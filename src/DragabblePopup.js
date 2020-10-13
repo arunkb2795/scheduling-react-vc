@@ -10,7 +10,6 @@ import TextField from "./TextField";
 import TimePicker from "./TimePicker";
 import DatePicker from "./DatePicker";
 import MultiSelector from "./MultiSelector";
-import Select from "./Select";
 import AutocompleteTextField from "./AutoComplete";
 import IconButton from "@material-ui/core/IconButton";
 import DateRangeRoundedIcon from "@material-ui/icons/DateRangeRounded";
@@ -18,11 +17,6 @@ import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined"
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
-import PersonAddOutlinedIcon from "@material-ui/icons/PersonAddOutlined";
-
-import AddUserPopup from "./AddUserPopup";
-import EditUserPopup from "./EditUserPopup";
-
 import axios from "./axios";
 import moment from "moment";
 
@@ -47,31 +41,29 @@ export default function DraggableDialog(props) {
   const [appointmentSubject, setAppointmentSubject] = useState("");
   const [editableTitle, setEditableTitle] = React.useState("");
   const [agentName, setAgentName] = useState([]);
-  const [customerName, setCustomerName] = useState([]);
+  const [appointmentType, setAppointmentType] = useState([]);
+
+  const [selectedAgent, setSelectedAgent] = useState({});
+  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  const [selectedAppointmentType, setSelectedAppointmentType] = useState([]);
+  const [submitData, setSubmitData] = useState({
+    consultant: {},
+    customers: [],
+    appointmentType: {},
+    start: null,
+    stop: null,
+  });
 
   //handling more-less button
   const [more, setMore] = useState(false);
-  //handle addUserpopup
-  const [addUserPopup, setAddUserPopup] = useState(false);
-  //handle editUserPopup
-  const [editUserPopup, setEditUserPopup] = useState(false);
-  const [editUserData, setEditUserData] = useState({});
 
   const handleClose = () => {
     setOpen(false);
-    setAddUserPopup(false);
-    setEditUserPopup(false);
   };
 
-  const handleStartChange = (e) => {
-    startTime(e.target.value);
-  };
-
-  const handleEndChange = (value) => {
-    endTime(value);
-  };
-  const handleDateChange = (value) => {
+  const handleDateChange = (name, value) => {
     setDate(value);
+    console.log(name, value);
   };
   const handleChange = (e) => {
     setAppointmentSubject(e.target.value);
@@ -98,39 +90,6 @@ export default function DraggableDialog(props) {
     setOpen(props.open);
   }, [props]);
 
-  //add user function
-
-  const addUser = (user, open) => {
-    let userData = {
-      name: user.name,
-      email: user.email,
-    };
-    console.log(userData);
-    axios
-      .post("/customer/", userData)
-      .then((response) => console.log(response));
-    setAddUserPopup(!open);
-  };
-
-  const handleChipClik = (id) => {
-    setEditUserPopup(true);
-    axios
-      .get(`/customer/${id}`)
-      .then((response) => {
-        setEditUserData(response.data);
-        console.log(response);
-      })
-      .catch((error) => console.log(error));
-  };
-  const handleSelectedValue = (value) => {
-    // let data = {
-    //   name: value[0].name,
-    //   email: value[0].email,
-    // };
-    // console.log({ value });
-    // setEditUser(data);
-  };
-
   //jsonplaceholder.typicode.com/posts
   useEffect(() => {
     axios
@@ -142,40 +101,45 @@ export default function DraggableDialog(props) {
       .catch((error) => console.log(error));
   }, []);
 
-  const handleApicall = () => {
-    setAddUserPopup(false);
-    setEditUserPopup(false);
+  useEffect(() => {
     axios
-
-      .get("/customer/")
+      .get("/schedule_type/")
       .then((response) => {
         console.log(response);
-        setCustomerName(response.data);
+        setAppointmentType(response.data);
       })
       .catch((error) => console.log(error));
+  }, []);
+
+  const handleAgentName = (value) => {
+    //console.log(value);
+    setSelectedAgent(value);
+  };
+  const handleCustomerName = (value) => {
+    //console.log(value);
+    setSelectedCustomers(value);
   };
 
-  const updateUser = (user, open) => {
-    let userData = {
-      name: user.name,
-      email: user.email,
-    };
-    console.log({ userData }, open);
-    axios
-      .put(`/customer/${user.id}`, userData)
-      .then((response) => console.log(response));
-    setEditUserPopup(!open);
+  const handleAppointmentType = (value) => {
+    setSelectedAppointmentType(value);
   };
 
   const handleSubmit = (selectedInfo) => {
     console.log({ selectedInfo });
+    setSubmitData({
+      consultant: selectedAgent,
+      customers: selectedCustomers,
+      appointmentType: selectedAppointmentType,
+      start: start,
+      stop: end,
+    });
     let calendarApi = selectedInfo.view.calendar;
-    calendarApi.unselect(); // clear date selection
-    let title = appointmentSubject;
-    if (title) {
+    // calendarApi.unselect(); // clear date selection
+    // let title = appointmentSubject;
+    if (appointmentType) {
       calendarApi.addEvent({
         id: 101,
-        title,
+        title: selectedAppointmentType.name,
         start: start,
         color: "#3788d8", // override!,
         borderColor: "#3788d8",
@@ -183,16 +147,23 @@ export default function DraggableDialog(props) {
       });
     }
 
-    let formData = {
-      date: date,
-      start: start,
-      end: end,
-      appointmentSubject: appointmentSubject,
-    };
-    console.log({ formData });
+    // let formData = {
+    //   date: date,
+    //   start: start,
+    //   end: end,
+    //   appointmentSubject: appointmentSubject,
+    // };
+    // console.log({ formData });
     handleClose();
   };
+
+  const handleTimeChange = (name, value) => {
+    // const { name, value } = e.target;
+    name === "fromTime" ? startTime(value) : endTime(value);
+    console.log(name, value);
+  };
   //console.log(props.selectedInfo);
+  console.log({ submitData });
 
   return (
     <div>
@@ -231,8 +202,9 @@ export default function DraggableDialog(props) {
               <AutocompleteTextField
                 label="Consultant Name*"
                 options={agentName}
+                onChange={handleAgentName}
+                placeholder="Select Consultatnt"
               />
-              {/* <CreatablSelect label="Consultant Name*" options={agentName} /> */}
             </div>
           </div>
           <div style={{ display: "flex" }}>
@@ -245,33 +217,8 @@ export default function DraggableDialog(props) {
               }}
             />
             <div>
-              <MultiSelector
-              // options={customerName}
-              // onChipClik={handleChipClik}
-              // selectedValue={handleSelectedValue}
-              // apiCall={handleApicall}
-              />
+              <MultiSelector onChange={handleCustomerName} />
             </div>
-            {/* <div>
-              <IconButton
-                onClick={() => setAddUserPopup(!addUserPopup)}
-                style={{
-                  marginTop: "24px",
-                  marginLeft: "10px",
-                  border: "1px solid #ddd",
-                  borderRadius: "3px",
-                  padding: " 6px",
-                }}
-              >
-                <PersonAddOutlinedIcon
-                  style={{
-                    width: 24,
-                    height: 24,
-                    color: "#685bc7",
-                  }}
-                />
-              </IconButton>
-            </div> */}
           </div>
           <div style={{ display: "flex" }}>
             <div>
@@ -294,21 +241,24 @@ export default function DraggableDialog(props) {
             >
               <DatePicker
                 label="Date*"
+                name="date"
                 format="MM/dd/yyyy"
                 value={date}
-                onHandleDateChange={(value) => handleDateChange(value)}
+                onHandleDateChange={handleDateChange}
               />
 
               <TimePicker
                 label="From Time*"
+                name="fromTime"
                 value={start}
-                onHandleTimeChange={(e) => handleStartChange(e.target.value)}
+                onChange={handleTimeChange}
               />
 
               <TimePicker
                 label="To Time*"
+                name="toTime"
                 value={end}
-                onHandleTimeChange={(e) => handleEndChange(e.target.value)}
+                onChange={handleTimeChange}
               />
             </div>
           </div>
@@ -323,7 +273,12 @@ export default function DraggableDialog(props) {
               }}
             />
             <div style={{ width: "100%" }}>
-              <Select />
+              <AutocompleteTextField
+                label="Appointment Type*"
+                options={appointmentType}
+                onChange={handleAppointmentType}
+                placeholder="Select Appointment Type"
+              />
             </div>
           </div>
           <div style={{ float: "right" }}>
@@ -371,16 +326,6 @@ export default function DraggableDialog(props) {
             Create
           </Button>
         </DialogActions>
-        {addUserPopup ? (
-          <AddUserPopup open={addUserPopup} handleAddUser={addUser} />
-        ) : null}
-        {editUserPopup ? (
-          <EditUserPopup
-            open={editUserPopup}
-            currentUser={editUserData}
-            updateUser={updateUser}
-          />
-        ) : null}
       </Dialog>
     </div>
   );

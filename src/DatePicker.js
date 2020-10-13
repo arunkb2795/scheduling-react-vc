@@ -17,12 +17,13 @@ export default function DatePicker(props) {
           inputVariant="outlined"
           margin="normal"
           size="small"
+          name={props.date}
           style={{ width: 158, marginTop: 10 }}
           //id={props.id}
           //label="Date"
           format={"MM/dd/yyyy"}
           value={props.value}
-          onChange={(value) => props.onHandleDateChange(value)}
+          onChange={(value) => props.onHandleDateChange(props.name, value)}
 
           //value={props.value}
           //className={classes.textField}

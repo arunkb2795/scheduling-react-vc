@@ -78,6 +78,7 @@ export default function Tags(props) {
 
   const selectedValue = (e, value) => {
     console.log("selected value :", value);
+    props.onChange(value);
     setOldValue(value);
     getSelected(value);
     setCreatedValue(initialFormState);
@@ -88,7 +89,7 @@ export default function Tags(props) {
       ? getSelected([...oldValue, createdValue])
       : getSelected(oldValue);
     console.log(createdValue);
-  }, [createdValue]);
+  }, [createdValue, oldValue]);
 
   const addUser = (data) => {
     setCreatedValue(data);

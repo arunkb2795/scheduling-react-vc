@@ -15,30 +15,13 @@ function KeyboardTimePickerExample(props) {
       </InputLabel>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <KeyboardTimePicker
+          name={props.name}
           margin="normal"
           inputVariant="outlined"
-          //disableToolbar
           style={{ width: 142, marginTop: 10 }}
           size="small"
           value={props.value}
-          onChange={(value) => props.onHandleTimeChange(value)}
-          // id={props.id}
-          //label="From Time"
-          //format={props.format}
-          //value={props.value}
-          //onChange={(value) => props.onHandleTimeChange(value)}
-          // className={classes.textField}
-          // InputAdornmentProps={{
-          //   classes: {
-          //     adornedEnd: classes.adornedEnd,
-          //   },
-          // }}
-          // InputProps={{
-          //   classes: {
-          //     input: classes.resize,
-          //   },
-          // }}
-          //onChange={(value) => props.onHandleTimeChange(value)}
+          onChange={(value) => props.onChange(props.name, value)}
           KeyboardButtonProps={{
             "aria-label": "change date",
           }}

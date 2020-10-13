@@ -14,14 +14,14 @@ function ComboBox(props) {
       <div style={{ width: 515, marginBottom: 10 }}>
         <Autocomplete
           PopperComponent="bottom"
-          id="combo-box-demo"
+          onChange={(e, value) => props.onChange(value)}
           options={props.options}
           getOptionLabel={(option) => option.name}
           renderInput={(params) => (
             <TextField
               fullWidth
               {...params}
-              placeholder="Select Consultatnt"
+              placeholder={props.placeholder}
               //label="Combo box"
               variant="outlined"
               size="small"
