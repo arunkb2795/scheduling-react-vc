@@ -18,6 +18,7 @@ function CustomTextField(props) {
             width: props.width,
           }}
           type="text"
+          helperText={props.helperText}
           id={props.id}
           name={props.name}
           placeholder={props.placeholder}
@@ -28,6 +29,7 @@ function CustomTextField(props) {
           rows={props.rows}
           value={props.value}
           onChange={props.onChange}
+          onBlur={props.onBlur}
         />
       </div>
     </div>

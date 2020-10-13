@@ -20,18 +20,7 @@ function App() {
     <MuiThemeProvider theme={theme}>
       {/* <AsyncAutoComplete /> */}
       <FullCalendarPage />
-
-      {/* <AutocompleteTextField />
-      <Select />
-      <TextField />
-      <TimePicker />
-      <DatePicker />
-      <MultiSelector />
-      <DragablePopup /> */}
     </MuiThemeProvider>
-
-    // <TextField />
-    // <Select />
   );
 }
 

@@ -14,12 +14,28 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+import { useFormik } from "formik";
+import * as Yup from "yup";
+const validationSchema = Yup.object({
+  name: Yup.string().required("Required"),
+  email: Yup.string().email("Invalid email formal").required("Required"),
+});
+const initialValues = { name: "", email: "" };
+const onSubmit = (values) => {
+  console.log("Form data", values);
+};
 export default function Asynchronous() {
+  const formik = useFormik({
+    initialValues,
+    onSubmit,
+    validationSchema,
+  });
   const [open, setOpen] = React.useState(false);
   const [editOpen, setEditOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
   const [selected, getSelected] = React.useState([]);
   const [createdValue, setCreatedValue] = React.useState({
+    id: null,
     name: "",
     email: "",
   });
@@ -28,15 +44,19 @@ export default function Asynchronous() {
   const initialFormState = { id: null, name: "", email: "" };
   const [user, setUser] = useState(initialFormState);
 
+  //console.log("Form Values : ", formik.values);
   function handleClickOpen() {
+    setUser(initialFormState);
     setOpen(!open);
   }
 
   function handleClose() {
+    setUser(initialFormState);
     setOpen(false);
   }
 
   function editClose() {
+    setUser(initialFormState);
     setEditOpen(false);
   }
 
@@ -108,6 +128,10 @@ export default function Asynchronous() {
     setUser(initialFormState);
   };
 
+  // const onSubmit = (values) => {
+  //   console.log("parent", values);
+  // };
+
   return (
     <div>
       <Autocomplete
@@ -161,35 +185,48 @@ export default function Asynchronous() {
         <DialogContent>
           <form
             id="my-form-id"
-            onSubmit={(event) => {
-              event.preventDefault();
-              let userData = {
-                name: user.name,
-                email: user.email,
-              };
-              console.log(userData);
-              axios
-                .post("/customer/", userData)
-                .then((response) => addUser(response.data));
-              setUser(initialFormState);
-              handleClose();
-            }}
+            onSubmit={formik.handleSubmit}
+            // onSubmit={(event) => {
+            //   event.preventDefault();
+            //   let userData = {
+            //     name: user.name,
+            //     email: user.email,
+            //   };
+            //   console.log(userData);
+            //   axios
+            //     .post("/customer/", userData)
+            //     .then((response) => addUser(response.data));
+            //   setUser(initialFormState);
+            //   handleClose();
+            // }}
           >
             <TextFieldCustom
               label="Name*"
               name="name"
               placeholder="John Doe"
-              value={user.name}
+              helperText={
+                formik.touched.name && formik.errors.name
+                  ? formik.errors.name
+                  : null
+              }
+              value={formik.values.name}
               width={500}
-              onChange={handleChange}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
             />
             <TextFieldCustom
               label="Email*"
               name="email"
+              helperText={
+                formik.touched.email && formik.errors.email
+                  ? formik.errors.email
+                  : null
+              }
               placeholder="johndoe@gmail.com"
-              value={user.email}
+              value={formik.values.email}
               width={500}
-              onChange={handleChange}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
             />
             <Button
               variant="outlined"
@@ -205,7 +242,7 @@ export default function Asynchronous() {
 
       {/* edit user popup */}
 
-      <Dialog
+      {/* <Dialog
         open={editOpen}
         onClose={editClose}
         aria-labelledby="form-dialog-title"
@@ -255,7 +292,7 @@ export default function Asynchronous() {
             </Button>
           </form>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 }

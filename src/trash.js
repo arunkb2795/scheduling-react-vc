@@ -14,13 +14,9 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import InputLabel from "@material-ui/core/InputLabel";
 import { DialogActions } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-
-//import UserForm from './UserForm'
 
 export default function Tags(props) {
   const initialFormState = { id: null, name: "", email: "" };
-  const [dropdownOpen, setDropDownOpen] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [editOpen, setEditOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
@@ -28,33 +24,6 @@ export default function Tags(props) {
   const [createdValue, setCreatedValue] = React.useState(initialFormState);
   const [oldValue, setOldValue] = React.useState([]);
   const [user, setUser] = useState(initialFormState);
-  const loading = dropdownOpen && options.length === 0;
-
-  useEffect(() => {
-    let active = true;
-
-    if (!loading) {
-      return undefined;
-    }
-
-    axios
-      .get("/customer/")
-      .then((response) => {
-        console.log(response);
-        setOptions(response.data);
-      })
-      .catch((error) => console.log(error));
-
-    return () => {
-      active = false;
-    };
-  }, [loading]);
-
-  useEffect(() => {
-    if (!dropdownOpen) {
-      setOptions([]);
-    }
-  }, [dropdownOpen]);
 
   function handleClickOpen() {
     setOpen(!open);
@@ -74,6 +43,16 @@ export default function Tags(props) {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
     console.log(user);
+  };
+
+  const handleOpen = () => {
+    axios
+      .get("/customer/")
+      .then((response) => {
+        console.log(response);
+        setOptions(response.data);
+      })
+      .catch((error) => console.log(error));
   };
 
   const selectedValue = (e, value) => {
@@ -139,17 +118,10 @@ export default function Tags(props) {
             value={selected}
             multiple
             //limitTags={2}
-            onOpen={() => {
-              setDropDownOpen(true);
-            }}
-            onClose={() => {
-              setDropDownOpen(false);
-            }}
-            loading={loading}
             size="small"
             id="tags-filled"
             PopperComponent="bottom"
-            //onOpen={handleOpen}
+            onOpen={handleOpen}
             options={options}
             getOptionLabel={(option) => option.name}
             getOptionSelected={(option, value) => option.name === value.name}
@@ -173,17 +145,6 @@ export default function Tags(props) {
                 variant="outlined"
                 placeholder="Select Consultatnt"
                 size="small"
-                InputProps={{
-                  ...params.InputProps,
-                  endAdornment: (
-                    <React.Fragment>
-                      {loading ? (
-                        <CircularProgress color="inherit" size={20} />
-                      ) : null}
-                      {params.InputProps.endAdornment}
-                    </React.Fragment>
-                  ),
-                }}
               />
             )}
           />
@@ -270,6 +231,8 @@ export default function Tags(props) {
           </DialogContent>
         </Dialog>
 
+        {/* edit user popup */}
+
         <Dialog
           open={editOpen}
           onClose={editClose}
@@ -319,7 +282,7 @@ export default function Tags(props) {
                   form="my-form-id2"
                   color="primary"
                 >
-                  Save CHanges
+                  Save Changes
                 </Button>
               </DialogActions>
             </form>
