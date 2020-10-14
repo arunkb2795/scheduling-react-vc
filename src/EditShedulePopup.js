@@ -33,30 +33,19 @@ function PaperComponent(props) {
 
 export default function DraggableDialog(props) {
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = useState(moment().format("MM-DD-YYYY"));
-
-  const [start, startTime] = useState(moment());
-  const [end, endTime] = useState(moment());
-  const [appointmentSubject, setAppointmentSubject] = useState("");
-  const [agentName, setAgentName] = useState([]);
+  const [sheduleInfo, setSheduleInfo] = useState({});
   const [appointmentType, setAppointmentType] = useState([]);
-
-  const [selectedAgent, setSelectedAgent] = useState({});
-  const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [selectedAppointmentType, setSelectedAppointmentType] = useState([]);
-  const [submitData, setSubmitData] = useState({
-    consultant: {},
-    customers: [],
-    appointmentType: {},
-    start: null,
-    stop: null,
-  });
 
-  // const [allowSubmittion, setAllowSubmittion] = useState(false);
-  // const [validator, setvalidator] = useState({
-  //   typevalidator: "",
-  //   error: false,
-  // });
+  useEffect(() => {
+    axios
+      .get("/schedule_type/")
+      .then((response) => {
+        console.log(response);
+        setAppointmentType(response.data);
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
   //handling more-less button
   const [more, setMore] = useState(false);
@@ -64,122 +53,16 @@ export default function DraggableDialog(props) {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const handleDateChange = (name, value) => {
-    setDate(value);
-    console.log(name, value);
-  };
-  const handleChange = (e) => {
-    setAppointmentSubject(e.target.value);
-  };
-  useEffect(() => startTime(props.selectedInfo && props.selectedInfo.start), [
-    props,
-  ]);
-  useEffect(() => endTime(props.selectedInfo && props.selectedInfo.end), [
-    props,
-  ]);
-
-  useEffect(
-    () =>
-      setDate(
-        moment(props.selectedInfo && props.selectedInfo.startStr).format(
-          "MM-DD-YYYY"
-        )
-      ),
-    [props]
-  );
-
-  useEffect(() => {
-    setOpen(props.open);
-  }, [props]);
-
-  //jsonplaceholder.typicode.com/posts
-  useEffect(() => {
-    axios
-      .get("/agent/")
-      .then((response) => {
-        console.log(response);
-        setAgentName(response.data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
-
-  useEffect(() => {
-    axios
-      .get("/schedule_type/")
-      .then((response) => {
-        setAppointmentType(response.data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
-
-  const handleAgentName = (value) => {
-    //console.log(value);
-    setSelectedAgent(value);
-  };
-  const handleCustomerName = (value) => {
-    //console.log(value);
-    setSelectedCustomers(value);
-  };
-
   const handleAppointmentType = (value) => {
     setSelectedAppointmentType(value);
     //setvalidator({ typevalidator: "", error: false });
   };
 
-  // const validationHandler = () => {
-  //   if (submitData.appointmentType.length === 0) {
-  //     setvalidator({ typevalidator: "Select appointment type", error: true });
-  //     setAllowSubmittion(true);
-  //   }
-  // };
+  useEffect(() => {
+    setOpen(props.open);
+  }, [props]);
 
-  const handleSubmit = (selectedInfo) => {
-    console.log({ selectedInfo });
-
-    setSubmitData({
-      consultant: selectedAgent,
-      customers: selectedCustomers,
-      appointmentType: selectedAppointmentType,
-      start: start,
-      stop: end,
-    });
-    let calendarApi = selectedInfo.view.calendar;
-    // if (allowSubmittion) {
-    //   calendarApi.addEvent({
-    //     id: 101,
-    //     title: selectedAppointmentType.name,
-    //     start: start,
-    //     color: "#3788d8", // override!,
-    //     borderColor: "#3788d8",
-    //     end: end,
-    //   });
-    if (selectedAppointmentType.name) {
-      calendarApi.addEvent({
-        id: 101,
-        title: selectedAppointmentType.name,
-        start: start,
-        color: "#3788d8", // override!,
-        borderColor: "#3788d8",
-        end: end,
-      });
-
-      handleClose();
-    }
-  };
-
-  // useEffect(() => {
-  //   validationHandler(submitData);
-  // }, [submitData]);
-
-  const handleTimeChange = (name, value) => {
-    // const { name, value } = e.target;
-    name === "fromTime" ? startTime(value) : endTime(value);
-    console.log(name, value);
-  };
-  console.log(submitData);
-  //console.log({ validator });
-
+  console.log({ appointmentType });
   return (
     <div>
       <Dialog
@@ -194,7 +77,7 @@ export default function DraggableDialog(props) {
           }}
           id="draggable-dialog-title"
         >
-          Add Appointment
+          Edit Appointment
           <IconButton
             style={{ float: "right", padding: 10 }}
             aria-label="close"
@@ -216,8 +99,8 @@ export default function DraggableDialog(props) {
             <div>
               <AutocompleteTextField
                 label="Consultant Name*"
-                options={agentName}
-                onChange={handleAgentName}
+                //options={agentName}
+                //onChange={handleAgentName}
                 placeholder="Select Consultatnt"
               />
             </div>
@@ -232,7 +115,8 @@ export default function DraggableDialog(props) {
               }}
             />
             <div>
-              <MultiSelector onChange={handleCustomerName} />
+              <MultiSelector //onChange={handleCustomerName}
+              />
             </div>
           </div>
           <div style={{ display: "flex" }}>
@@ -258,22 +142,22 @@ export default function DraggableDialog(props) {
                 label="Date*"
                 name="date"
                 format="MM/dd/yyyy"
-                value={date}
-                onHandleDateChange={handleDateChange}
+                //value={date}
+                //onHandleDateChange={handleDateChange}
               />
 
               <TimePicker
                 label="From Time*"
                 name="fromTime"
-                value={start}
-                onChange={handleTimeChange}
+                //value={start}
+                //onChange={handleTimeChange}
               />
 
               <TimePicker
                 label="To Time*"
                 name="toTime"
-                value={end}
-                onChange={handleTimeChange}
+                //value={end}
+                //onChange={handleTimeChange}
               />
             </div>
           </div>
@@ -290,11 +174,10 @@ export default function DraggableDialog(props) {
             <div style={{ width: "100%" }}>
               <AutocompleteTextField
                 label="Appointment Type*"
+                value={appointmentType[0]}
                 options={appointmentType}
                 onChange={handleAppointmentType}
                 placeholder="Select Appointment Type"
-                // helperText={validator.typevalidator}
-                // error={validator.error}
               />
             </div>
           </div>
@@ -317,8 +200,8 @@ export default function DraggableDialog(props) {
             <div style={{ marginLeft: "28px" }}>
               <TextField
                 label="Subject"
-                value={appointmentSubject}
-                onChange={handleChange}
+                //value={appointmentSubject}
+                //onChange={handleChange}
               />
             </div>
           ) : null}
@@ -329,17 +212,19 @@ export default function DraggableDialog(props) {
           ) : null}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Close
+          <Button
+            //onClick={handleClose}
+            color="secondary"
+          >
+            Remove
           </Button>
-
           <Button
             style={{ marginRight: 15 }}
-            onClick={() => handleSubmit(props.selectedInfo)}
+            //onClick={() => handleSubmit(props.selectedInfo)}
             color="primary"
             variant="outlined"
           >
-            Create appointment
+            Save Changes
           </Button>
         </DialogActions>
       </Dialog>

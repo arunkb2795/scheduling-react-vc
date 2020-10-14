@@ -5,16 +5,16 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { INITIAL_EVENTS } from "./event-utils";
 import DragabblePopup from "./DragabblePopup";
+import EditSchedulePopup from "./EditShedulePopup";
 import moment from "moment";
 export default class FullCalendarPage extends React.Component {
   calendarRef = React.createRef();
   state = {
     currentEvents: [],
-    setOpen: false,
-    editableButton: false,
-    editableTitle: "",
+    addOpen: false,
+    editOpen: false,
     data: null,
-    selectable: false,
+    editData: null,
   };
 
   render() {
@@ -29,10 +29,10 @@ export default class FullCalendarPage extends React.Component {
               right: "dayGridMonth,timeGridWeek,timeGridDay",
             }}
             initialView="timeGridDay"
-            editable={true}
+            editable={false}
             selectable={true}
             selectMirror={true}
-            dayMaxEvents={true}
+            // dayMaxEvents={true}
             allDaySlot={false}
             dateClick={this.handleDateClick}
             initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
@@ -48,17 +48,22 @@ export default class FullCalendarPage extends React.Component {
             ref={this.calendarRef}
           />
         </div>
-
-        {moment(this.state.data && this.state.data.start).format("hh:mm:ss") &&
-        moment(this.state.data && this.state.data.end).format("hh:mm:ss") ===
-          "12:00:00" ? null : (
-          <DragabblePopup
-            open={this.state.setOpen}
-            editableTitle={this.state.editableTitle}
-            selectedInfo={this.state.data}
-            editable={this.state.editableButton}
+        {this.state.editOpen ? (
+          <EditSchedulePopup
+            open={this.state.editOpen}
+            editData={this.state.editData}
           />
-        )}
+        ) : null}
+
+        {this.state.addOpen &&
+        moment(this.state.data && this.state.data.start).format("hh:mm:ss") &&
+        moment(this.state.data && this.state.data.end).format("hh:mm:ss") !==
+          "12:00:00" ? (
+          <DragabblePopup
+            open={this.state.addOpen}
+            selectedInfo={this.state.data}
+          />
+        ) : null}
       </div>
     );
   }
@@ -70,29 +75,24 @@ export default class FullCalendarPage extends React.Component {
   };
 
   handleDateSelect = (selectInfo) => {
-    //console.log(moment(selectInfo.start).format("hh:mm:ss"));
-
     this.setState({
-      setOpen: true,
-      editableTitle: "",
+      addOpen: true,
       data: selectInfo,
-      editableButton: false,
     });
   };
 
   handleEventClick = (clickInfo) => {
+    console.log({ clickInfo });
+    let data = {
+      title: clickInfo.event.title,
+      start: clickInfo.event.start,
+      end: clickInfo.event.end,
+    };
+    console.log({ data });
     this.setState({
-      setOpen: true,
-      data: clickInfo.event,
-      editableButton: true,
-      editableTitle: "Edit Appointment",
-    });
-  };
-
-  handleEvents = (events) => {
-    this.setState({
-      currentEvents: events,
-      setOpen: false,
+      addOpen: false,
+      editOpen: true,
+      editData: data,
     });
   };
 }

@@ -139,7 +139,7 @@ export default function Tags(props) {
           <Autocomplete
             value={selected}
             multiple
-            //limitTags={2}
+            limitTags={2}
             onOpen={() => {
               setDropDownOpen(true);
             }}
@@ -253,7 +253,7 @@ export default function Tags(props) {
               <DialogActions>
                 <Button
                   //variant="outlined"
-                  color="secondary"
+                  color="primary"
                   onClick={handleClose}
                 >
                   close

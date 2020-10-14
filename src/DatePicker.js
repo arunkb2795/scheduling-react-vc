@@ -19,20 +19,9 @@ export default function DatePicker(props) {
           size="small"
           name={props.date}
           style={{ width: 158, marginTop: 10 }}
-          //id={props.id}
-          //label="Date"
           format={"MM/dd/yyyy"}
           value={props.value}
           onChange={(value) => props.onHandleDateChange(props.name, value)}
-
-          //value={props.value}
-          //className={classes.textField}
-          //onChange={(value) => props.onHandleDateChange(value)}
-          //onChange={(value) => props.onHandleDateChange(value)}
-          // KeyboardButtonProps={{
-          //   "aria-label": "change date",
-          // }}
-          //keyboardIcon={<CalendarTodayRoundedIcon style={{ fontSize: 22 }} />}
         />
       </MuiPickersUtilsProvider>
     </div>
