@@ -17,7 +17,6 @@ import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined"
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
-import axios from "./axios";
 import moment from "moment";
 
 function PaperComponent(props) {
@@ -33,33 +32,29 @@ function PaperComponent(props) {
 
 export default function DraggableDialog(props) {
   const [open, setOpen] = React.useState(false);
+  const [more, setMore] = useState(false);
   const [date, setDate] = useState(moment().format("MM-DD-YYYY"));
 
   const [start, startTime] = useState(moment());
   const [end, endTime] = useState(moment());
   const [appointmentSubject, setAppointmentSubject] = useState("");
-  const [agentName, setAgentName] = useState([]);
-  const [appointmentType, setAppointmentType] = useState([]);
+  const [description, setDescription] = useState("");
 
   const [selectedAgent, setSelectedAgent] = useState({});
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [selectedAppointmentType, setSelectedAppointmentType] = useState([]);
-  const [submitData, setSubmitData] = useState({
-    consultant: {},
-    customers: [],
-    appointmentType: {},
-    start: null,
-    stop: null,
-  });
+  const [submitData, setSubmitData] = useState({});
+
+  // const [name, setDefault] = useState({});
+  // useEffect(() => {
+  //   setDefault(props.agentName[0]);
+  // }, []);
 
   // const [allowSubmittion, setAllowSubmittion] = useState(false);
   // const [validator, setvalidator] = useState({
   //   typevalidator: "",
   //   error: false,
   // });
-
-  //handling more-less button
-  const [more, setMore] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -71,6 +66,10 @@ export default function DraggableDialog(props) {
   };
   const handleChange = (e) => {
     setAppointmentSubject(e.target.value);
+  };
+
+  const handleDescription = (e) => {
+    setDescription(e.target.value);
   };
   useEffect(() => startTime(props.selectedInfo && props.selectedInfo.start), [
     props,
@@ -93,28 +92,10 @@ export default function DraggableDialog(props) {
     setOpen(props.open);
   }, [props]);
 
-  //jsonplaceholder.typicode.com/posts
-  useEffect(() => {
-    axios
-      .get("/agent/")
-      .then((response) => {
-        console.log(response);
-        setAgentName(response.data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
-
-  useEffect(() => {
-    axios
-      .get("/schedule_type/")
-      .then((response) => {
-        setAppointmentType(response.data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
-
   const handleAgentName = (value) => {
-    //console.log(value);
+    //console.log("agetName", value);
+    //  setDefault(value);
+
     setSelectedAgent(value);
   };
   const handleCustomerName = (value) => {
@@ -134,52 +115,39 @@ export default function DraggableDialog(props) {
   //   }
   // };
 
-  const handleSubmit = (selectedInfo) => {
-    console.log({ selectedInfo });
+  const handleButtonClick = () => {
+    //console.log({ selectedInfo });
 
     setSubmitData({
-      consultant: selectedAgent,
-      customers: selectedCustomers,
-      appointmentType: selectedAppointmentType,
-      start: start,
-      stop: end,
+      // consultant: selectedAgent,
+      // customers: selectedCustomers,
+      // appointmentType: selectedAppointmentType,
+      title: appointmentSubject,
+      description: description,
+      start: moment(start).format(),
+      stop: moment(end).format(),
     });
-    let calendarApi = selectedInfo.view.calendar;
-    // if (allowSubmittion) {
-    //   calendarApi.addEvent({
-    //     id: 101,
-    //     title: selectedAppointmentType.name,
-    //     start: start,
-    //     color: "#3788d8", // override!,
-    //     borderColor: "#3788d8",
-    //     end: end,
-    //   });
-    if (selectedAppointmentType.name) {
-      calendarApi.addEvent({
-        id: 101,
-        title: selectedAppointmentType.name,
-        start: start,
-        color: "#3788d8", // override!,
-        borderColor: "#3788d8",
-        end: end,
-      });
-
-      handleClose();
-    }
   };
+
+  const callback = () => {
+    props.handleDataSubmit(submitData, open);
+    console.log(submitData);
+  };
+
+  useEffect(() => {
+    callback(submitData);
+  }, [submitData]);
 
   // useEffect(() => {
   //   validationHandler(submitData);
   // }, [submitData]);
 
   const handleTimeChange = (name, value) => {
-    // const { name, value } = e.target;
     name === "fromTime" ? startTime(value) : endTime(value);
     console.log(name, value);
   };
-  console.log(submitData);
-  //console.log({ validator });
 
+  console.log(open);
   return (
     <div>
       <Dialog
@@ -216,8 +184,8 @@ export default function DraggableDialog(props) {
             <div>
               <AutocompleteTextField
                 label="Consultant Name*"
-                options={agentName}
-                onChange={handleAgentName}
+                options={props.consultantList}
+                handleChange={handleAgentName}
                 placeholder="Select Consultatnt"
               />
             </div>
@@ -290,8 +258,8 @@ export default function DraggableDialog(props) {
             <div style={{ width: "100%" }}>
               <AutocompleteTextField
                 label="Appointment Type*"
-                options={appointmentType}
-                onChange={handleAppointmentType}
+                options={props.customerList}
+                handleChange={handleAppointmentType}
                 placeholder="Select Appointment Type"
                 // helperText={validator.typevalidator}
                 // error={validator.error}
@@ -324,7 +292,13 @@ export default function DraggableDialog(props) {
           ) : null}
           {more ? (
             <div style={{ marginLeft: "28px" }}>
-              <TextField label="Description" multiline={true} rows={4} />
+              <TextField
+                label="Description"
+                multiline={true}
+                rows={4}
+                value={description}
+                onChange={handleDescription}
+              />
             </div>
           ) : null}
         </DialogContent>
@@ -335,7 +309,7 @@ export default function DraggableDialog(props) {
 
           <Button
             style={{ marginRight: 15 }}
-            onClick={() => handleSubmit(props.selectedInfo)}
+            onClick={handleButtonClick}
             color="primary"
             variant="outlined"
           >

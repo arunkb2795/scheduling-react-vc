@@ -17,7 +17,6 @@ import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined"
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
-import axios from "./axios";
 import moment from "moment";
 
 function PaperComponent(props) {
@@ -34,17 +33,21 @@ function PaperComponent(props) {
 export default function DraggableDialog(props) {
   const [open, setOpen] = React.useState(false);
   const [sheduleInfo, setSheduleInfo] = useState({});
-  const [appointmentType, setAppointmentType] = useState([]);
   const [selectedAppointmentType, setSelectedAppointmentType] = useState([]);
 
+  const [agentName, setAgentName] = useState({});
+  const [startTime, setStartTime] = useState("");
+  const [appointmentType, setAppointmentType] = useState([]);
+  const [eventClickDetails, setEventClickDetails] = useState({});
+
   useEffect(() => {
-    axios
-      .get("/schedule_type/")
-      .then((response) => {
-        console.log(response);
-        setAppointmentType(response.data);
-      })
-      .catch((error) => console.log(error));
+    setEventClickDetails(props.eventClickInformation);
+  }, [props]);
+
+  useEffect(() => {
+    setAgentName(props.consultantList[0]);
+    setAppointmentType(props.customerList[1]);
+    setStartTime("2020-10-08T17:41:03Z");
   }, []);
 
   //handling more-less button
@@ -53,16 +56,34 @@ export default function DraggableDialog(props) {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const handleStartTimeChange = (name, value) => {
+    console.log(value);
+    setStartTime(moment(value).format());
+  };
   const handleAppointmentType = (value) => {
-    setSelectedAppointmentType(value);
+    setAppointmentType(value);
     //setvalidator({ typevalidator: "", error: false });
+  };
+
+  const handleAgentName = (value) => {
+    console.log("agetName", value);
+    setAgentName(value);
   };
 
   useEffect(() => {
     setOpen(props.open);
   }, [props]);
 
-  console.log({ appointmentType });
+  const handleSubmit = () => {
+    console.log("agenName", agentName, "appointmentType", appointmentType);
+  };
+
+  const handleDelete = () => {
+    props.handleDeleteEvent(eventClickDetails.id, open);
+  };
+
+  console.log({ eventClickDetails });
   return (
     <div>
       <Dialog
@@ -99,8 +120,10 @@ export default function DraggableDialog(props) {
             <div>
               <AutocompleteTextField
                 label="Consultant Name*"
-                //options={agentName}
-                //onChange={handleAgentName}
+                options={props.consultantList}
+                //defaultValue={props.agentName[0]}
+                value={agentName}
+                handleChange={handleAgentName}
                 placeholder="Select Consultatnt"
               />
             </div>
@@ -142,21 +165,21 @@ export default function DraggableDialog(props) {
                 label="Date*"
                 name="date"
                 format="MM/dd/yyyy"
-                //value={date}
+                value="2020-02-02T09:30"
                 //onHandleDateChange={handleDateChange}
               />
 
               <TimePicker
                 label="From Time*"
                 name="fromTime"
-                //value={start}
-                //onChange={handleTimeChange}
+                value={startTime}
+                onChange={handleStartTimeChange}
               />
 
               <TimePicker
                 label="To Time*"
                 name="toTime"
-                //value={end}
+                value="2020-02-02T09:30"
                 //onChange={handleTimeChange}
               />
             </div>
@@ -174,9 +197,9 @@ export default function DraggableDialog(props) {
             <div style={{ width: "100%" }}>
               <AutocompleteTextField
                 label="Appointment Type*"
-                value={appointmentType[0]}
-                options={appointmentType}
-                onChange={handleAppointmentType}
+                value={appointmentType}
+                options={props.customerList}
+                handleChange={handleAppointmentType}
                 placeholder="Select Appointment Type"
               />
             </div>
@@ -212,15 +235,12 @@ export default function DraggableDialog(props) {
           ) : null}
         </DialogContent>
         <DialogActions>
-          <Button
-            //onClick={handleClose}
-            color="secondary"
-          >
+          <Button onClick={handleDelete} color="secondary">
             Remove
           </Button>
           <Button
             style={{ marginRight: 15 }}
-            //onClick={() => handleSubmit(props.selectedInfo)}
+            onClick={handleSubmit}
             color="primary"
             variant="outlined"
           >

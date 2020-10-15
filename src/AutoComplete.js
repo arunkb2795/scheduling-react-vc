@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -15,8 +15,7 @@ function ComboBox(props) {
         <Autocomplete
           PopperComponent="bottom"
           value={props.value}
-          onChange={(e, value) => props.onChange(value)}
-          onInputChange={(e, newInputValue) => console.log(newInputValue)}
+          onChange={(e, value) => props.handleChange(value)}
           options={props.options}
           getOptionLabel={(option) => option.name}
           renderInput={(params) => (

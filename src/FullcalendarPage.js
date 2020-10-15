@@ -1,98 +1,158 @@
-import React from "react";
-import FullCalendar from "@fullcalendar/react";
+import React, { useState, useEffect } from "react";
+import FullCalendar, { createDuration } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { INITIAL_EVENTS } from "./event-utils";
-import DragabblePopup from "./DragabblePopup";
+import AddSchedulePopup from "./DragabblePopup";
 import EditSchedulePopup from "./EditShedulePopup";
 import moment from "moment";
-export default class FullCalendarPage extends React.Component {
-  calendarRef = React.createRef();
-  state = {
-    currentEvents: [],
-    addOpen: false,
-    editOpen: false,
-    data: null,
-    editData: null,
+import axios from "./axios";
+
+export default function FullCalendarPage() {
+  const calendarRef = React.createRef();
+  const [addOpen, setAddOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [eventInfo, setEventInfo] = useState([]);
+  const [selectedInfo, setSelectedInfo] = useState(null);
+  const [consultantList, setConsultantList] = useState([]);
+  const [customerList, setCustomerList] = useState([]);
+  const [creationData, setCreactionData] = useState({});
+  const [eventClickInfo, setEventClickInfo] = useState({});
+  useEffect(() => {
+    if (creationData.title) {
+      axios.post("/schedule/", creationData).then((response) => response);
+      loadData();
+    }
+  }, [creationData]);
+
+  const loadData = async () => {
+    await axios
+      .get("/schedule/")
+      .then((response) => {
+        let arr = [];
+        for (let i = 0; i < response.data.length; i++) {
+          let data = {
+            id: response.data[i].id,
+            title: response.data[i].title,
+            start: moment(response.data[i].start).format(),
+            end: moment(response.data[i].stop).format(),
+          };
+          arr.push(data);
+        }
+        setEventInfo(arr);
+      })
+      .catch((error) => console.log(error));
   };
 
-  render() {
-    return (
-      <div>
-        <div>
-          <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "dayGridMonth,timeGridWeek,timeGridDay",
-            }}
-            initialView="timeGridDay"
-            editable={false}
-            selectable={true}
-            selectMirror={true}
-            // dayMaxEvents={true}
-            allDaySlot={false}
-            dateClick={this.handleDateClick}
-            initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
-            select={this.handleDateSelect}
-            //eventContent={renderEventContent} // custom render function
-            eventClick={this.handleEventClick}
-            //eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
-            /* you can update a remote database when these fire:
-            eventAdd={function(){}}
-            eventChange={function(){}}
-            eventRemove={function(){}}
-            */
-            ref={this.calendarRef}
-          />
-        </div>
-        {this.state.editOpen ? (
-          <EditSchedulePopup
-            open={this.state.editOpen}
-            editData={this.state.editData}
-          />
-        ) : null}
+  useEffect(() => {
+    loadData();
+  }, []);
 
-        {this.state.addOpen &&
-        moment(this.state.data && this.state.data.start).format("hh:mm:ss") &&
-        moment(this.state.data && this.state.data.end).format("hh:mm:ss") !==
-          "12:00:00" ? (
-          <DragabblePopup
-            open={this.state.addOpen}
-            selectedInfo={this.state.data}
-          />
-        ) : null}
-      </div>
-    );
-  }
+  useEffect(() => {
+    loadData();
+  }, [addOpen, editOpen, creationData]);
 
-  handleDateClick = (dateClickInfo) => {
-    this.calendarRef.current
-      .getApi()
-      .changeView("timeGridDay", dateClickInfo.date);
+  useEffect(() => {
+    axios
+      .get("/agent/")
+      .then((response) => {
+        console.log(response);
+        setConsultantList(response.data);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get("/schedule_type/")
+      .then((response) => {
+        setCustomerList(response.data);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
+  const handleDateClick = (dateClickInfo) => {
+    calendarRef.current.getApi().changeView("timeGridDay", dateClickInfo.date);
   };
 
-  handleDateSelect = (selectInfo) => {
-    this.setState({
-      addOpen: true,
-      data: selectInfo,
-    });
+  const handleDateSelect = (selectInfo) => {
+    setAddOpen(true);
+    setSelectedInfo(selectInfo);
+    setEditOpen(false);
   };
 
-  handleEventClick = (clickInfo) => {
+  const handleEventClick = (clickInfo) => {
     console.log({ clickInfo });
     let data = {
+      id: clickInfo.event.id,
       title: clickInfo.event.title,
       start: clickInfo.event.start,
       end: clickInfo.event.end,
     };
     console.log({ data });
-    this.setState({
-      addOpen: false,
-      editOpen: true,
-      editData: data,
-    });
+    setEventClickInfo(data);
+    setAddOpen(false);
+    setEditOpen(true);
   };
+
+  const handleSubmit = (submitData, open) => {
+    setCreactionData(submitData);
+    setAddOpen(!open);
+  };
+  const handleDeleteEventHandler = (id, open) => {
+    console.log({ id });
+    axios
+      .delete(`/schedule/${id}`)
+      .then((response) => {
+        console.log(response);
+        loadData();
+      })
+      .catch((error) => console.log(error));
+    setEditOpen(!open);
+  };
+  return (
+    <div>
+      <div>
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          headerToolbar={{
+            left: "prevYear,prev,next,nextYear today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          }}
+          initialView="timeGridDay"
+          editable={false}
+          selectable={true}
+          selectMirror={true}
+          allDaySlot={false}
+          dateClick={handleDateClick}
+          events={eventInfo}
+          select={handleDateSelect}
+          eventClick={handleEventClick}
+          ref={calendarRef}
+        />
+      </div>
+      {addOpen &&
+      moment(selectedInfo && selectedInfo.start).format("hh:mm:ss") &&
+      moment(selectedInfo && selectedInfo.end).format("hh:mm:ss") !==
+        "12:00:00" ? (
+        <AddSchedulePopup
+          open={addOpen}
+          selectedInfo={selectedInfo}
+          consultantList={consultantList}
+          customerList={customerList}
+          handleDataSubmit={handleSubmit}
+        />
+      ) : null}
+      {editOpen ? (
+        <EditSchedulePopup
+          open={editOpen}
+          consultantList={consultantList}
+          customerList={customerList}
+          eventClickInformation={eventClickInfo}
+          handleDeleteEvent={handleDeleteEventHandler}
+        />
+      ) : null}
+    </div>
+  );
 }
