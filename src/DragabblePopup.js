@@ -18,6 +18,7 @@ import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import moment from "moment";
+import { startTimeFormatter, endTimeFormatter } from "./Utils";
 
 function PaperComponent(props) {
   return (
@@ -116,16 +117,14 @@ export default function DraggableDialog(props) {
   // };
 
   const handleButtonClick = () => {
-    //console.log({ selectedInfo });
-
     setSubmitData({
       // consultant: selectedAgent,
       // customers: selectedCustomers,
       // appointmentType: selectedAppointmentType,
       title: appointmentSubject,
       description: description,
-      start: moment(start).format(),
-      stop: moment(end).format(),
+      start: startTimeFormatter(start),
+      stop: endTimeFormatter(end),
     });
   };
 

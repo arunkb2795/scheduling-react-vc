@@ -17,6 +17,7 @@ import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined"
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
+import { startTimeFormatter, endTimeFormatter } from "./Utils";
 import moment from "moment";
 
 function PaperComponent(props) {
@@ -36,18 +37,33 @@ export default function DraggableDialog(props) {
   const [selectedAppointmentType, setSelectedAppointmentType] = useState([]);
 
   const [agentName, setAgentName] = useState({});
+  const [date, setDate] = useState(moment().format("MM-DD-YYYY"));
   const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [appointmentType, setAppointmentType] = useState([]);
+  const [appointmentSubject, setAppointmentSubject] = useState("");
+  const [description, setDescription] = useState("");
   const [eventClickDetails, setEventClickDetails] = useState({});
+  const [updateData, setUpdateData] = useState({});
 
   useEffect(() => {
+    const { title, description, start, stop } = props.eventClickInformation;
+    let startTime = start && start.slice(0, -1);
+    let endTime = stop && stop.slice(0, -1);
     setEventClickDetails(props.eventClickInformation);
+    console.log("EditPage", props.eventClickInformation);
+    console.log(start, stop);
+    setAppointmentSubject(title);
+    setDescription(description);
+    setStartTime(startTime);
+    setEndTime(endTime);
+    setDate(start);
   }, [props]);
 
   useEffect(() => {
     setAgentName(props.consultantList[0]);
     setAppointmentType(props.customerList[1]);
-    setStartTime("2020-10-08T17:41:03Z");
+    setStartTime(eventClickDetails.start);
   }, []);
 
   //handling more-less button
@@ -57,9 +73,22 @@ export default function DraggableDialog(props) {
     setOpen(false);
   };
 
+  const handleChange = (e) => {
+    setAppointmentSubject(e.target.value);
+  };
+
+  const handleDescription = (e) => {
+    setDescription(e.target.value);
+  };
+
   const handleStartTimeChange = (name, value) => {
     console.log(value);
     setStartTime(moment(value).format());
+  };
+
+  const handleEndTimeChange = (name, value) => {
+    console.log(value);
+    setEndTime(moment(value).format());
   };
   const handleAppointmentType = (value) => {
     setAppointmentType(value);
@@ -67,7 +96,7 @@ export default function DraggableDialog(props) {
   };
 
   const handleAgentName = (value) => {
-    console.log("agetName", value);
+    //console.log("agetName", value);
     setAgentName(value);
   };
 
@@ -75,15 +104,33 @@ export default function DraggableDialog(props) {
     setOpen(props.open);
   }, [props]);
 
-  const handleSubmit = () => {
-    console.log("agenName", agentName, "appointmentType", appointmentType);
-  };
-
   const handleDelete = () => {
     props.handleDeleteEvent(eventClickDetails.id, open);
   };
 
-  console.log({ eventClickDetails });
+  const handleButtonClick = () => {
+    setUpdateData({
+      // consultant: selectedAgent,
+      // customers: selectedCustomers,
+      // appointmentType: selectedAppointmentType,
+      id: props.eventClickInformation.id,
+      title: appointmentSubject,
+      description: description,
+      start: startTimeFormatter(startTime),
+      stop: endTimeFormatter(endTime),
+    });
+  };
+
+  const callback = () => {
+    props.handleUpdateData(updateData, open);
+    //console.log(updateData);
+  };
+
+  useEffect(() => {
+    callback(updateData);
+  }, [updateData]);
+
+  //console.log({ updateData });
   return (
     <div>
       <Dialog
@@ -165,7 +212,7 @@ export default function DraggableDialog(props) {
                 label="Date*"
                 name="date"
                 format="MM/dd/yyyy"
-                value="2020-02-02T09:30"
+                value={date}
                 //onHandleDateChange={handleDateChange}
               />
 
@@ -179,8 +226,8 @@ export default function DraggableDialog(props) {
               <TimePicker
                 label="To Time*"
                 name="toTime"
-                value="2020-02-02T09:30"
-                //onChange={handleTimeChange}
+                value={endTime} //"2020-02-02T09:30"
+                onChange={handleEndTimeChange}
               />
             </div>
           </div>
@@ -223,14 +270,20 @@ export default function DraggableDialog(props) {
             <div style={{ marginLeft: "28px" }}>
               <TextField
                 label="Subject"
-                //value={appointmentSubject}
-                //onChange={handleChange}
+                value={appointmentSubject}
+                onChange={handleChange}
               />
             </div>
           ) : null}
           {more ? (
             <div style={{ marginLeft: "28px" }}>
-              <TextField label="Description" multiline={true} rows={4} />
+              <TextField
+                label="Description"
+                multiline={true}
+                rows={4}
+                value={description}
+                onChange={handleDescription}
+              />
             </div>
           ) : null}
         </DialogContent>
@@ -240,7 +293,7 @@ export default function DraggableDialog(props) {
           </Button>
           <Button
             style={{ marginRight: 15 }}
-            onClick={handleSubmit}
+            onClick={handleButtonClick}
             color="primary"
             variant="outlined"
           >

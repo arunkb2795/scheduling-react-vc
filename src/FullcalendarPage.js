@@ -7,6 +7,9 @@ import AddSchedulePopup from "./DragabblePopup";
 import EditSchedulePopup from "./EditShedulePopup";
 import moment from "moment";
 import axios from "./axios";
+import SnackBar from "./SnackBar";
+import { INITIAL_EVENTS } from "./event-utils";
+import { startTimeFormatter, endTimeFormatter } from "./Utils";
 
 export default function FullCalendarPage() {
   const calendarRef = React.createRef();
@@ -17,27 +20,44 @@ export default function FullCalendarPage() {
   const [consultantList, setConsultantList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
   const [creationData, setCreactionData] = useState({});
+  const [updationData, setUpdation] = useState({});
   const [eventClickInfo, setEventClickInfo] = useState({});
+  const [snackOpen, setSnackOpen] = useState(false);
   useEffect(() => {
+    console.log(creationData);
+
     if (creationData.title) {
       axios.post("/schedule/", creationData).then((response) => response);
       loadData();
     }
   }, [creationData]);
 
+  useEffect(() => {
+    console.log(updationData);
+
+    if (updationData.title) {
+      axios
+        .put(`/schedule/${updationData.id}`, updationData)
+        .then((response) => response);
+      loadData();
+    }
+  }, [updationData]);
+
   const loadData = async () => {
     await axios
       .get("/schedule/")
       .then((response) => {
         let arr = [];
+
         for (let i = 0; i < response.data.length; i++) {
           let data = {
             id: response.data[i].id,
             title: response.data[i].title,
-            start: moment(response.data[i].start).format(),
-            end: moment(response.data[i].stop).format(),
+            start: response.data[i].start.slice(0, -1),
+            end: response.data[i].stop.slice(0, -1),
           };
           arr.push(data);
+          console.log({ arr });
         }
         setEventInfo(arr);
       })
@@ -73,31 +93,41 @@ export default function FullCalendarPage() {
 
   const handleDateClick = (dateClickInfo) => {
     calendarRef.current.getApi().changeView("timeGridDay", dateClickInfo.date);
+    setSnackOpen(false);
   };
 
   const handleDateSelect = (selectInfo) => {
     setAddOpen(true);
     setSelectedInfo(selectInfo);
     setEditOpen(false);
+    setSnackOpen(false);
   };
 
   const handleEventClick = (clickInfo) => {
     console.log({ clickInfo });
-    let data = {
-      id: clickInfo.event.id,
-      title: clickInfo.event.title,
-      start: clickInfo.event.start,
-      end: clickInfo.event.end,
-    };
-    console.log({ data });
-    setEventClickInfo(data);
+    axios
+      .get(`/schedule/${clickInfo.event.id}`)
+      .then((response) => {
+        console.log(response);
+        setEventClickInfo(response.data);
+      })
+      .catch((error) => console.log(error));
+
     setAddOpen(false);
     setEditOpen(true);
+    setSnackOpen(false);
   };
 
   const handleSubmit = (submitData, open) => {
     setCreactionData(submitData);
     setAddOpen(!open);
+    setSnackOpen(true);
+  };
+
+  const handleUpdate = (updateData, open) => {
+    console.log({ updateData });
+    setUpdation(updateData);
+    setEditOpen(!open);
   };
   const handleDeleteEventHandler = (id, open) => {
     console.log({ id });
@@ -109,7 +139,9 @@ export default function FullCalendarPage() {
       })
       .catch((error) => console.log(error));
     setEditOpen(!open);
+    setSnackOpen(false);
   };
+
   return (
     <div>
       <div>
@@ -151,8 +183,10 @@ export default function FullCalendarPage() {
           customerList={customerList}
           eventClickInformation={eventClickInfo}
           handleDeleteEvent={handleDeleteEventHandler}
+          handleUpdateData={handleUpdate}
         />
       ) : null}
+      <SnackBar snackOpen={snackOpen} />
     </div>
   );
 }

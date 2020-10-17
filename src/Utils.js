@@ -1,8 +1,16 @@
 import moment from "moment";
 export const startTimeFormatter = (value) => {
-  const startDate = moment(value).format("L");
-  const startTime = moment(value).format("L");
-  return [startDate, startTime];
+  let startDate = moment(value).format("YYYY-MM-DD");
+  let startTime = moment(value).format("HH:mm");
+  let formatedStartTime = startDate + "T" + startTime;
+  return formatedStartTime;
+};
+
+export const endTimeFormatter = (value) => {
+  let endDate = moment(value).format("YYYY-MM-DD");
+  let endTime = moment(value).format("HH:mm");
+  let formatedEndTime = endDate + "T" + endTime;
+  return formatedEndTime;
 };
 
 //Sun Feb 02 2020 06:30:00 GMT+0530 (India Standard Time)}
