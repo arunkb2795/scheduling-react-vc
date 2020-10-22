@@ -13,9 +13,10 @@ function ComboBox(props) {
 
       <div style={{ width: 515, marginBottom: 10 }}>
         <Autocomplete
-          PopperComponent="bottom"
-          value={props.value}
-          onChange={(e, value) => props.handleChange(value)}
+          PopperComponent={"bottom"}
+          // value={props.value}
+          //onChange={(e, value) => props.onChange(value)}
+          onChange={props.onChange}
           options={props.options}
           getOptionLabel={(option) => option.name}
           renderInput={(params) => (
@@ -23,10 +24,11 @@ function ComboBox(props) {
               fullWidth
               {...params}
               name={props.name}
-              error={props.error}
+              // value={props.value}
+              // onChange={props.handleChange}
               helperText={props.helperText}
+              error={props.error}
               placeholder={props.placeholder}
-              //label="Combo box"
               variant="outlined"
               size="small"
             />

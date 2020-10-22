@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-import FullCalendar, { createDuration } from "@fullcalendar/react";
+import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import AddSchedulePopup from "./DragabblePopup";
+import AddSchedulePopup from "./AddSchedulePopup";
 import EditSchedulePopup from "./EditShedulePopup";
 import moment from "moment";
 import axios from "./axios";
 import SnackBar from "./SnackBar";
-import { INITIAL_EVENTS } from "./event-utils";
-import { startTimeFormatter, endTimeFormatter } from "./Utils";
 
 export default function FullCalendarPage() {
   const calendarRef = React.createRef();
@@ -23,6 +21,7 @@ export default function FullCalendarPage() {
   const [updationData, setUpdation] = useState({});
   const [eventClickInfo, setEventClickInfo] = useState({});
   const [snackOpen, setSnackOpen] = useState(false);
+  const [snakBarMessage, setSnackMessage] = useState("");
   useEffect(() => {
     console.log(creationData);
 
@@ -57,7 +56,6 @@ export default function FullCalendarPage() {
             end: response.data[i].stop.slice(0, -1),
           };
           arr.push(data);
-          console.log({ arr });
         }
         setEventInfo(arr);
       })
@@ -121,6 +119,7 @@ export default function FullCalendarPage() {
   const handleSubmit = (submitData, open) => {
     setCreactionData(submitData);
     setAddOpen(!open);
+    setSnackMessage("New Appointment Added successfully");
     setSnackOpen(true);
   };
 
@@ -128,6 +127,8 @@ export default function FullCalendarPage() {
     console.log({ updateData });
     setUpdation(updateData);
     setEditOpen(!open);
+    setSnackMessage("Appointment Updated successfully");
+    setSnackOpen(true);
   };
   const handleDeleteEventHandler = (id, open) => {
     console.log({ id });
@@ -139,7 +140,12 @@ export default function FullCalendarPage() {
       })
       .catch((error) => console.log(error));
     setEditOpen(!open);
-    setSnackOpen(false);
+    setSnackMessage("Appointment Deleted successfully");
+    setSnackOpen(true);
+  };
+
+  const selectDisable = (e) => {
+    return moment().add(-1, "days").diff(e.start) <= 0;
   };
 
   return (
@@ -162,6 +168,7 @@ export default function FullCalendarPage() {
           select={handleDateSelect}
           eventClick={handleEventClick}
           ref={calendarRef}
+          selectAllow={selectDisable}
         />
       </div>
       {addOpen &&
@@ -186,7 +193,9 @@ export default function FullCalendarPage() {
           handleUpdateData={handleUpdate}
         />
       ) : null}
-      <SnackBar snackOpen={snackOpen} />
+      {snackOpen ? (
+        <SnackBar snackOpen={snackOpen} message={snakBarMessage} />
+      ) : null}
     </div>
   );
 }

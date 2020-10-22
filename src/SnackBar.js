@@ -24,7 +24,7 @@ export default function CustomizedSnackbars(props) {
     <div>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success">
-          Appointment created successfully!
+          {props.message}
         </Alert>
       </Snackbar>
     </div>
