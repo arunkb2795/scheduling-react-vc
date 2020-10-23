@@ -95,10 +95,23 @@ export default function DraggableDialog(props) {
     setSelectedAgent(value);
   };
   const handleCustomerName = (value) => {
-    setSelectedCustomers(value);
+    console.log("customers", { value });
+    let arr = [];
+    let userData = {};
+    for (let i = 0; i < value.length; i++) {
+      userData = {
+        name: value[i].name,
+        email: value[i].email,
+      };
+      arr.push(userData);
+    }
+    console.log({ arr });
+    setSelectedCustomers(arr);
+    //setSelectedCustomers(value);
   };
 
-  const handleAppointmentType = (value) => {
+  const handleAppointmentType = (e, value) => {
+    console.log({ value });
     setSelectedAppointmentType(value);
   };
 
@@ -126,9 +139,9 @@ export default function DraggableDialog(props) {
     setIsSubmit(formValidator());
     //console.log(values);
     setSubmitData({
-      //consultant: selectedAgent,
-      // customers: selectedCustomers,
-      // appointmentType: selectedAppointmentType,
+      agent: `${selectedAgent.id}`,
+      customers: selectedCustomers,
+      schedule_type: `${selectedAppointmentType.id}`,
       title: appointmentSubject,
       description: description,
       start: startTimeFormatter(start),
@@ -270,7 +283,7 @@ export default function DraggableDialog(props) {
               <AutocompleteTextField
                 label="Appointment Type*"
                 options={props.customerList}
-                handleChange={handleAppointmentType}
+                onChange={handleAppointmentType}
                 placeholder="Select Appointment Type"
                 // helperText={validator.typevalidator}
                 // error={validator.error}

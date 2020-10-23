@@ -26,7 +26,15 @@ export default function FullCalendarPage() {
     console.log(creationData);
 
     if (creationData.title) {
-      axios.post("/schedule/", creationData).then((response) => response);
+      axios
+        .post("/schedule/", creationData)
+        .then((response) => response)
+        .then(() => {
+          setTimeout(() => {
+            setSnackOpen(true);
+            setSnackMessage("New Appointment Added successfully");
+          }, 1000);
+        });
       loadData();
     }
   }, [creationData]);
@@ -37,7 +45,14 @@ export default function FullCalendarPage() {
     if (updationData.title) {
       axios
         .put(`/schedule/${updationData.id}`, updationData)
-        .then((response) => response);
+        .then((response) => response)
+        .then(() => {
+          setTimeout(() => {
+            setSnackOpen(true);
+            setSnackMessage("Appointment Updated successfully");
+          }, 1000);
+        });
+
       loadData();
     }
   }, [updationData]);
@@ -68,7 +83,7 @@ export default function FullCalendarPage() {
 
   useEffect(() => {
     loadData();
-  }, [addOpen, editOpen, creationData]);
+  }, [addOpen, updationData, creationData]);
 
   useEffect(() => {
     axios
@@ -101,34 +116,34 @@ export default function FullCalendarPage() {
     setSnackOpen(false);
   };
 
-  const handleEventClick = (clickInfo) => {
+  const handleEventClick = async (clickInfo) => {
     console.log({ clickInfo });
-    axios
+    setAddOpen(false);
+    await axios
       .get(`/schedule/${clickInfo.event.id}`)
       .then((response) => {
         console.log(response);
         setEventClickInfo(response.data);
       })
       .catch((error) => console.log(error));
-
-    setAddOpen(false);
     setEditOpen(true);
+
     setSnackOpen(false);
   };
 
   const handleSubmit = (submitData, open) => {
     setCreactionData(submitData);
     setAddOpen(!open);
-    setSnackMessage("New Appointment Added successfully");
-    setSnackOpen(true);
+    // setSnackMessage("New Appointment Added successfully");
+    // setSnackOpen(true);
   };
 
   const handleUpdate = (updateData, open) => {
     console.log({ updateData });
     setUpdation(updateData);
     setEditOpen(!open);
-    setSnackMessage("Appointment Updated successfully");
-    setSnackOpen(true);
+    // setSnackMessage("Appointment Updated successfully");
+    // setSnackOpen(true);
   };
   const handleDeleteEventHandler = (id, open) => {
     console.log({ id });
@@ -138,15 +153,22 @@ export default function FullCalendarPage() {
         console.log(response);
         loadData();
       })
+      .then(() => {
+        setTimeout(() => {
+          setSnackOpen(true);
+          setSnackMessage("Appointment Deleted successfully");
+        }, 1000);
+      })
       .catch((error) => console.log(error));
     setEditOpen(!open);
-    setSnackMessage("Appointment Deleted successfully");
-    setSnackOpen(true);
+    // setSnackMessage("Appointment Deleted successfully");
+    // setSnackOpen(true);
   };
 
   const selectDisable = (e) => {
     return moment().add(-1, "days").diff(e.start) <= 0;
   };
+  console.log(eventClickInfo);
 
   return (
     <div>
@@ -183,12 +205,12 @@ export default function FullCalendarPage() {
           handleDataSubmit={handleSubmit}
         />
       ) : null}
-      {editOpen ? (
+      {editOpen && editOpen ? (
         <EditSchedulePopup
           open={editOpen}
           consultantList={consultantList}
           customerList={customerList}
-          eventClickInformation={eventClickInfo}
+          eventClickInformation={eventClickInfo && eventClickInfo}
           handleDeleteEvent={handleDeleteEventHandler}
           handleUpdateData={handleUpdate}
         />

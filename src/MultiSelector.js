@@ -5,10 +5,8 @@ import axios from "./axios";
 import Chip from "@material-ui/core/Chip";
 import TextFieldCustom from "./TextField";
 import Button from "@material-ui/core/Button";
-
 import IconButton from "@material-ui/core/IconButton";
 import PersonAddOutlinedIcon from "@material-ui/icons/PersonAddOutlined";
-
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -24,10 +22,12 @@ export default function Tags(props) {
   const [open, setOpen] = React.useState(false);
   const [editOpen, setEditOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
-  const [selected, getSelected] = React.useState([]);
-  const [createdValue, setCreatedValue] = React.useState(initialFormState);
-  const [oldValue, setOldValue] = React.useState([]);
+  const [selected, getSelected] = React.useState(
+    props.customersName ? props.customersName : []
+  );
+  const [createdValue, setCreatedValue] = React.useState({});
   const [user, setUser] = useState(initialFormState);
+  const [finalData, setFinalData] = useState({});
   const loading = dropdownOpen && options.length === 0;
 
   useEffect(() => {
@@ -73,23 +73,26 @@ export default function Tags(props) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
-    console.log(user);
-  };
-
-  const selectedValue = (e, value) => {
-    console.log("selected value :", value);
-    props.onChange(value);
-    setOldValue(value);
-    getSelected(value);
-    setCreatedValue(initialFormState);
   };
 
   useEffect(() => {
     createdValue.name
-      ? getSelected([...oldValue, createdValue])
-      : getSelected(oldValue);
-    console.log(createdValue);
-  }, [createdValue, oldValue]);
+      ? getSelected([...selected, createdValue])
+      : getSelected(selected);
+  }, [createdValue]);
+
+  const selectedValue = (e, value) => {
+    getSelected(value);
+  };
+
+  useEffect(() => {
+    setFinalData(selected);
+  }, [selected]);
+
+  useEffect(() => {
+    console.log("final data : ", { selected });
+    props.onChange(finalData);
+  }, [finalData]);
 
   const addUser = (data) => {
     setCreatedValue(data);
@@ -129,6 +132,8 @@ export default function Tags(props) {
     setUser(initialFormState);
   };
 
+  console.log("final data : ", { selected });
+
   return (
     <div>
       <InputLabel style={{ margin: "5px 0px 5px 0px", fontSize: 14 }}>
@@ -138,6 +143,7 @@ export default function Tags(props) {
         <div>
           <Autocomplete
             value={selected}
+            // defaultValue={selected}
             multiple
             limitTags={2}
             onOpen={() => {
@@ -226,9 +232,10 @@ export default function Tags(props) {
                   email: user.email,
                 };
                 console.log(userData);
-                axios
-                  .post("/customer/", userData)
-                  .then((response) => addUser(response.data));
+                addUser(userData);
+                // axios
+                //   .post("/customer/", userData)
+                //   .then((response) => addUser(response.data));
                 setUser(initialFormState);
                 handleClose();
               }}

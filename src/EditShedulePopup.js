@@ -33,38 +33,43 @@ function PaperComponent(props) {
 
 export default function DraggableDialog(props) {
   const [open, setOpen] = React.useState(false);
-  const [sheduleInfo, setSheduleInfo] = useState({});
-  const [selectedAppointmentType, setSelectedAppointmentType] = useState([]);
+  const [customersName, setCustomersName] = useState([]);
 
   const [agentName, setAgentName] = useState({});
+  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  const [scheduleType, setScheduleType] = useState({});
   const [date, setDate] = useState(moment().format("MM-DD-YYYY"));
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [appointmentType, setAppointmentType] = useState([]);
   const [appointmentSubject, setAppointmentSubject] = useState("");
   const [description, setDescription] = useState("");
   const [eventClickDetails, setEventClickDetails] = useState({});
   const [updateData, setUpdateData] = useState({});
-
   useEffect(() => {
-    const { title, description, start, stop } = props.eventClickInformation;
+    setOpen(props.open);
+  }, [props]);
+  useEffect(() => {
+    const {
+      agent,
+      title,
+      description,
+      start,
+      stop,
+      schedule_type,
+      customers,
+    } = props.eventClickInformation;
     let startTime = start && start.slice(0, -1);
     let endTime = stop && stop.slice(0, -1);
     setEventClickDetails(props.eventClickInformation);
-    console.log("EditPage", props.eventClickInformation);
-    console.log(start, stop);
     setAppointmentSubject(title);
     setDescription(description);
     setStartTime(startTime);
     setEndTime(endTime);
     setDate(start);
-  }, [props]);
-
-  useEffect(() => {
-    setAgentName(props.consultantList[0]);
-    setAppointmentType(props.customerList[1]);
-    setStartTime(eventClickDetails.start);
-  }, []);
+    setAgentName(agent[0]);
+    setScheduleType(schedule_type[0]);
+    setCustomersName(customers);
+  }, [open]);
 
   //handling more-less button
   const [more, setMore] = useState(false);
@@ -90,19 +95,14 @@ export default function DraggableDialog(props) {
     console.log(value);
     setEndTime(moment(value).format());
   };
-  const handleAppointmentType = (value) => {
-    setAppointmentType(value);
-    //setvalidator({ typevalidator: "", error: false });
+  const handleScheduleType = (e, value) => {
+    setScheduleType(value);
   };
 
-  const handleAgentName = (value) => {
-    //console.log("agetName", value);
+  const handleAgentName = (e, value) => {
+    console.log("agetName", value);
     setAgentName(value);
   };
-
-  useEffect(() => {
-    setOpen(props.open);
-  }, [props]);
 
   const handleDelete = () => {
     props.handleDeleteEvent(eventClickDetails.id, open);
@@ -110,10 +110,10 @@ export default function DraggableDialog(props) {
 
   const handleButtonClick = () => {
     setUpdateData({
-      // consultant: selectedAgent,
-      // customers: selectedCustomers,
-      // appointmentType: selectedAppointmentType,
       id: props.eventClickInformation.id,
+      agent: `${agentName.id}`,
+      customers: selectedCustomers,
+      schedule_type: `${scheduleType.id}`,
       title: appointmentSubject,
       description: description,
       start: startTimeFormatter(startTime),
@@ -123,14 +123,30 @@ export default function DraggableDialog(props) {
 
   const callback = () => {
     props.handleUpdateData(updateData, open);
-    //console.log(updateData);
+    console.log(updateData);
   };
 
   useEffect(() => {
     callback(updateData);
   }, [updateData]);
 
-  //console.log({ updateData });
+  const handleCustomerName = (value) => {
+    console.log({ value });
+    // let arr = [];
+    // let userData = {};
+    // for (let i = 0; i < value.length; i++) {
+    //   userData = {
+    //     name: value[i].name,
+    //     email: value[i].email,
+    //   };
+    //   arr.push(userData);
+    // }
+    // console.log({ arr });
+    // setSelectedCustomers(arr);
+    setSelectedCustomers(value);
+  };
+
+  console.log({ customersName });
   return (
     <div>
       <Dialog
@@ -168,9 +184,8 @@ export default function DraggableDialog(props) {
               <AutocompleteTextField
                 label="Consultant Name*"
                 options={props.consultantList}
-                //defaultValue={props.agentName[0]}
                 value={agentName}
-                handleChange={handleAgentName}
+                onChange={handleAgentName}
                 placeholder="Select Consultatnt"
               />
             </div>
@@ -185,7 +200,9 @@ export default function DraggableDialog(props) {
               }}
             />
             <div>
-              <MultiSelector //onChange={handleCustomerName}
+              <MultiSelector
+                customersName={customersName}
+                onChange={handleCustomerName}
               />
             </div>
           </div>
@@ -244,9 +261,9 @@ export default function DraggableDialog(props) {
             <div style={{ width: "100%" }}>
               <AutocompleteTextField
                 label="Appointment Type*"
-                value={appointmentType}
+                value={scheduleType}
                 options={props.customerList}
-                handleChange={handleAppointmentType}
+                onChange={handleScheduleType}
                 placeholder="Select Appointment Type"
               />
             </div>
