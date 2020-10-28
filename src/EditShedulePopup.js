@@ -190,7 +190,7 @@ export default function DraggableDialog(props) {
                 options={props.consultantList}
                 value={agentName}
                 onChange={handleAgentName}
-                placeholder="Select Consultatnt"
+                placeholder="Select consultatnt"
               />
             </div>
           </div>
@@ -272,6 +272,15 @@ export default function DraggableDialog(props) {
               />
             </div>
           </div>
+          <div style={{ marginLeft: "28px" }}>
+            <TextField
+              label="Appointment Title*"
+              value={appointmentSubject}
+              onChange={handleChange}
+              placeholder="Type appointment title here"
+            />
+          </div>
+
           <div style={{ float: "right" }}>
             <button
               onClick={() => setMore(!more)}
@@ -287,15 +296,6 @@ export default function DraggableDialog(props) {
             </button>
           </div>
 
-          {more ? (
-            <div style={{ marginLeft: "28px" }}>
-              <TextField
-                label="Subject"
-                value={appointmentSubject}
-                onChange={handleChange}
-              />
-            </div>
-          ) : null}
           {more ? (
             <div style={{ marginLeft: "28px" }}>
               <TextField

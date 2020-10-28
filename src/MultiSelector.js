@@ -178,8 +178,10 @@ export default function Tags(props) {
                 fullWidth
                 {...params}
                 variant="outlined"
-                placeholder="Select Consultatnt"
+                placeholder="Select customers"
                 size="small"
+                helperText={props.helperText}
+                error={props.error}
                 InputProps={{
                   ...params.InputProps,
                   endAdornment: (

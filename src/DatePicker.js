@@ -21,6 +21,7 @@ export default function DatePicker(props) {
           style={{ width: 158, marginTop: 10 }}
           format={"MM/dd/yyyy"}
           value={props.value}
+          minDate={new Date()}
           onChange={(value) => props.onHandleDateChange(props.name, value)}
         />
       </MuiPickersUtilsProvider>

@@ -19,6 +19,7 @@ function ComboBox(props) {
           //onChange={(e, value) => props.onChange(value)}
           onChange={props.onChange}
           options={props.options}
+          disableClearable
           getOptionLabel={(option) => option.name}
           renderInput={(params) => (
             <TextField

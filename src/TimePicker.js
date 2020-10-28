@@ -21,6 +21,8 @@ function KeyboardTimePickerExample(props) {
           style={{ width: 142, marginTop: 10 }}
           size="small"
           value={props.value}
+          helperText={props.helperText}
+          error={props.error}
           onChange={(value) => props.onChange(props.name, value)}
           KeyboardButtonProps={{
             "aria-label": "change date",

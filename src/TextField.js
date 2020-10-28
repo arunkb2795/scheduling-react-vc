@@ -9,7 +9,7 @@ function CustomTextField(props) {
         {props.label}
       </InputLabel>
 
-      <div style={{ display: "flex", alignItems: "center" }}>
+      <div style={{ display: "flex", alignItems: "center", width: "525px" }}>
         <TextField
           style={{
             margin: 10,
@@ -19,6 +19,7 @@ function CustomTextField(props) {
           }}
           type="text"
           helperText={props.helperText}
+          error={props.error}
           id={props.id}
           name={props.name}
           placeholder={props.placeholder}

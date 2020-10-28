@@ -45,7 +45,11 @@ export default function DraggableDialog(props) {
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [selectedAppointmentType, setSelectedAppointmentType] = useState([]);
   const [submitData, setSubmitData] = useState({});
-  const [errorMessages, setErrorMessages] = useState({});
+  const [errorMessages, setErrorMessages] = useState({
+    agentNameError: "",
+    appointmentTypeError: "",
+    appointmentSubjectError: "",
+  });
   const [isSubmit, setIsSubmit] = useState(true);
   const handleClose = () => {
     setOpen(false);
@@ -94,6 +98,10 @@ export default function DraggableDialog(props) {
     setSelectedAgent(value);
   };
   const handleCustomerName = (value) => {
+    setErrorMessages({
+      ...errorMessages,
+      customerError: "",
+    });
     console.log("customers", { value });
     let arr = [];
     let userData = {};
@@ -110,13 +118,17 @@ export default function DraggableDialog(props) {
   };
 
   const handleAppointmentType = (e, value) => {
-    console.log({ value });
+    setErrorMessages({
+      ...errorMessages,
+      appointmentTypeError: "",
+    });
     setSelectedAppointmentType(value);
   };
 
   const formValidator = () => {
     let formValid = true;
-    if (Object.keys(selectedAgent).length === 0) {
+    console.log({ selectedAgent });
+    if (Object.keys(selectedAgent).length <= 0) {
       formValid = false;
       setErrorMessages({
         ...errorMessages,
@@ -128,6 +140,28 @@ export default function DraggableDialog(props) {
       setErrorMessages({
         ...errorMessages,
         appointmentSubjectError: "Required",
+      });
+    }
+    if (Object.keys(selectedAppointmentType).length <= 0) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        appointmentTypeError: "Required",
+      });
+    }
+    if (selectedCustomers.length <= 0) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        customerError: "Required",
+      });
+    }
+
+    if (start > end) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        timeError: "Invalid Time",
       });
     }
 
@@ -161,6 +195,10 @@ export default function DraggableDialog(props) {
   }, [submitData]);
 
   const handleTimeChange = (name, value) => {
+    setErrorMessages({
+      ...errorMessages,
+      timeError: "",
+    });
     name === "fromTime" ? startTime(value) : endTime(value);
     console.log(name, value);
   };
@@ -205,12 +243,9 @@ export default function DraggableDialog(props) {
                 label="Consultant Name*"
                 options={props.consultantList}
                 onChange={handleAgentName}
-                placeholder="Select Consultant"
-                helperText={
-                  errorMessages.agentNameError
-                    ? errorMessages.agentNameError
-                    : ""
-                }
+                placeholder="Select consultant"
+                helperText={errorMessages.agentNameError}
+                error={errorMessages.agentNameError ? true : false}
               />
             </div>
           </div>
@@ -224,7 +259,13 @@ export default function DraggableDialog(props) {
               }}
             />
             <div>
-              <MultiSelector onChange={handleCustomerName} />
+              <MultiSelector
+                helperText={
+                  errorMessages.customerError ? errorMessages.customerError : ""
+                }
+                error={errorMessages.customerError ? true : false}
+                onChange={handleCustomerName}
+              />
             </div>
           </div>
           <div style={{ display: "flex" }}>
@@ -259,6 +300,10 @@ export default function DraggableDialog(props) {
                 name="fromTime"
                 value={start}
                 onChange={handleTimeChange}
+                helperText={
+                  errorMessages.timeError ? errorMessages.timeError : ""
+                }
+                error={errorMessages.timeError ? true : false}
               />
 
               <TimePicker
@@ -266,6 +311,10 @@ export default function DraggableDialog(props) {
                 name="toTime"
                 value={end}
                 onChange={handleTimeChange}
+                helperText={
+                  errorMessages.timeError ? errorMessages.timeError : ""
+                }
+                error={errorMessages.timeError ? true : false}
               />
             </div>
           </div>
@@ -284,12 +333,32 @@ export default function DraggableDialog(props) {
                 label="Appointment Type*"
                 options={props.customerList}
                 onChange={handleAppointmentType}
-                placeholder="Select Appointment Type"
-                // helperText={validator.typevalidator}
-                // error={validator.error}
+                placeholder="Select appointment type"
+                helperText={
+                  errorMessages.appointmentTypeError
+                    ? errorMessages.appointmentTypeError
+                    : ""
+                }
+                error={errorMessages.appointmentTypeError ? true : false}
               />
             </div>
           </div>
+
+          <div style={{ marginLeft: "28px" }}>
+            <TextField
+              label="Appointment Title*"
+              value={appointmentSubject}
+              onChange={handleChange}
+              placeholder="Type appointment title here"
+              helperText={
+                errorMessages.appointmentSubjectError
+                  ? errorMessages.appointmentSubjectError
+                  : ""
+              }
+              error={errorMessages.appointmentSubjectError ? true : false}
+            />
+          </div>
+
           <div style={{ float: "right" }}>
             <button
               onClick={() => setMore(!more)}
@@ -305,20 +374,6 @@ export default function DraggableDialog(props) {
             </button>
           </div>
 
-          {more ? (
-            <div style={{ marginLeft: "28px" }}>
-              <TextField
-                label="Subject"
-                value={appointmentSubject}
-                onChange={handleChange}
-                helperText={
-                  errorMessages.appointmentSubjectError
-                    ? errorMessages.appointmentSubjectError
-                    : ""
-                }
-              />
-            </div>
-          ) : null}
           {more ? (
             <div style={{ marginLeft: "28px" }}>
               <TextField
@@ -341,7 +396,7 @@ export default function DraggableDialog(props) {
             onClick={handleButtonClick}
             color="primary"
             variant="outlined"
-            //disabled={isSubmit}
+            //disabled={!isSubmit}
           >
             Create appointment
           </Button>
