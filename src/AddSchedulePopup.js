@@ -18,7 +18,7 @@ import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import moment from "moment";
-import { startTimeFormatter, endTimeFormatter } from "./Utils";
+import { startTimeFormatter, endTimeFormatter, starter } from "./Utils";
 
 function PaperComponent(props) {
   return (
@@ -53,7 +53,6 @@ export default function DraggableDialog(props) {
 
   const handleDateChange = (name, value) => {
     setDate(moment(value).format("MM-DD-YYYY"));
-    console.log(name, value);
   };
   const handleChange = (e) => {
     setErrorMessages({
@@ -144,8 +143,8 @@ export default function DraggableDialog(props) {
       schedule_type: `${selectedAppointmentType.id}`,
       title: appointmentSubject,
       description: description,
-      start: startTimeFormatter(start),
-      stop: endTimeFormatter(end),
+      start: startTimeFormatter(date, start),
+      stop: endTimeFormatter(date, end),
     });
   };
 
@@ -166,7 +165,8 @@ export default function DraggableDialog(props) {
     console.log(name, value);
   };
 
-  // console.log(open);
+  let output = starter(date, start);
+  console.log(output);
   return (
     <div>
       <Dialog

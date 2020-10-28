@@ -74,6 +74,10 @@ export default function DraggableDialog(props) {
   //handling more-less button
   const [more, setMore] = useState(false);
 
+  const handleDateChange = (name, value) => {
+    setDate(moment(value).format("MM-DD-YYYY"));
+  };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -116,8 +120,8 @@ export default function DraggableDialog(props) {
       schedule_type: `${scheduleType.id}`,
       title: appointmentSubject,
       description: description,
-      start: startTimeFormatter(startTime),
-      stop: endTimeFormatter(endTime),
+      start: startTimeFormatter(date, startTime),
+      stop: endTimeFormatter(date, endTime),
     });
   };
 
@@ -230,7 +234,7 @@ export default function DraggableDialog(props) {
                 name="date"
                 format="MM/dd/yyyy"
                 value={date}
-                //onHandleDateChange={handleDateChange}
+                onHandleDateChange={handleDateChange}
               />
 
               <TimePicker
