@@ -49,9 +49,18 @@ export default function DraggableDialog(props) {
     agentNameError: "",
     appointmentTypeError: "",
     appointmentSubjectError: "",
+    customerError: "",
+    timeError: "",
   });
   const [isSubmit, setIsSubmit] = useState(true);
   const handleClose = () => {
+    setErrorMessages({
+      agentNameError: "",
+      appointmentTypeError: "",
+      appointmentSubjectError: "",
+      customerError: "",
+      timeError: "",
+    });
     setOpen(false);
   };
 
@@ -125,7 +134,14 @@ export default function DraggableDialog(props) {
     setSelectedAppointmentType(value);
   };
 
-  const formValidator = () => {
+  const formValidator = (
+    selectedAgent,
+    selectedCustomers,
+    selectedAppointmentType,
+    appointmentSubject,
+    start,
+    end
+  ) => {
     let formValid = true;
     console.log({ selectedAgent });
     if (Object.keys(selectedAgent).length <= 0) {
@@ -169,7 +185,16 @@ export default function DraggableDialog(props) {
   };
 
   const handleButtonClick = () => {
-    setIsSubmit(formValidator());
+    setIsSubmit(
+      formValidator(
+        selectedAgent,
+        selectedCustomers,
+        selectedAppointmentType,
+        appointmentSubject,
+        start,
+        end
+      )
+    );
     //console.log(values);
     setSubmitData({
       agent: `${selectedAgent.id}`,

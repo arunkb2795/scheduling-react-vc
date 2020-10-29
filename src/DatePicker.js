@@ -17,6 +17,8 @@ export default function DatePicker(props) {
           inputVariant="outlined"
           margin="normal"
           size="small"
+          error={false}
+          helperText={false}
           name={props.date}
           style={{ width: 158, marginTop: 10 }}
           format={"MM/dd/yyyy"}

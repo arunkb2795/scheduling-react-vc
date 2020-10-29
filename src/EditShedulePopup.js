@@ -45,6 +45,14 @@ export default function DraggableDialog(props) {
   const [description, setDescription] = useState("");
   const [eventClickDetails, setEventClickDetails] = useState({});
   const [updateData, setUpdateData] = useState({});
+  const [errorMessages, setErrorMessages] = useState({
+    agentNameError: "",
+    appointmentTypeError: "",
+    appointmentSubjectError: "",
+    customerError: "",
+    timeError: "",
+  });
+  const [isSubmit, setIsSubmit] = useState(true);
   useEffect(() => {
     setOpen(props.open);
   }, [props]);
@@ -79,10 +87,21 @@ export default function DraggableDialog(props) {
   };
 
   const handleClose = () => {
+    setErrorMessages({
+      agentNameError: "",
+      appointmentTypeError: "",
+      appointmentSubjectError: "",
+      customerError: "",
+      timeError: "",
+    });
     setOpen(false);
   };
 
   const handleChange = (e) => {
+    setErrorMessages({
+      ...errorMessages,
+      appointmentSubjectError: "",
+    });
     setAppointmentSubject(e.target.value);
   };
 
@@ -90,21 +109,37 @@ export default function DraggableDialog(props) {
     setDescription(e.target.value);
   };
 
-  const handleStartTimeChange = (name, value) => {
-    console.log(value);
-    setStartTime(moment(value).format());
+  const handleTimeChange = (name, value) => {
+    setErrorMessages({
+      ...errorMessages,
+      timeError: "",
+    });
+    name === "fromTime"
+      ? setStartTime(moment(value).format())
+      : setEndTime(moment(value).format());
   };
+  // const handleStartTimeChange = (name, value) => {
+  //   console.log(value);
+  //   setStartTime(moment(value).format());
+  // };
 
-  const handleEndTimeChange = (name, value) => {
-    console.log(value);
-    setEndTime(moment(value).format());
-  };
+  // const handleEndTimeChange = (name, value) => {
+  //   console.log(value);
+  //   setEndTime(moment(value).format());
+  // };
   const handleScheduleType = (e, value) => {
+    setErrorMessages({
+      ...errorMessages,
+      appointmentTypeError: "",
+    });
     setScheduleType(value);
   };
 
   const handleAgentName = (e, value) => {
-    console.log("agetName", value);
+    setErrorMessages({
+      ...errorMessages,
+      agentNameError: "",
+    });
     setAgentName(value);
   };
 
@@ -113,6 +148,8 @@ export default function DraggableDialog(props) {
   };
 
   const handleButtonClick = () => {
+    setIsSubmit(formValidator());
+
     setUpdateData({
       id: props.eventClickInformation.id,
       agent: `${agentName.id}`,
@@ -126,7 +163,9 @@ export default function DraggableDialog(props) {
   };
 
   const callback = () => {
-    props.handleUpdateData(updateData, open);
+    if (isSubmit) {
+      props.handleUpdateData(updateData, open);
+    }
     console.log(updateData);
   };
 
@@ -135,6 +174,10 @@ export default function DraggableDialog(props) {
   }, [updateData]);
 
   const handleCustomerName = (value) => {
+    setErrorMessages({
+      ...errorMessages,
+      customerError: "",
+    });
     console.log({ value });
     // let arr = [];
     // let userData = {};
@@ -148,6 +191,48 @@ export default function DraggableDialog(props) {
     // console.log({ arr });
     // setSelectedCustomers(arr);
     setSelectedCustomers(value);
+  };
+
+  const formValidator = () => {
+    let formValid = true;
+    if (Object.keys(agentName).length <= 0) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        agentNameError: "Required",
+      });
+    }
+    if (!appointmentSubject) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        appointmentSubjectError: "Required",
+      });
+    }
+    if (Object.keys(scheduleType).length <= 0) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        appointmentTypeError: "Required",
+      });
+    }
+    if (selectedCustomers.length <= 0) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        customerError: "Required",
+      });
+    }
+
+    if (startTime > endTime) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        timeError: "Invalid Time",
+      });
+    }
+
+    return formValid;
   };
 
   console.log({ customersName });
@@ -191,6 +276,8 @@ export default function DraggableDialog(props) {
                 value={agentName}
                 onChange={handleAgentName}
                 placeholder="Select consultatnt"
+                helperText={errorMessages.agentNameError}
+                error={errorMessages.agentNameError ? true : false}
               />
             </div>
           </div>
@@ -207,6 +294,10 @@ export default function DraggableDialog(props) {
               <MultiSelector
                 customersName={customersName}
                 onChange={handleCustomerName}
+                helperText={
+                  errorMessages.customerError ? errorMessages.customerError : ""
+                }
+                error={errorMessages.customerError ? true : false}
               />
             </div>
           </div>
@@ -241,14 +332,22 @@ export default function DraggableDialog(props) {
                 label="From Time*"
                 name="fromTime"
                 value={startTime}
-                onChange={handleStartTimeChange}
+                onChange={handleTimeChange}
+                helperText={
+                  errorMessages.timeError ? errorMessages.timeError : ""
+                }
+                error={errorMessages.timeError ? true : false}
               />
 
               <TimePicker
                 label="To Time*"
                 name="toTime"
                 value={endTime} //"2020-02-02T09:30"
-                onChange={handleEndTimeChange}
+                onChange={handleTimeChange}
+                helperText={
+                  errorMessages.timeError ? errorMessages.timeError : ""
+                }
+                error={errorMessages.timeError ? true : false}
               />
             </div>
           </div>
@@ -269,6 +368,12 @@ export default function DraggableDialog(props) {
                 options={props.customerList}
                 onChange={handleScheduleType}
                 placeholder="Select Appointment Type"
+                helperText={
+                  errorMessages.appointmentTypeError
+                    ? errorMessages.appointmentTypeError
+                    : ""
+                }
+                error={errorMessages.appointmentTypeError ? true : false}
               />
             </div>
           </div>
@@ -278,6 +383,12 @@ export default function DraggableDialog(props) {
               value={appointmentSubject}
               onChange={handleChange}
               placeholder="Type appointment title here"
+              helperText={
+                errorMessages.appointmentSubjectError
+                  ? errorMessages.appointmentSubjectError
+                  : ""
+              }
+              error={errorMessages.appointmentSubjectError ? true : false}
             />
           </div>
 
