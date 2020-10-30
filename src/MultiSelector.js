@@ -29,6 +29,13 @@ export default function Tags(props) {
   const [user, setUser] = useState(initialFormState);
   const [finalData, setFinalData] = useState({});
   const loading = dropdownOpen && options.length === 0;
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  // const [errorMessages, setErrorerrorMessages] = useState({
+  //   nameErrorMessage: "",
+  //   emailErrorMessage: "",
+  // });
+  const [isSubmit, setIsSUbmit] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -62,16 +69,27 @@ export default function Tags(props) {
 
   function handleClose() {
     setOpen(false);
+    setUser(initialFormState);
+    setNameError("");
+    setEmailError("");
   }
 
   function editClose() {
     setEditOpen(false);
     setCreatedValue(initialFormState);
     setUser(initialFormState);
+    setNameError("");
+    setEmailError("");
   }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name == "name") {
+      setNameError("");
+    }
+    if (name == "email") {
+      setEmailError("");
+    }
     setUser({ ...user, [name]: value });
   };
 
@@ -132,6 +150,26 @@ export default function Tags(props) {
     setUser(initialFormState);
   };
 
+  const validateFunction = (user) => {
+    let valid = true;
+    console.log({ user });
+    if (!user.name) {
+      valid = false;
+      setNameError("Required");
+    }
+    if (!user.email) {
+      valid = false;
+      setEmailError("Required");
+    } else if (
+      !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+        user.email
+      )
+    ) {
+      valid = false;
+      setEmailError("Invalid Email");
+    }
+    return valid;
+  };
   console.log("final data : ", { selected });
 
   return (
@@ -234,12 +272,11 @@ export default function Tags(props) {
                   email: user.email,
                 };
                 console.log(userData);
-                addUser(userData);
-                // axios
-                //   .post("/customer/", userData)
-                //   .then((response) => addUser(response.data));
-                setUser(initialFormState);
-                handleClose();
+                if (validateFunction(user)) {
+                  addUser(userData);
+                  setUser(initialFormState);
+                  handleClose();
+                }
               }}
             >
               <TextFieldCustom
@@ -249,6 +286,8 @@ export default function Tags(props) {
                 value={user.name}
                 width={500}
                 onChange={handleChange}
+                helperText={nameError}
+                error={nameError ? true : false}
               />
               <TextFieldCustom
                 label="Email*"
@@ -257,6 +296,8 @@ export default function Tags(props) {
                 value={user.email}
                 width={500}
                 onChange={handleChange}
+                helperText={emailError}
+                error={emailError ? true : false}
               />
               {/* <Divider component="Button" /> */}
               <DialogActions>
@@ -296,11 +337,13 @@ export default function Tags(props) {
                   email: user.email,
                 };
                 console.log(userData);
-                axios
-                  .put(`/customer/${user.id}`, userData)
-                  .then((response) => updateUser(response.data));
-                setUser(initialFormState);
-                editClose();
+                if (validateFunction(user)) {
+                  axios
+                    .put(`/customer/${user.id}`, userData)
+                    .then((response) => updateUser(response.data));
+                  setUser(initialFormState);
+                  editClose();
+                }
               }}
             >
               <TextFieldCustom
@@ -310,6 +353,9 @@ export default function Tags(props) {
                 value={user.name}
                 width={500}
                 onChange={handleChange}
+                onChange={handleChange}
+                helperText={nameError}
+                error={nameError ? true : false}
               />
               <TextFieldCustom
                 label="Email*"
@@ -318,6 +364,8 @@ export default function Tags(props) {
                 value={user.email}
                 width={500}
                 onChange={handleChange}
+                helperText={emailError}
+                error={emailError ? true : false}
               />
               <DialogActions>
                 <Button color="secondary" onClick={() => handleDelete(user)}>
