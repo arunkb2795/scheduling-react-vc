@@ -6,8 +6,10 @@ import interactionPlugin from "@fullcalendar/interaction";
 import AddSchedulePopup from "./AddSchedulePopup";
 import EditSchedulePopup from "./EditShedulePopup";
 import moment from "moment";
+import timeZone from "moment-timezone";
 import axios from "./axios";
 import SnackBar from "./SnackBar";
+import TimeZonePicker from "./Components/TimeZonePicker";
 
 export default function FullCalendarPage() {
   const calendarRef = React.createRef();
@@ -22,6 +24,7 @@ export default function FullCalendarPage() {
   const [eventClickInfo, setEventClickInfo] = useState({});
   const [snackOpen, setSnackOpen] = useState(false);
   const [snakBarMessage, setSnackMessage] = useState("");
+  const [timeZone, setTimeZone] = useState(moment.tz.guess());
   useEffect(() => {
     console.log(creationData);
 
@@ -168,31 +171,65 @@ export default function FullCalendarPage() {
   const selectDisable = (e) => {
     return moment().add(-1, "days").diff(e.start) <= 0;
   };
-  console.log(eventClickInfo);
+
+  const handleTimePicker = (e, value) => {
+    setAddOpen(false);
+
+    setTimeZone(value);
+  };
+  // var timeSone = timeZone.tz.guess();
+  //var time = new Date();
+  // var timeZoneOffset = time.getTimezoneOffset();
+  // let data = timeZone.tz.zone(timeSone).abbr(timeZoneOffset);
+  // console.log({ data });
+
+  // var currentUserTimezone = moment.tz.guess();
+  // console.log({ timeZones });
+  // console.log({ currentUserTimezone });
+  //var currentTime = moment.tz.console.log({ timeZones });
 
   return (
-    <div>
-      <div>
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          headerToolbar={{
-            left: "prevYear,prev,next,nextYear today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay",
-          }}
-          initialView="timeGridDay"
-          editable={false}
-          selectable={true}
-          selectMirror={true}
-          allDaySlot={false}
-          dateClick={handleDateClick}
-          events={eventInfo}
-          select={handleDateSelect}
-          eventClick={handleEventClick}
-          ref={calendarRef}
-          selectAllow={selectDisable}
-        />
+    <>
+      <div
+        style={{
+          border: "1px solid #ddd",
+          backgroundColor: "white",
+          padding: "15px 20px 20px 20px",
+          marginBottom: "20px",
+          borderRadius: "5px",
+        }}
+      >
+        <div style={{ margin: "10px 0px 10px 0px" }}>
+          <TimeZonePicker
+            label="Change Time Zone"
+            width="500"
+            timeZoneData={moment.tz.names()}
+            value={timeZone}
+            onChange={handleTimePicker}
+          />
+        </div>
       </div>
+
+      <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        headerToolbar={{
+          left: "prevYear,prev,next,nextYear today",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,timeGridDay",
+        }}
+        initialView="timeGridDay"
+        editable={false}
+        selectable={true}
+        selectMirror={true}
+        allDaySlot={false}
+        dateClick={handleDateClick}
+        events={eventInfo}
+        select={handleDateSelect}
+        eventClick={handleEventClick}
+        ref={calendarRef}
+        selectAllow={selectDisable}
+      />
+
       {addOpen &&
       moment(selectedInfo && selectedInfo.start).format("hh:mm:ss") &&
       moment(selectedInfo && selectedInfo.end).format("hh:mm:ss") !==
@@ -202,6 +239,7 @@ export default function FullCalendarPage() {
           selectedInfo={selectedInfo}
           consultantList={consultantList}
           customerList={customerList}
+          timeZoneData={timeZone}
           handleDataSubmit={handleSubmit}
         />
       ) : null}
@@ -218,6 +256,6 @@ export default function FullCalendarPage() {
       {snackOpen ? (
         <SnackBar snackOpen={snackOpen} message={snakBarMessage} />
       ) : null}
-    </div>
+    </>
   );
 }

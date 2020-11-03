@@ -1,8 +1,17 @@
 /* eslint-disable no-use-before-define */
-import React, { useState, useEffect } from "react";
+import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InputLabel from "@material-ui/core/InputLabel";
+import Popper from "@material-ui/core/Popper";
+
+const PopperMy = function (props) {
+  return (
+    <div>
+      <Popper {...props} style={{ width: 515 }} placement="start" />
+    </div>
+  );
+};
 
 function ComboBox(props) {
   return (
@@ -13,7 +22,7 @@ function ComboBox(props) {
 
       <div style={{ width: 515, marginBottom: 10 }}>
         <Autocomplete
-          PopperComponent={"bottom"}
+          PopperComponent={PopperMy}
           value={props.value}
           //defaultValue={props.defaultValue}
           //onChange={(e, value) => props.onChange(value)}

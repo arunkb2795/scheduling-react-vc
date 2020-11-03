@@ -11,13 +11,17 @@ import TimePicker from "./TimePicker";
 import DatePicker from "./DatePicker";
 import MultiSelector from "./MultiSelector";
 import AutocompleteTextField from "./AutoComplete";
+import TimeZonePicker from "./Components/TimeZonePicker";
 import IconButton from "@material-ui/core/IconButton";
 import DateRangeRoundedIcon from "@material-ui/icons/DateRangeRounded";
 import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined";
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
+import ScheduleRoundedIcon from "@material-ui/icons/ScheduleRounded";
 import moment from "moment";
+import timeZone from "moment-timezone";
+
 import { startTimeFormatter, endTimeFormatter, starter } from "./Utils";
 
 function PaperComponent(props) {
@@ -33,6 +37,7 @@ function PaperComponent(props) {
 
 export default function DraggableDialog(props) {
   const [open, setOpen] = React.useState(false);
+  const [timeZone, setTimeZone] = useState(props.timeZoneData);
   const [more, setMore] = useState(false);
   const [date, setDate] = useState(moment().format("MM-DD-YYYY"));
 
@@ -230,6 +235,11 @@ export default function DraggableDialog(props) {
 
   let output = starter(date, start);
   console.log(output);
+
+  const handleTimePicker = (e, value) => {
+    setTimeZone(value);
+  };
+
   return (
     <div>
       <Dialog
@@ -283,6 +293,7 @@ export default function DraggableDialog(props) {
                 color: "#685bc7",
               }}
             />
+
             <div>
               <MultiSelector
                 helperText={
@@ -290,6 +301,24 @@ export default function DraggableDialog(props) {
                 }
                 error={errorMessages.customerError ? true : false}
                 onChange={handleCustomerName}
+              />
+            </div>
+          </div>
+          <div style={{ display: "flex" }}>
+            <ScheduleRoundedIcon
+              style={{
+                width: 28,
+                height: 28,
+                margin: "30px 10px 0px 0px",
+                color: "#685bc7",
+              }}
+            />
+            <div>
+              <TimeZonePicker
+                label="Time Zone*"
+                timeZoneData={moment.tz.names()}
+                value={timeZone}
+                onChange={handleTimePicker}
               />
             </div>
           </div>
@@ -343,7 +372,6 @@ export default function DraggableDialog(props) {
               />
             </div>
           </div>
-
           <div style={{ display: "flex" }}>
             <DescriptionOutlinedIcon
               style={{
@@ -368,7 +396,6 @@ export default function DraggableDialog(props) {
               />
             </div>
           </div>
-
           <div style={{ marginLeft: "28px" }}>
             <TextField
               label="Appointment Title*"
@@ -383,7 +410,6 @@ export default function DraggableDialog(props) {
               error={errorMessages.appointmentSubjectError ? true : false}
             />
           </div>
-
           <div style={{ float: "right" }}>
             <button
               onClick={() => setMore(!more)}
@@ -398,7 +424,6 @@ export default function DraggableDialog(props) {
               {more ? "Less" : "More"}
             </button>
           </div>
-
           {more ? (
             <div style={{ marginLeft: "28px" }}>
               <TextField

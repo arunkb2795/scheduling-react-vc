@@ -13,8 +13,17 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import InputLabel from "@material-ui/core/InputLabel";
 import { DialogActions } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Popper from "@material-ui/core/Popper";
 
 //import UserForm from './UserForm'
+
+const PopperMy = function (props) {
+  return (
+    <div>
+      <Popper {...props} style={{ width: 515 }} placement="top-start" />
+    </div>
+  );
+};
 
 export default function Tags(props) {
   const initialFormState = { id: null, name: "", email: "" };
@@ -31,11 +40,6 @@ export default function Tags(props) {
   const loading = dropdownOpen && options.length === 0;
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
-  // const [errorMessages, setErrorerrorMessages] = useState({
-  //   nameErrorMessage: "",
-  //   emailErrorMessage: "",
-  // });
-  const [isSubmit, setIsSUbmit] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -84,10 +88,10 @@ export default function Tags(props) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name == "name") {
+    if (name === "name") {
       setNameError("");
     }
-    if (name == "email") {
+    if (name === "email") {
       setEmailError("");
     }
     setUser({ ...user, [name]: value });
@@ -193,7 +197,7 @@ export default function Tags(props) {
             loading={loading}
             size="small"
             id="tags-filled"
-            PopperComponent="bottom"
+            PopperComponent={PopperMy}
             //onOpen={handleOpen}
             options={options}
             getOptionLabel={(option) => option.name}
