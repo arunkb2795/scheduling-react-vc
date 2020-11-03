@@ -177,16 +177,6 @@ export default function FullCalendarPage() {
 
     setTimeZone(value);
   };
-  // var timeSone = timeZone.tz.guess();
-  //var time = new Date();
-  // var timeZoneOffset = time.getTimezoneOffset();
-  // let data = timeZone.tz.zone(timeSone).abbr(timeZoneOffset);
-  // console.log({ data });
-
-  // var currentUserTimezone = moment.tz.guess();
-  // console.log({ timeZones });
-  // console.log({ currentUserTimezone });
-  //var currentTime = moment.tz.console.log({ timeZones });
 
   return (
     <>
