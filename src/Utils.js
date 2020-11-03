@@ -16,10 +16,3 @@ export const endTimeFormatter = (date, time) => {
 //Sun Feb 02 2020 06:30:00 GMT+0530 (India Standard Time)}
 //2020-02-02T09:30
 
-export const starter = (date, time) => {
-  let startDate = moment(date).format("YYYY-MM-DD");
-  let startTime = moment(time).format("HH:mm");
-  let formatedStartTime = startDate + "T" + startTime;
-  console.log(formatedStartTime);
-  return "hello";
-};

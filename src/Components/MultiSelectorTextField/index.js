@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import axios from "./axios";
+import axios from "../../api/axios";
 import Chip from "@material-ui/core/Chip";
-import TextFieldCustom from "./TextField";
+import TextFieldCustom from "../TextField";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import PersonAddOutlinedIcon from "@material-ui/icons/PersonAddOutlined";

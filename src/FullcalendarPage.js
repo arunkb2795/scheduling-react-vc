@@ -6,9 +6,9 @@ import interactionPlugin from "@fullcalendar/interaction";
 import AddSchedulePopup from "./AddSchedulePopup";
 import EditSchedulePopup from "./EditShedulePopup";
 import moment from "moment";
-import timeZone from "moment-timezone";
-import axios from "./axios";
-import SnackBar from "./SnackBar";
+import momentTimeZone from "moment-timezone";
+import axios from "./api/axios";
+import SnackBar from "./Components/SnackBar";
 import TimeZonePicker from "./Components/TimeZonePicker";
 
 export default function FullCalendarPage() {
@@ -24,10 +24,8 @@ export default function FullCalendarPage() {
   const [eventClickInfo, setEventClickInfo] = useState({});
   const [snackOpen, setSnackOpen] = useState(false);
   const [snakBarMessage, setSnackMessage] = useState("");
-  const [timeZone, setTimeZone] = useState(moment.tz.guess());
+  const [timeZone, setTimeZone] = useState(momentTimeZone.tz.guess());
   useEffect(() => {
-    console.log(creationData);
-
     if (creationData.title) {
       axios
         .post("/schedule/", creationData)
@@ -43,7 +41,6 @@ export default function FullCalendarPage() {
   }, [creationData]);
 
   useEffect(() => {
-    console.log(updationData);
 
     if (updationData.title) {
       axios
@@ -92,7 +89,6 @@ export default function FullCalendarPage() {
     axios
       .get("/agent/")
       .then((response) => {
-        console.log(response);
         setConsultantList(response.data);
       })
       .catch((error) => console.log(error));
@@ -120,12 +116,10 @@ export default function FullCalendarPage() {
   };
 
   const handleEventClick = async (clickInfo) => {
-    console.log({ clickInfo });
     setAddOpen(false);
     await axios
       .get(`/schedule/${clickInfo.event.id}`)
       .then((response) => {
-        console.log(response);
         setEventClickInfo(response.data);
       })
       .catch((error) => console.log(error));
@@ -142,18 +136,15 @@ export default function FullCalendarPage() {
   };
 
   const handleUpdate = (updateData, open) => {
-    console.log({ updateData });
     setUpdation(updateData);
     setEditOpen(!open);
     // setSnackMessage("Appointment Updated successfully");
     // setSnackOpen(true);
   };
   const handleDeleteEventHandler = (id, open) => {
-    console.log({ id });
     axios
       .delete(`/schedule/${id}`)
       .then((response) => {
-        console.log(response);
         loadData();
       })
       .then(() => {
@@ -193,7 +184,7 @@ export default function FullCalendarPage() {
           <TimeZonePicker
             label="Change Time Zone"
             width="500"
-            timeZoneData={moment.tz.names()}
+            timeZoneData={momentTimeZone.tz.names()}
             value={timeZone}
             onChange={handleTimePicker}
           />

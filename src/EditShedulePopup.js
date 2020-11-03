@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from "react";
-import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Paper from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
-import TextField from "./TextField";
-import TimePicker from "./TimePicker";
-import DatePicker from "./DatePicker";
-import MultiSelector from "./MultiSelector";
-import AutocompleteTextField from "./AutoComplete";
+import TextField from "./Components/TextField";
+import TimePicker from "./Components/TimePicker";
+import DatePicker from "./Components/DatePicker";
+import MultiSelector from "./Components/MultiSelectorTextField";
+import AutocompleteTextField from "./Components/AutoCompleteTextField";
+import TimeZonePicker from "./Components/TimeZonePicker";
 import IconButton from "@material-ui/core/IconButton";
 import DateRangeRoundedIcon from "@material-ui/icons/DateRangeRounded";
 import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined";
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
+import ScheduleRoundedIcon from "@material-ui/icons/ScheduleRounded";
 import { startTimeFormatter, endTimeFormatter } from "./Utils";
 import moment from "moment";
+import CustomButton from "./Components/Button";
+import momentTimeZone from "moment-timezone";
+
 
 function PaperComponent(props) {
   return (
@@ -34,7 +38,7 @@ function PaperComponent(props) {
 export default function DraggableDialog(props) {
   const [open, setOpen] = React.useState(false);
   const [customersName, setCustomersName] = useState([]);
-
+  const [timeZone, setTimeZone] = useState(props.timeZoneData);
   const [agentName, setAgentName] = useState({});
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [scheduleType, setScheduleType] = useState({});
@@ -118,15 +122,6 @@ export default function DraggableDialog(props) {
       ? setStartTime(moment(value).format())
       : setEndTime(moment(value).format());
   };
-  // const handleStartTimeChange = (name, value) => {
-  //   console.log(value);
-  //   setStartTime(moment(value).format());
-  // };
-
-  // const handleEndTimeChange = (name, value) => {
-  //   console.log(value);
-  //   setEndTime(moment(value).format());
-  // };
   const handleScheduleType = (e, value) => {
     setErrorMessages({
       ...errorMessages,
@@ -166,7 +161,6 @@ export default function DraggableDialog(props) {
     if (isSubmit) {
       props.handleUpdateData(updateData, open);
     }
-    console.log(updateData);
   };
 
   useEffect(() => {
@@ -178,18 +172,7 @@ export default function DraggableDialog(props) {
       ...errorMessages,
       customerError: "",
     });
-    console.log({ value });
-    // let arr = [];
-    // let userData = {};
-    // for (let i = 0; i < value.length; i++) {
-    //   userData = {
-    //     name: value[i].name,
-    //     email: value[i].email,
-    //   };
-    //   arr.push(userData);
-    // }
-    // console.log({ arr });
-    // setSelectedCustomers(arr);
+   
     setSelectedCustomers(value);
   };
 
@@ -235,7 +218,10 @@ export default function DraggableDialog(props) {
     return formValid;
   };
 
-  console.log({ customersName });
+  const handleTimePicker = (e, value) => {
+    setTimeZone(value);
+  };
+
   return (
     <div>
       <Dialog
@@ -298,6 +284,25 @@ export default function DraggableDialog(props) {
                   errorMessages.customerError ? errorMessages.customerError : ""
                 }
                 error={errorMessages.customerError ? true : false}
+              />
+            </div>
+            
+          </div>
+          <div style={{ display: "flex" }}>
+            <ScheduleRoundedIcon
+              style={{
+                width: 28,
+                height: 28,
+                margin: "30px 10px 0px 0px",
+                color: "#685bc7",
+              }}
+            />
+            <div>
+              <TimeZonePicker
+                label="Time Zone*"
+                timeZoneData={momentTimeZone.tz.names()}
+                value={timeZone}
+                onChange={handleTimePicker}
               />
             </div>
           </div>
@@ -420,17 +425,18 @@ export default function DraggableDialog(props) {
           ) : null}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDelete} color="secondary">
+          <CustomButton onClick={handleDelete} color="secondary">
             Remove
-          </Button>
-          <Button
-            style={{ marginRight: 15 }}
+          </CustomButton>
+          <div  style={{ marginRight: 15 }}>
+          <CustomButton
             onClick={handleButtonClick}
             color="primary"
             variant="outlined"
           >
-            Save Changes
-          </Button>
+              Save Changes
+          </CustomButton>
+          </div>
         </DialogActions>
       </Dialog>
     </div>

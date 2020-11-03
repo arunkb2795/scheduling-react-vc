@@ -8,7 +8,7 @@ import Popper from "@material-ui/core/Popper";
 const PopperMy = function (props) {
   return (
     <div>
-      <Popper {...props} style={{ width: 515 }} placement="start" />
+      <Popper {...props} style={{ width: 515 }} placement="top-start" />
     </div>
   );
 };
@@ -24,8 +24,6 @@ function ComboBox(props) {
         <Autocomplete
           PopperComponent={PopperMy}
           value={props.value}
-          //defaultValue={props.defaultValue}
-          //onChange={(e, value) => props.onChange(value)}
           onChange={props.onChange}
           options={props.options}
           disableClearable
@@ -35,8 +33,6 @@ function ComboBox(props) {
               fullWidth
               {...params}
               name={props.name}
-              //value={props.value}
-              // onChange={props.handleChange}
               helperText={props.helperText}
               error={props.error}
               placeholder={props.placeholder}

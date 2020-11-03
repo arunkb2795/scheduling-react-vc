@@ -19,7 +19,7 @@ export default function DatePicker(props) {
           size="small"
           error={false}
           helperText={false}
-          name={props.date}
+          name={props.name}
           style={{ width: 158, marginTop: 10 }}
           format={"MM/dd/yyyy"}
           value={props.value}
