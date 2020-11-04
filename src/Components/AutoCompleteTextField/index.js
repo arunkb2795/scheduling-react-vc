@@ -14,6 +14,8 @@ const PopperMy = function (props) {
 };
 
 function ComboBox(props) {
+  console.log("disableOptions", props.disableOptions);
+  console.log("options", props.options);
   return (
     <div>
       <InputLabel style={{ margin: "5px 0px 5px 0px", fontSize: 14 }}>
@@ -27,6 +29,12 @@ function ComboBox(props) {
           onChange={props.onChange}
           options={props.options}
           disableClearable
+          getOptionDisabled={
+            props.disableOptions && props.disableOptions.length > 0
+              ? (option) =>
+                  !!props.disableOptions.find((e) => e.id === option.id)
+              : false
+          }
           getOptionLabel={(option) => option.name}
           renderInput={(params) => (
             <TextField

@@ -41,7 +41,6 @@ export default function FullCalendarPage() {
   }, [creationData]);
 
   useEffect(() => {
-
     if (updationData.title) {
       axios
         .put(`/schedule/${updationData.id}`, updationData)
@@ -66,6 +65,7 @@ export default function FullCalendarPage() {
         for (let i = 0; i < response.data.length; i++) {
           let data = {
             id: response.data[i].id,
+            agent: response.data[i].agent,
             title: response.data[i].title,
             start: response.data[i].start.slice(0, -1),
             end: response.data[i].stop.slice(0, -1),
@@ -165,7 +165,6 @@ export default function FullCalendarPage() {
 
   const handleTimePicker = (e, value) => {
     setAddOpen(false);
-
     setTimeZone(value);
   };
 
@@ -222,6 +221,7 @@ export default function FullCalendarPage() {
           customerList={customerList}
           timeZoneData={timeZone}
           handleDataSubmit={handleSubmit}
+          allScheduleInfo={eventInfo}
         />
       ) : null}
       {editOpen && editOpen ? (
@@ -232,6 +232,7 @@ export default function FullCalendarPage() {
           eventClickInformation={eventClickInfo && eventClickInfo}
           handleDeleteEvent={handleDeleteEventHandler}
           handleUpdateData={handleUpdate}
+          allScheduleInfo={eventInfo}
         />
       ) : null}
       {snackOpen ? (

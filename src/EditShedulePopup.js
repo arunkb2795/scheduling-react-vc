@@ -22,7 +22,7 @@ import { startTimeFormatter, endTimeFormatter } from "./Utils";
 import moment from "moment";
 import CustomButton from "./Components/Button";
 import momentTimeZone from "moment-timezone";
-
+import { agentAvailibilityChecker } from "./Utils";
 
 function PaperComponent(props) {
   return (
@@ -172,7 +172,7 @@ export default function DraggableDialog(props) {
       ...errorMessages,
       customerError: "",
     });
-   
+
     setSelectedCustomers(value);
   };
 
@@ -221,6 +221,10 @@ export default function DraggableDialog(props) {
   const handleTimePicker = (e, value) => {
     setTimeZone(value);
   };
+
+  useEffect(() => {
+    agentAvailibilityChecker(date, startTime, endTime, props.allScheduleInfo);
+  }, [date, startTime, endTime]);
 
   return (
     <div>
@@ -286,7 +290,6 @@ export default function DraggableDialog(props) {
                 error={errorMessages.customerError ? true : false}
               />
             </div>
-            
           </div>
           <div style={{ display: "flex" }}>
             <ScheduleRoundedIcon
@@ -428,14 +431,14 @@ export default function DraggableDialog(props) {
           <CustomButton onClick={handleDelete} color="secondary">
             Remove
           </CustomButton>
-          <div  style={{ marginRight: 15 }}>
-          <CustomButton
-            onClick={handleButtonClick}
-            color="primary"
-            variant="outlined"
-          >
+          <div style={{ marginRight: 15 }}>
+            <CustomButton
+              onClick={handleButtonClick}
+              color="primary"
+              variant="outlined"
+            >
               Save Changes
-          </CustomButton>
+            </CustomButton>
           </div>
         </DialogActions>
       </Dialog>

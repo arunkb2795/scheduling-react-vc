@@ -22,6 +22,7 @@ import moment from "moment";
 import momentTimeZone from "moment-timezone";
 import CustomButton from "./Components/Button";
 import { startTimeFormatter, endTimeFormatter } from "./Utils";
+import { agentAvailibilityChecker } from "./Utils";
 
 function PaperComponent(props) {
   return (
@@ -36,6 +37,7 @@ function PaperComponent(props) {
 
 export default function DraggableDialog(props) {
   const [open, setOpen] = React.useState(false);
+  const [agents, setAgents] = useState([]);
   const [timeZone, setTimeZone] = useState(props.timeZoneData);
   const [more, setMore] = useState(false);
   const [date, setDate] = useState(moment().format("MM-DD-YYYY"));
@@ -226,6 +228,14 @@ export default function DraggableDialog(props) {
     setTimeZone(value);
   };
 
+  useEffect(() => {
+    let startz = startTimeFormatter(date, start);
+    let endz = endTimeFormatter(date, end);
+    setAgents(
+      agentAvailibilityChecker(date, startz, endz, props.allScheduleInfo)
+    );
+  }, [date, start, end]);
+
   return (
     <div>
       <Dialog
@@ -263,6 +273,7 @@ export default function DraggableDialog(props) {
               <AutocompleteTextField
                 label="Consultant Name*"
                 options={props.consultantList}
+                disableOptions={agents}
                 onChange={handleAgentName}
                 placeholder="Select consultant"
                 helperText={errorMessages.agentNameError}
