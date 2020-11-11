@@ -37,11 +37,23 @@ export const agentAvailibilityChecker = (
 ) => {
   console.log({ date }, { startTime }, { endTime }, { allScheduleInfo });
   let result = allScheduleInfo.filter((el) => {
-    if (el.start === startTime + ":00" || el.end === endTime + ":00") {
+    // if (el.start === startTime + ":00" || el.end === endTime + ":00") {
+    //   return el;
+    // }
+
+    if (
+      moment(startTime).isSame(moment(el.start)) ||
+      moment(endTime).isSame(moment(el.end))
+    ) {
       return el;
     } else if (
       moment(startTime).isBetween(moment(el.start), moment(el.end)) ||
       moment(endTime).isBetween(moment(el.start), moment(el.end))
+    ) {
+      return el;
+    } else if (
+      moment(el.start).isBetween(moment(startTime), moment(endTime)) ||
+      moment(el.end).isBetween(moment(startTime), moment(endTime))
     ) {
       return el;
     }

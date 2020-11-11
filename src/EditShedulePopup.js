@@ -37,6 +37,7 @@ function PaperComponent(props) {
 
 export default function DraggableDialog(props) {
   const [open, setOpen] = React.useState(false);
+  const [agents, setAgents] = useState([]);
   const [customersName, setCustomersName] = useState([]);
   const [timeZone, setTimeZone] = useState(props.timeZoneData);
   const [agentName, setAgentName] = useState({});
@@ -223,7 +224,9 @@ export default function DraggableDialog(props) {
   };
 
   useEffect(() => {
-    agentAvailibilityChecker(date, startTime, endTime, props.allScheduleInfo);
+    setAgents(
+      agentAvailibilityChecker(date, startTime, endTime, props.allScheduleInfo)
+    );
   }, [date, startTime, endTime]);
 
   return (
@@ -264,6 +267,7 @@ export default function DraggableDialog(props) {
                 label="Consultant Name*"
                 options={props.consultantList}
                 value={agentName}
+                disableOptions={agents}
                 onChange={handleAgentName}
                 placeholder="Select consultatnt"
                 helperText={errorMessages.agentNameError}
