@@ -1,8 +1,10 @@
 import axios from "axios";
 const token = "280081f9ebf9d3be0a48333226b56705cba9d8b6";
+//const token = window.schedule_token;
 // `Bearer ${token}`;
 const instance = axios.create({
   baseURL: "https://schedule-app.litmus7.com/",
+  //baseURL: window.schedule_app_url,
 });
 
 instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;

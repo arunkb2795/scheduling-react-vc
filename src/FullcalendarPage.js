@@ -56,7 +56,7 @@ export default function FullCalendarPage() {
     }
   }, [updationData]);
 
-  const loadData = async () => {
+  const loadData = async (timeZone) => {
     await axios
       .get("/schedule/")
       .then((response) => {
@@ -67,6 +67,13 @@ export default function FullCalendarPage() {
             id: response.data[i].id,
             agent: response.data[i].agent,
             title: response.data[i].title,
+            //   start: momentTimeZone(response.data[i].start.slice(0, -1))
+            //     .tz(timeZone)
+            //     .format("YYYY-MM-DDTHH:mm"),
+            //   end: momentTimeZone(response.data[i].stop.slice(0, -1))
+            //     .tz(timeZone)
+            //     .format("YYYY-MM-DDTHH:mm"),
+            // };
             start: response.data[i].start.slice(0, -1),
             end: response.data[i].stop.slice(0, -1),
           };
@@ -78,8 +85,8 @@ export default function FullCalendarPage() {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData(timeZone);
+  }, [timeZone]);
 
   useEffect(() => {
     loadData();
@@ -168,6 +175,7 @@ export default function FullCalendarPage() {
     setTimeZone(value);
   };
 
+  console.log({ eventInfo });
   return (
     <>
       <div
