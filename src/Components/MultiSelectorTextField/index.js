@@ -42,7 +42,7 @@ export default function Tags(props) {
   const [emailError, setEmailError] = useState("");
 
   useEffect(() => {
-    let active = true;
+    var active = true;
 
     if (!loading) {
       return undefined;

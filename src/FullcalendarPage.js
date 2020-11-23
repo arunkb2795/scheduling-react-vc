@@ -58,7 +58,7 @@ export default function FullCalendarPage() {
 
   const loadData = async (timeZone) => {
     await axios
-      .get("/schedule/")
+      .get(`/schedule/?time_zone=${timeZone}`)
       .then((response) => {
         let arr = [];
 
@@ -67,13 +67,6 @@ export default function FullCalendarPage() {
             id: response.data[i].id,
             agent: response.data[i].agent,
             title: response.data[i].title,
-            //   start: momentTimeZone(response.data[i].start.slice(0, -1))
-            //     .tz(timeZone)
-            //     .format("YYYY-MM-DDTHH:mm"),
-            //   end: momentTimeZone(response.data[i].stop.slice(0, -1))
-            //     .tz(timeZone)
-            //     .format("YYYY-MM-DDTHH:mm"),
-            // };
             start: response.data[i].start.slice(0, -1),
             end: response.data[i].stop.slice(0, -1),
           };
@@ -89,8 +82,8 @@ export default function FullCalendarPage() {
   }, [timeZone]);
 
   useEffect(() => {
-    loadData();
-  }, [addOpen, updationData, creationData]);
+    loadData(timeZone);
+  }, [addOpen, updationData, creationData, timeZone]);
 
   useEffect(() => {
     axios
@@ -138,15 +131,11 @@ export default function FullCalendarPage() {
   const handleSubmit = (submitData, open) => {
     setCreactionData(submitData);
     setAddOpen(!open);
-    // setSnackMessage("New Appointment Added successfully");
-    // setSnackOpen(true);
   };
 
   const handleUpdate = (updateData, open) => {
     setUpdation(updateData);
     setEditOpen(!open);
-    // setSnackMessage("Appointment Updated successfully");
-    // setSnackOpen(true);
   };
   const handleDeleteEventHandler = (id, open) => {
     axios
@@ -162,8 +151,6 @@ export default function FullCalendarPage() {
       })
       .catch((error) => console.log(error));
     setEditOpen(!open);
-    // setSnackMessage("Appointment Deleted successfully");
-    // setSnackOpen(true);
   };
 
   const selectDisable = (e) => {
@@ -175,7 +162,8 @@ export default function FullCalendarPage() {
     setTimeZone(value);
   };
 
-  console.log({ eventInfo });
+  console.log("response", eventClickInfo);
+
   return (
     <>
       <div

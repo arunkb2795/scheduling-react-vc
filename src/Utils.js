@@ -35,12 +35,7 @@ export const agentAvailibilityChecker = (
   endTime,
   allScheduleInfo
 ) => {
-  console.log({ date }, { startTime }, { endTime }, { allScheduleInfo });
   let result = allScheduleInfo.filter((el) => {
-    // if (el.start === startTime + ":00" || el.end === endTime + ":00") {
-    //   return el;
-    // }
-
     if (
       moment(startTime).isSame(moment(el.start)) ||
       moment(endTime).isSame(moment(el.end))
@@ -58,14 +53,11 @@ export const agentAvailibilityChecker = (
       return el;
     }
   });
-  console.log(result);
   let arr = [];
   for (let i = 0; i < result.length; i++) {
     console.log("data", result[i].agent);
     arr.push(...result[i].agent);
   }
-  console.log("agents", { arr });
-
   return arr;
 };
 //Sun Feb 02 2020 06:30:00 GMT+0530 (India Standard Time)}

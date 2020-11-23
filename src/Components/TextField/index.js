@@ -5,7 +5,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 function CustomTextField(props) {
   return (
     <div>
-      <InputLabel style={{ margin: "10px 0px 5px 10px", fontSize: 14 }}>
+      <InputLabel style={{ margin: "5px 0px 0px 10px", fontSize: 14 }}>
         {props.label}
       </InputLabel>
 

@@ -6,8 +6,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Paper from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
 import TextField from "./Components/TextField";
-import TimePicker from "./Components/TimePicker";
-import DatePicker from "./Components/DatePicker";
 import MultiSelector from "./Components/MultiSelectorTextField";
 import AutocompleteTextField from "./Components/AutoCompleteTextField";
 import TimeZonePicker from "./Components/TimeZonePicker";
@@ -23,7 +21,8 @@ import momentTimeZone from "moment-timezone";
 import CustomButton from "./Components/Button";
 import { startTimeFormatter, endTimeFormatter } from "./Utils";
 import { agentAvailibilityChecker } from "./Utils";
-
+import BasicDatePicker from "./Components/BasicDatePicker";
+import BasicTimePicker from "./Components/BasicTimePicker";
 function PaperComponent(props) {
   return (
     <Draggable
@@ -40,7 +39,8 @@ export default function DraggableDialog(props) {
   const [agents, setAgents] = useState([]);
   const [timeZone, setTimeZone] = useState(props.timeZoneData);
   const [more, setMore] = useState(false);
-  const [date, setDate] = useState(moment().format("MM-DD-YYYY"));
+  const [startDate, setStartDate] = useState(moment().format("MM-DD-YYYY"));
+  const [endDate, setEndDate] = useState(moment().format("MM-DD-YYYY"));
   const [start, startTime] = useState(moment());
   const [end, endTime] = useState(moment());
   const [appointmentSubject, setAppointmentSubject] = useState("");
@@ -69,7 +69,12 @@ export default function DraggableDialog(props) {
   };
 
   const handleDateChange = (name, value) => {
-    setDate(moment(value).format("MM-DD-YYYY"));
+    if (name === "start Date") {
+      setStartDate(moment(value).format("MM-DD-YYYY"));
+      setEndDate(moment(value).format("MM-DD-YYYY"));
+    } else if (name === "end Date") {
+      setEndDate(moment(value).format("MM-DD-YYYY"));
+    }
   };
   const handleChange = (e) => {
     setErrorMessages({
@@ -89,15 +94,18 @@ export default function DraggableDialog(props) {
     props,
   ]);
 
-  useEffect(
-    () =>
-      setDate(
-        moment(props.selectedInfo && props.selectedInfo.startStr).format(
-          "MM-DD-YYYY"
-        )
-      ),
-    [props]
-  );
+  useEffect(() => {
+    setStartDate(
+      moment(props.selectedInfo && props.selectedInfo.startStr).format(
+        "MM-DD-YYYY"
+      )
+    );
+    setEndDate(
+      moment(props.selectedInfo && props.selectedInfo.startStr).format(
+        "MM-DD-YYYY"
+      )
+    );
+  }, [props]);
 
   useEffect(() => {
     setOpen(props.open);
@@ -143,6 +151,7 @@ export default function DraggableDialog(props) {
     start,
     end
   ) => {
+    console.log("start : ", { start }, "end : ", { end });
     let formValid = true;
     if (Object.keys(selectedAgent).length <= 0) {
       formValid = false;
@@ -173,8 +182,9 @@ export default function DraggableDialog(props) {
       });
     }
 
-    if (start > end) {
+    if (moment(start).isAfter(moment(end))) {
       formValid = false;
+      console.log("not Valid");
       setErrorMessages({
         ...errorMessages,
         timeError: "Invalid Time",
@@ -191,8 +201,8 @@ export default function DraggableDialog(props) {
         selectedCustomers,
         selectedAppointmentType,
         appointmentSubject,
-        start,
-        end
+        startTimeFormatter(startDate, start),
+        endTimeFormatter(endDate, end)
       )
     );
     setSubmitData({
@@ -201,8 +211,8 @@ export default function DraggableDialog(props) {
       schedule_type: `${selectedAppointmentType.id}`,
       title: appointmentSubject,
       description: description,
-      start: startTimeFormatter(date, start),
-      stop: endTimeFormatter(date, end),
+      start: startTimeFormatter(startDate, start),
+      stop: endTimeFormatter(endDate, end),
     });
   };
 
@@ -229,12 +239,12 @@ export default function DraggableDialog(props) {
   };
 
   useEffect(() => {
-    let startz = startTimeFormatter(date, start);
-    let endz = endTimeFormatter(date, end);
+    let startz = startTimeFormatter(startDate, start);
+    let endz = endTimeFormatter(endDate, end);
     setAgents(
-      agentAvailibilityChecker(date, startz, endz, props.allScheduleInfo)
+      agentAvailibilityChecker(startDate, startz, endz, props.allScheduleInfo)
     );
-  }, [date, start, end]);
+  }, [startDate, start, end]);
 
   return (
     <div>
@@ -252,7 +262,7 @@ export default function DraggableDialog(props) {
         >
           Add Appointment
           <IconButton
-            style={{ float: "right", padding: 10 }}
+            style={{ float: "right", padding: 5 }}
             aria-label="close"
             onClick={handleClose}
           >
@@ -319,7 +329,7 @@ export default function DraggableDialog(props) {
               />
             </div>
           </div>
-          <div style={{ display: "flex" }}>
+          <div style={{ display: "flex", width: "555px" }}>
             <div>
               <DateRangeRoundedIcon
                 style={{
@@ -338,16 +348,25 @@ export default function DraggableDialog(props) {
                 width: "100%",
               }}
             >
-              <DatePicker
-                label="Date*"
-                name="date"
+              <BasicDatePicker
+                label="Start Date*"
+                name="start Date"
                 format="MM/dd/yyyy"
-                value={date}
+                value={startDate}
+                disableFrom={new Date()}
                 onHandleDateChange={handleDateChange}
               />
 
-              <TimePicker
-                label="From Time*"
+              <BasicDatePicker
+                label="End Date*"
+                name="end Date"
+                format="MM/dd/yyyy"
+                value={endDate}
+                disableFrom={startDate}
+                onHandleDateChange={handleDateChange}
+              />
+              <BasicTimePicker
+                label="Start Time*"
                 name="fromTime"
                 value={start}
                 onChange={handleTimeChange}
@@ -356,9 +375,8 @@ export default function DraggableDialog(props) {
                 }
                 error={errorMessages.timeError ? true : false}
               />
-
-              <TimePicker
-                label="To Time*"
+              <BasicTimePicker
+                label="End Time*"
                 name="toTime"
                 value={end}
                 onChange={handleTimeChange}
@@ -369,6 +387,7 @@ export default function DraggableDialog(props) {
               />
             </div>
           </div>
+
           <div style={{ display: "flex" }}>
             <DescriptionOutlinedIcon
               style={{

@@ -6,8 +6,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Paper from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
 import TextField from "./Components/TextField";
-import TimePicker from "./Components/TimePicker";
-import DatePicker from "./Components/DatePicker";
 import MultiSelector from "./Components/MultiSelectorTextField";
 import AutocompleteTextField from "./Components/AutoCompleteTextField";
 import TimeZonePicker from "./Components/TimeZonePicker";
@@ -23,6 +21,8 @@ import moment from "moment";
 import CustomButton from "./Components/Button";
 import momentTimeZone from "moment-timezone";
 import { agentAvailibilityChecker } from "./Utils";
+import BasicDatePicker from "./Components/BasicDatePicker";
+import BasicTimePicker from "./Components/BasicTimePicker";
 
 function PaperComponent(props) {
   return (
@@ -43,7 +43,8 @@ export default function DraggableDialog(props) {
   const [agentName, setAgentName] = useState({});
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [scheduleType, setScheduleType] = useState({});
-  const [date, setDate] = useState(moment().format("MM-DD-YYYY"));
+  const [startDate, setStartDate] = useState(moment().format("MM-DD-YYYY"));
+  const [endDate, setEndDate] = useState(moment().format("MM-DD-YYYY"));
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [appointmentSubject, setAppointmentSubject] = useState("");
@@ -78,7 +79,8 @@ export default function DraggableDialog(props) {
     setDescription(description);
     setStartTime(startTime);
     setEndTime(endTime);
-    setDate(start);
+    setStartDate(start);
+    setEndDate(stop);
     setAgentName(agent[0]);
     setScheduleType(schedule_type[0]);
     setCustomersName(customers);
@@ -88,7 +90,12 @@ export default function DraggableDialog(props) {
   const [more, setMore] = useState(false);
 
   const handleDateChange = (name, value) => {
-    setDate(moment(value).format("MM-DD-YYYY"));
+    if (name === "start Date") {
+      setStartDate(moment(value).format("MM-DD-YYYY"));
+      setEndDate(moment(value).format("MM-DD-YYYY"));
+    } else if (name === "end Date") {
+      setEndDate(moment(value).format("MM-DD-YYYY"));
+    }
   };
 
   const handleClose = () => {
@@ -153,8 +160,8 @@ export default function DraggableDialog(props) {
       schedule_type: `${scheduleType.id}`,
       title: appointmentSubject,
       description: description,
-      start: startTimeFormatter(date, startTime),
-      stop: endTimeFormatter(date, endTime),
+      start: startTimeFormatter(startDate, startTime),
+      stop: endTimeFormatter(endDate, endTime),
     });
   };
 
@@ -225,9 +232,14 @@ export default function DraggableDialog(props) {
 
   useEffect(() => {
     setAgents(
-      agentAvailibilityChecker(date, startTime, endTime, props.allScheduleInfo)
+      agentAvailibilityChecker(
+        startDate,
+        startTime,
+        endTime,
+        props.allScheduleInfo
+      )
     );
-  }, [date, startTime, endTime]);
+  }, [startDate, startTime, endTime]);
 
   return (
     <div>
@@ -245,7 +257,7 @@ export default function DraggableDialog(props) {
         >
           Edit Appointment
           <IconButton
-            style={{ float: "right", padding: 10 }}
+            style={{ float: "right", padding: 5 }}
             aria-label="close"
             onClick={handleClose}
           >
@@ -313,7 +325,7 @@ export default function DraggableDialog(props) {
               />
             </div>
           </div>
-          <div style={{ display: "flex" }}>
+          {/* <div style={{ display: "flex" }}>
             <div>
               <DateRangeRoundedIcon
                 style={{
@@ -355,6 +367,66 @@ export default function DraggableDialog(props) {
                 label="To Time*"
                 name="toTime"
                 value={endTime} //"2020-02-02T09:30"
+                onChange={handleTimeChange}
+                helperText={
+                  errorMessages.timeError ? errorMessages.timeError : ""
+                }
+                error={errorMessages.timeError ? true : false}
+              />
+            </div>
+          </div> */}
+
+          <div style={{ display: "flex", width: "555px" }}>
+            <div>
+              <DateRangeRoundedIcon
+                style={{
+                  width: 28,
+                  height: 28,
+                  margin: "35px 10px 0px 0px",
+                  color: "#685bc7",
+                }}
+              />
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <BasicDatePicker
+                label="Start Date*"
+                name="start Date"
+                format="MM/dd/yyyy"
+                value={startDate}
+                disableFrom={new Date()}
+                onHandleDateChange={handleDateChange}
+              />
+              <BasicDatePicker
+                label="End Date*"
+                name="end Date"
+                format="MM/dd/yyyy"
+                value={endDate}
+                disableFrom={startDate}
+                onHandleDateChange={handleDateChange}
+              />
+
+              <BasicTimePicker
+                label="Start Time*"
+                name="fromTime"
+                value={startTime}
+                onChange={handleTimeChange}
+                helperText={
+                  errorMessages.timeError ? errorMessages.timeError : ""
+                }
+                error={errorMessages.timeError ? true : false}
+              />
+
+              <BasicTimePicker
+                label="End Time*"
+                name="toTime"
+                value={endTime}
                 onChange={handleTimeChange}
                 helperText={
                   errorMessages.timeError ? errorMessages.timeError : ""

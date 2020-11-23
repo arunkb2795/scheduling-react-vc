@@ -1,31 +1,31 @@
 import React from "react";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
 import InputLabel from "@material-ui/core/InputLabel";
-export default function DatePicker(props) {
+
+function BasicDatePicker(props) {
   return (
     <div>
-      <InputLabel style={{ margin: "5px 0px 0px 0px", fontSize: 14 }}>
+      <InputLabel style={{ margin: "5px 0px", fontSize: 14 }}>
         {props.label}
       </InputLabel>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardDatePicker
+        <DatePicker
           inputVariant="outlined"
-          margin="normal"
+          //margin="normal"
           size="small"
           error={false}
           helperText={false}
           name={props.name}
-          style={{ width: 158, marginTop: 10 }}
+          style={{ width: 120, marginBottom: 10 }}
           format={"MM/dd/yyyy"}
           value={props.value}
-          minDate={new Date()}
+          minDate={props.disableFrom}
           onChange={(value) => props.onHandleDateChange(props.name, value)}
         />
       </MuiPickersUtilsProvider>
     </div>
   );
 }
+
+export default BasicDatePicker;
