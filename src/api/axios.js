@@ -1,5 +1,5 @@
 import axios from "axios";
-const token = "280081f9ebf9d3be0a48333226b56705cba9d8b6";
+const token = "a793e4050d467828172c5589b7e15f15d18e0556";
 //const token = window.schedule_token;
 // `Bearer ${token}`;
 const instance = axios.create({

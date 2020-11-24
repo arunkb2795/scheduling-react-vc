@@ -5,7 +5,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 
 function BasicTimePicker(props) {
   return (
-    <div>
+    <div style={{ paddingTop: "19px" }}>
       <InputLabel style={{ margin: "5px 0px", fontSize: 14 }}>
         {props.label}
       </InputLabel>

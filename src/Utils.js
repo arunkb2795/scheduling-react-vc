@@ -1,15 +1,21 @@
 import moment from "moment";
-export const startTimeFormatter = (date, time) => {
+import momentTimeZone from "moment-timezone";
+
+export const startTimeFormatter = (date, time, timeZone) => {
+  console.log("timezone from utils: ", { timeZone });
   let startDate = moment(date).format("YYYY-MM-DD");
-  let startTime = moment(time).format("HH:mm");
-  let formatedStartTime = startDate + "T" + startTime;
+  let startTime = moment(time).format("HH:mm:ss");
+  let timeZoneInfo = timeZone && momentTimeZone(date).tz(timeZone).format("Z");
+  let formatedStartTime = startDate + "T" + startTime + timeZoneInfo;
   return formatedStartTime;
 };
 
-export const endTimeFormatter = (date, time) => {
+export const endTimeFormatter = (date, time, timeZone) => {
+  console.log("timezone from utils: ", { timeZone });
   let endDate = moment(date).format("YYYY-MM-DD");
-  let endTime = moment(time).format("HH:mm");
-  let formatedEndTime = endDate + "T" + endTime;
+  let endTime = moment(time).format("HH:mm:ss");
+  let timeZoneInfo = timeZone && momentTimeZone(date).tz(timeZone).format("Z");
+  let formatedEndTime = endDate + "T" + endTime + timeZoneInfo;
   return formatedEndTime;
 };
 

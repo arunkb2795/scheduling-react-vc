@@ -36,7 +36,7 @@ export default function FullCalendarPage() {
             setSnackMessage("New Appointment Added successfully");
           }, 1000);
         });
-      loadData();
+      loadData(timeZone);
     }
   }, [creationData]);
 
@@ -52,7 +52,7 @@ export default function FullCalendarPage() {
           }, 1000);
         });
 
-      loadData();
+      loadData(timeZone);
     }
   }, [updationData]);
 
@@ -67,8 +67,8 @@ export default function FullCalendarPage() {
             id: response.data[i].id,
             agent: response.data[i].agent,
             title: response.data[i].title,
-            start: response.data[i].start.slice(0, -1),
-            end: response.data[i].stop.slice(0, -1),
+            start: response.data[i].start.substring(0, 19), //2020-11-26T09:00:00
+            end: response.data[i].stop.substring(0, 19),
           };
           arr.push(data);
         }
@@ -118,7 +118,7 @@ export default function FullCalendarPage() {
   const handleEventClick = async (clickInfo) => {
     setAddOpen(false);
     await axios
-      .get(`/schedule/${clickInfo.event.id}`)
+      .get(`/schedule/${clickInfo.event.id}?time_zone=${timeZone}`)
       .then((response) => {
         setEventClickInfo(response.data);
       })
@@ -141,7 +141,7 @@ export default function FullCalendarPage() {
     axios
       .delete(`/schedule/${id}`)
       .then((response) => {
-        loadData();
+        loadData(timeZone);
       })
       .then(() => {
         setTimeout(() => {
@@ -159,10 +159,9 @@ export default function FullCalendarPage() {
 
   const handleTimePicker = (e, value) => {
     setAddOpen(false);
+    setEditOpen(false);
     setTimeZone(value);
   };
-
-  console.log("response", eventClickInfo);
 
   return (
     <>

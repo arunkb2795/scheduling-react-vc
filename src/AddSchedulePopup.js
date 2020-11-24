@@ -37,7 +37,7 @@ function PaperComponent(props) {
 export default function DraggableDialog(props) {
   const [open, setOpen] = React.useState(false);
   const [agents, setAgents] = useState([]);
-  const [timeZone, setTimeZone] = useState(props.timeZoneData);
+  const [timeZone, setTimeZone] = useState("");
   const [more, setMore] = useState(false);
   const [startDate, setStartDate] = useState(moment().format("MM-DD-YYYY"));
   const [endDate, setEndDate] = useState(moment().format("MM-DD-YYYY"));
@@ -92,6 +92,9 @@ export default function DraggableDialog(props) {
   ]);
   useEffect(() => endTime(props.selectedInfo && props.selectedInfo.end), [
     props,
+  ]);
+  useEffect(() => setTimeZone(props.timeZoneData && props.timeZoneData), [
+    props.timeZoneData,
   ]);
 
   useEffect(() => {
@@ -151,7 +154,6 @@ export default function DraggableDialog(props) {
     start,
     end
   ) => {
-    console.log("start : ", { start }, "end : ", { end });
     let formValid = true;
     if (Object.keys(selectedAgent).length <= 0) {
       formValid = false;
@@ -184,7 +186,6 @@ export default function DraggableDialog(props) {
 
     if (moment(start).isAfter(moment(end))) {
       formValid = false;
-      console.log("not Valid");
       setErrorMessages({
         ...errorMessages,
         timeError: "Invalid Time",
@@ -201,8 +202,8 @@ export default function DraggableDialog(props) {
         selectedCustomers,
         selectedAppointmentType,
         appointmentSubject,
-        startTimeFormatter(startDate, start),
-        endTimeFormatter(endDate, end)
+        startTimeFormatter(startDate, start, timeZone),
+        endTimeFormatter(endDate, end, timeZone)
       )
     );
     setSubmitData({
@@ -211,8 +212,9 @@ export default function DraggableDialog(props) {
       schedule_type: `${selectedAppointmentType.id}`,
       title: appointmentSubject,
       description: description,
-      start: startTimeFormatter(startDate, start),
-      stop: endTimeFormatter(endDate, end),
+      start: startTimeFormatter(startDate, start, timeZone),
+      stop: endTimeFormatter(endDate, end, timeZone),
+      time_zone: timeZone,
     });
   };
 
@@ -239,8 +241,8 @@ export default function DraggableDialog(props) {
   };
 
   useEffect(() => {
-    let startz = startTimeFormatter(startDate, start);
-    let endz = endTimeFormatter(endDate, end);
+    let startz = startTimeFormatter(startDate, start, timeZone);
+    let endz = endTimeFormatter(endDate, end, timeZone);
     setAgents(
       agentAvailibilityChecker(startDate, startz, endz, props.allScheduleInfo)
     );
@@ -349,24 +351,15 @@ export default function DraggableDialog(props) {
               }}
             >
               <BasicDatePicker
-                label="Start Date*"
+                label="Start Date & Time*"
                 name="start Date"
                 format="MM/dd/yyyy"
                 value={startDate}
                 disableFrom={new Date()}
                 onHandleDateChange={handleDateChange}
               />
-
-              <BasicDatePicker
-                label="End Date*"
-                name="end Date"
-                format="MM/dd/yyyy"
-                value={endDate}
-                disableFrom={startDate}
-                onHandleDateChange={handleDateChange}
-              />
               <BasicTimePicker
-                label="Start Time*"
+                label=""
                 name="fromTime"
                 value={start}
                 onChange={handleTimeChange}
@@ -375,8 +368,19 @@ export default function DraggableDialog(props) {
                 }
                 error={errorMessages.timeError ? true : false}
               />
+              <div style={{ margin: "32px 0px 20px 0px" }}>-</div>
+
+              <BasicDatePicker
+                label="End Date & Time*"
+                name="end Date"
+                format="MM/dd/yyyy"
+                value={endDate}
+                disableFrom={startDate}
+                onHandleDateChange={handleDateChange}
+              />
+
               <BasicTimePicker
-                label="End Time*"
+                label=""
                 name="toTime"
                 value={end}
                 onChange={handleTimeChange}

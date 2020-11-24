@@ -39,7 +39,7 @@ export default function DraggableDialog(props) {
   const [open, setOpen] = React.useState(false);
   const [agents, setAgents] = useState([]);
   const [customersName, setCustomersName] = useState([]);
-  const [timeZone, setTimeZone] = useState(props.timeZoneData);
+  const [timeZone, setTimeZone] = useState("");
   const [agentName, setAgentName] = useState({});
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [scheduleType, setScheduleType] = useState({});
@@ -71,9 +71,10 @@ export default function DraggableDialog(props) {
       stop,
       schedule_type,
       customers,
+      time_zone,
     } = props.eventClickInformation;
-    let startTime = start && start.slice(0, -1);
-    let endTime = stop && stop.slice(0, -1);
+    let startTime = start && start.substring(0, 19);
+    let endTime = stop && stop.substring(0, 19);
     setEventClickDetails(props.eventClickInformation);
     setAppointmentSubject(title);
     setDescription(description);
@@ -84,6 +85,7 @@ export default function DraggableDialog(props) {
     setAgentName(agent[0]);
     setScheduleType(schedule_type[0]);
     setCustomersName(customers);
+    setTimeZone(time_zone);
   }, [open]);
 
   //handling more-less button
@@ -160,8 +162,9 @@ export default function DraggableDialog(props) {
       schedule_type: `${scheduleType.id}`,
       title: appointmentSubject,
       description: description,
-      start: startTimeFormatter(startDate, startTime),
-      stop: endTimeFormatter(endDate, endTime),
+      time_zone: timeZone,
+      start: startTimeFormatter(startDate, startTime, timeZone),
+      stop: endTimeFormatter(endDate, endTime, timeZone),
     });
   };
 
@@ -325,56 +328,6 @@ export default function DraggableDialog(props) {
               />
             </div>
           </div>
-          {/* <div style={{ display: "flex" }}>
-            <div>
-              <DateRangeRoundedIcon
-                style={{
-                  width: 28,
-                  height: 28,
-                  margin: "35px 10px 0px 0px",
-                  color: "#685bc7",
-                }}
-              />
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
-              <DatePicker
-                label="Date*"
-                name="date"
-                format="MM/dd/yyyy"
-                value={date}
-                onHandleDateChange={handleDateChange}
-              />
-
-              <TimePicker
-                label="From Time*"
-                name="fromTime"
-                value={startTime}
-                onChange={handleTimeChange}
-                helperText={
-                  errorMessages.timeError ? errorMessages.timeError : ""
-                }
-                error={errorMessages.timeError ? true : false}
-              />
-
-              <TimePicker
-                label="To Time*"
-                name="toTime"
-                value={endTime} //"2020-02-02T09:30"
-                onChange={handleTimeChange}
-                helperText={
-                  errorMessages.timeError ? errorMessages.timeError : ""
-                }
-                error={errorMessages.timeError ? true : false}
-              />
-            </div>
-          </div> */}
 
           <div style={{ display: "flex", width: "555px" }}>
             <div>
@@ -396,24 +349,15 @@ export default function DraggableDialog(props) {
               }}
             >
               <BasicDatePicker
-                label="Start Date*"
+                label="Start Date & Time*"
                 name="start Date"
                 format="MM/dd/yyyy"
                 value={startDate}
                 disableFrom={new Date()}
                 onHandleDateChange={handleDateChange}
               />
-              <BasicDatePicker
-                label="End Date*"
-                name="end Date"
-                format="MM/dd/yyyy"
-                value={endDate}
-                disableFrom={startDate}
-                onHandleDateChange={handleDateChange}
-              />
-
               <BasicTimePicker
-                label="Start Time*"
+                label=""
                 name="fromTime"
                 value={startTime}
                 onChange={handleTimeChange}
@@ -422,9 +366,16 @@ export default function DraggableDialog(props) {
                 }
                 error={errorMessages.timeError ? true : false}
               />
-
+              <div style={{ margin: "32px 0px 20px 0px" }}>-</div>
+              <BasicDatePicker
+                label="End Date & Time*"
+                name="end Date"
+                format="MM/dd/yyyy"
+                value={endDate}
+                disableFrom={startDate}
+                onHandleDateChange={handleDateChange}
+              />
               <BasicTimePicker
-                label="End Time*"
                 name="toTime"
                 value={endTime}
                 onChange={handleTimeChange}
