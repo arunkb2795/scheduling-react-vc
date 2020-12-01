@@ -14,16 +14,29 @@ import InputLabel from "@material-ui/core/InputLabel";
 import { DialogActions } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Popper from "@material-ui/core/Popper";
+import Paper from "@material-ui/core/Paper";
+import Draggable from "react-draggable";
 
 //import UserForm from './UserForm'
 
 const PopperMy = function (props) {
   return (
     <div>
-      <Popper {...props} style={{ width: 515 }} placement="top-start" />
+      <Popper {...props} placement="top-start" />
     </div>
   );
 };
+
+function PaperComponent(props) {
+  return (
+    <Draggable
+      handle="#draggable-dialog-title"
+      cancel={'[class*="MuiDialogContent-root"]'}
+    >
+      <Paper {...props} style={{ width: 600 }} />
+    </Draggable>
+  );
+}
 
 export default function Tags(props) {
   const initialFormState = { id: null, name: "", email: "" };
@@ -181,11 +194,10 @@ export default function Tags(props) {
       <InputLabel style={{ margin: "5px 0px 5px 0px", fontSize: 14 }}>
         Customer Name*
       </InputLabel>
-      <div style={{ width: 450, marginBottom: 10, display: "flex" }}>
-        <div>
+      <div style={{ marginBottom: 10, display: "flex" }}>
+        <div style={{ flex: "2" }}>
           <Autocomplete
             value={selected}
-            // defaultValue={selected}
             multiple
             limitTags={2}
             onOpen={() => {
@@ -198,12 +210,10 @@ export default function Tags(props) {
             size="small"
             id="tags-filled"
             PopperComponent={PopperMy}
-            //onOpen={handleOpen}
             options={options}
             getOptionLabel={(option) => option.name}
             getOptionSelected={(option, value) => option.name === value.name}
             onChange={selectedValue}
-            style={{ width: 468 }}
             renderTags={(value, getTagProps) =>
               value.map((option, index) => (
                 <Chip
@@ -217,7 +227,6 @@ export default function Tags(props) {
             }
             renderInput={(params) => (
               <TextField
-                fullWidth
                 {...params}
                 variant="outlined"
                 placeholder="Select customers"
@@ -264,6 +273,7 @@ export default function Tags(props) {
           open={open}
           onClose={handleClose}
           aria-labelledby="form-dialog-title"
+          PaperComponent={PaperComponent}
         >
           <DialogTitle id="form-dialog-title">Add New User</DialogTitle>
           <DialogContent dividers>
@@ -288,7 +298,6 @@ export default function Tags(props) {
                 name="name"
                 placeholder="John Doe"
                 value={user.name}
-                width={500}
                 onChange={handleChange}
                 helperText={nameError}
                 error={nameError ? true : false}
@@ -298,13 +307,12 @@ export default function Tags(props) {
                 name="email"
                 placeholder="johndoe@gmail.com"
                 value={user.email}
-                width={500}
                 onChange={handleChange}
                 helperText={emailError}
                 error={emailError ? true : false}
               />
               {/* <Divider component="Button" /> */}
-              <DialogActions>
+              <DialogActions style={{ padding: 0, margin: "12px 0px" }}>
                 <Button
                   //variant="outlined"
                   color="primary"
@@ -355,7 +363,6 @@ export default function Tags(props) {
                 name="name"
                 placeholder="John Doe"
                 value={user.name}
-                width={500}
                 onChange={handleChange}
                 onChange={handleChange}
                 helperText={nameError}
@@ -366,12 +373,11 @@ export default function Tags(props) {
                 name="email"
                 placeholder="johndoe@gmail.com"
                 value={user.email}
-                width={500}
                 onChange={handleChange}
                 helperText={emailError}
                 error={emailError ? true : false}
               />
-              <DialogActions>
+              <DialogActions style={{ padding: 0, margin: "12px 0px" }}>
                 <Button color="secondary" onClick={() => handleDelete(user)}>
                   Remove
                 </Button>

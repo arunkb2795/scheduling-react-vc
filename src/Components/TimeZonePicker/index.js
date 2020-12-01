@@ -7,7 +7,7 @@ import Popper from "@material-ui/core/Popper";
 const PopperMy = function (props) {
   return (
     <div>
-      <Popper {...props} style={{ width: 515 }} placement="top-start" />
+      <Popper {...props} placement="top-start" />
     </div>
   );
 };
@@ -19,7 +19,7 @@ function TimeZonePicker(props) {
         {props.label}
       </InputLabel>
 
-      <div style={{ width: 515, marginBottom: 10 }}>
+      <div style={{ marginBottom: 10 }}>
         <Autocomplete
           PopperComponent={PopperMy}
           options={props.timeZoneData}

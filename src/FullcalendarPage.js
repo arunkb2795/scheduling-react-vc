@@ -3,6 +3,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
 import AddSchedulePopup from "./AddSchedulePopup";
 import EditSchedulePopup from "./EditShedulePopup";
 import moment from "moment";
@@ -177,7 +178,7 @@ export default function FullCalendarPage() {
         <div style={{ margin: "10px 0px 10px 0px" }}>
           <TimeZonePicker
             label="Change Time Zone"
-            width="500"
+            width="100%"
             timeZoneData={momentTimeZone.tz.names()}
             value={timeZone}
             onChange={handleTimePicker}
@@ -186,11 +187,18 @@ export default function FullCalendarPage() {
       </div>
 
       <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
         headerToolbar={{
           left: "prevYear,prev,next,nextYear today",
           center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
+          right: "timeGridDay,dayGridWeek,dayGridMonth,listDay",
+        }}
+        views={{
+          agendaFourDay: {
+            type: "agenda",
+            duration: { days: 4 },
+            buttonText: "4 day",
+          },
         }}
         initialView="timeGridDay"
         editable={false}

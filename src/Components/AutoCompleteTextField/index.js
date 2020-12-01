@@ -8,21 +8,19 @@ import Popper from "@material-ui/core/Popper";
 const PopperMy = function (props) {
   return (
     <div>
-      <Popper {...props} style={{ width: 515 }} placement="top-start" />
+      <Popper {...props} placement="top-start" />
     </div>
   );
 };
 
 function ComboBox(props) {
-  console.log("disableOptions", props.disableOptions);
-  console.log("options", props.options);
   return (
     <div>
       <InputLabel style={{ margin: "5px 0px 5px 0px", fontSize: 14 }}>
         {props.label}
       </InputLabel>
 
-      <div style={{ width: 515, marginBottom: 10 }}>
+      <div style={{ marginBottom: 10 }}>
         <Autocomplete
           PopperComponent={PopperMy}
           value={props.value}
@@ -38,7 +36,6 @@ function ComboBox(props) {
           getOptionLabel={(option) => option.name}
           renderInput={(params) => (
             <TextField
-              fullWidth
               {...params}
               name={props.name}
               helperText={props.helperText}

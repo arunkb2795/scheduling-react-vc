@@ -23,6 +23,7 @@ import momentTimeZone from "moment-timezone";
 import { agentAvailibilityChecker } from "./Utils";
 import BasicDatePicker from "./Components/BasicDatePicker";
 import BasicTimePicker from "./Components/BasicTimePicker";
+import Editor from "./Components/CKEditor";
 
 function PaperComponent(props) {
   return (
@@ -30,7 +31,7 @@ function PaperComponent(props) {
       handle="#draggable-dialog-title"
       cancel={'[class*="MuiDialogContent-root"]'}
     >
-      <Paper {...props} />
+      <Paper {...props} style={{ width: 700 }} />
     </Draggable>
   );
 }
@@ -119,8 +120,9 @@ export default function DraggableDialog(props) {
     setAppointmentSubject(e.target.value);
   };
 
-  const handleDescription = (e) => {
-    setDescription(e.target.value);
+  const handleDescription = (event, editor) => {
+    const data = editor.getData();
+    setDescription(data);
   };
 
   const handleTimeChange = (name, value) => {
@@ -250,6 +252,8 @@ export default function DraggableDialog(props) {
         open={open}
         onClose={handleClose}
         PaperComponent={PaperComponent}
+        fullWidth={true}
+        maxWidth="none"
         aria-labelledby="draggable-dialog-title"
       >
         <DialogTitle
@@ -277,7 +281,7 @@ export default function DraggableDialog(props) {
                 color: "#685bc7",
               }}
             />
-            <div>
+            <div style={{ width: "100%" }}>
               <AutocompleteTextField
                 label="Consultant Name*"
                 options={props.consultantList}
@@ -299,7 +303,7 @@ export default function DraggableDialog(props) {
                 color: "#685bc7",
               }}
             />
-            <div>
+            <div style={{ width: "100%" }}>
               <MultiSelector
                 customersName={customersName}
                 onChange={handleCustomerName}
@@ -319,7 +323,7 @@ export default function DraggableDialog(props) {
                 color: "#685bc7",
               }}
             />
-            <div>
+            <div style={{ width: "100%" }}>
               <TimeZonePicker
                 label="Time Zone*"
                 timeZoneData={momentTimeZone.tz.names()}
@@ -329,7 +333,7 @@ export default function DraggableDialog(props) {
             </div>
           </div>
 
-          <div style={{ display: "flex", width: "555px" }}>
+          <div style={{ display: "flex", width: "100%" }}>
             <div>
               <DateRangeRoundedIcon
                 style={{
@@ -412,19 +416,21 @@ export default function DraggableDialog(props) {
               />
             </div>
           </div>
-          <div style={{ marginLeft: "28px" }}>
-            <TextField
-              label="Appointment Title*"
-              value={appointmentSubject}
-              onChange={handleChange}
-              placeholder="Type appointment title here"
-              helperText={
-                errorMessages.appointmentSubjectError
-                  ? errorMessages.appointmentSubjectError
-                  : ""
-              }
-              error={errorMessages.appointmentSubjectError ? true : false}
-            />
+          <div style={{ display: "flex" }}>
+            <div style={{ marginLeft: "40px", width: "100%" }}>
+              <TextField
+                label="Appointment Title*"
+                value={appointmentSubject}
+                onChange={handleChange}
+                placeholder="Type appointment title here"
+                helperText={
+                  errorMessages.appointmentSubjectError
+                    ? errorMessages.appointmentSubjectError
+                    : ""
+                }
+                error={errorMessages.appointmentSubjectError ? true : false}
+              />
+            </div>
           </div>
 
           <div style={{ float: "right" }}>
@@ -443,11 +449,9 @@ export default function DraggableDialog(props) {
           </div>
 
           {more ? (
-            <div style={{ marginLeft: "28px" }}>
-              <TextField
+            <div style={{ width: "100%" }}>
+              <Editor
                 label="Description"
-                multiline={true}
-                rows={4}
                 value={description}
                 onChange={handleDescription}
               />
@@ -458,7 +462,7 @@ export default function DraggableDialog(props) {
           <CustomButton onClick={handleDelete} color="secondary">
             Remove
           </CustomButton>
-          <div style={{ marginRight: 15 }}>
+          <div style={{ paddingRight: 30 }}>
             <CustomButton
               onClick={handleButtonClick}
               color="primary"

@@ -17,7 +17,7 @@ function BasicDatePicker(props) {
           error={false}
           helperText={false}
           name={props.name}
-          style={{ width: 120, marginBottom: 10 }}
+          style={{ width: 140, marginBottom: 10 }}
           format={"MM/dd/yyyy"}
           value={props.value}
           minDate={props.disableFrom}
