@@ -30,14 +30,33 @@ export default function FullCalendarPage() {
     if (creationData.title) {
       axios
         .post("/schedule/", creationData)
-        .then((response) => response)
-        .then(() => {
+        .then((response) => {
+          if (response.data) {
+            let arr = [...eventInfo];
+            let data = {
+              id: response.data.id,
+              agent: response.data.agent,
+              title: response.data.title,
+              start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
+              end: response.data.stop.substring(0, 19),
+            };
+            arr.push(data)
+            setEventInfo(arr)
+          }
+          else {
+            setSnackMessage("Agent is not available for this time");
+          }
+        }
+        ).then(() => {
           setTimeout(() => {
             setSnackOpen(true);
             setSnackMessage("New Appointment Added successfully");
-          }, 1000);
-        });
-      loadData(timeZone);
+          });
+        }).catch(err=> {
+          console.log(err.response.data);
+            setSnackOpen(true);
+            setSnackMessage(err.response.data);
+      })
     }
   }, [creationData]);
 
@@ -45,15 +64,30 @@ export default function FullCalendarPage() {
     if (updationData.title) {
       axios
         .put(`/schedule/${updationData.id}`, updationData)
-        .then((response) => response)
+        .then((response) => {
+          if (response.data) {
+            let data = {
+              id: response.data.id,
+              agent: response.data.agent,
+              title: response.data.title,
+              start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
+              end: response.data.stop.substring(0, 19),
+            }
+            const elementsIndex = eventInfo.findIndex(
+              (element) => element.id == updationData.id
+            );
+            let newArray = [...eventInfo];
+            newArray[elementsIndex] = data
+            setEventInfo(newArray);
+          }
+        }
+        )
         .then(() => {
           setTimeout(() => {
             setSnackOpen(true);
             setSnackMessage("Appointment Updated successfully");
           }, 1000);
         });
-
-      loadData(timeZone);
     }
   }, [updationData]);
 
@@ -84,7 +118,7 @@ export default function FullCalendarPage() {
 
   useEffect(() => {
     loadData(timeZone);
-  }, [addOpen, updationData, creationData, timeZone]);
+  }, [timeZone]);
 
   useEffect(() => {
     axios

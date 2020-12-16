@@ -48,6 +48,16 @@ export const agentAvailibilityChecker = (
     ) {
       return el;
     } else if (
+      moment(moment(el.start)).isSame(startTime) ||
+      moment(moment(el.end)).isSame(endTime)
+    ) {
+      return el;
+    }else if (
+      moment(startTime).isSame(moment(el.end)) ||
+      moment(endTime).isSame(moment(el.start))
+    ) {
+      return el;
+    } else if (
       moment(startTime).isBetween(moment(el.start), moment(el.end)) ||
       moment(endTime).isBetween(moment(el.start), moment(el.end))
     ) {
@@ -59,9 +69,10 @@ export const agentAvailibilityChecker = (
       return el;
     }
   });
+  console.log("result data", { result });
   let arr = [];
   for (let i = 0; i < result.length; i++) {
-    console.log("data", result[i].agent);
+    console.log("result", result[i].agent);
     arr.push(...result[i].agent);
   }
   return arr;

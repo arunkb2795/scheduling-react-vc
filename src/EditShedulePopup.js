@@ -44,8 +44,8 @@ export default function DraggableDialog(props) {
   const [agentName, setAgentName] = useState({});
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [scheduleType, setScheduleType] = useState({});
-  const [startDate, setStartDate] = useState(moment().format("MM-DD-YYYY"));
-  const [endDate, setEndDate] = useState(moment().format("MM-DD-YYYY"));
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [appointmentSubject, setAppointmentSubject] = useState("");
@@ -94,10 +94,10 @@ export default function DraggableDialog(props) {
 
   const handleDateChange = (name, value) => {
     if (name === "start Date") {
-      setStartDate(moment(value).format("MM-DD-YYYY"));
-      setEndDate(moment(value).format("MM-DD-YYYY"));
+      setStartDate(moment(value).format("YYYY-MM-DD"));
+      setEndDate(moment(value).format("YYYY-MM-DD"));
     } else if (name === "end Date") {
-      setEndDate(moment(value).format("MM-DD-YYYY"));
+      setEndDate(moment(value).format("YYYY-MM-DD"));
     }
   };
 

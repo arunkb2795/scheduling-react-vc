@@ -40,8 +40,8 @@ export default function DraggableDialog(props) {
   const [agents, setAgents] = useState([]);
   const [timeZone, setTimeZone] = useState("");
   const [more, setMore] = useState(false);
-  const [startDate, setStartDate] = useState(moment().format("MM-DD-YYYY"));
-  const [endDate, setEndDate] = useState(moment().format("MM-DD-YYYY"));
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [start, startTime] = useState(moment());
   const [end, endTime] = useState(moment());
   const [appointmentSubject, setAppointmentSubject] = useState("");
@@ -102,12 +102,12 @@ export default function DraggableDialog(props) {
   useEffect(() => {
     setStartDate(
       moment(props.selectedInfo && props.selectedInfo.startStr).format(
-        "MM-DD-YYYY"
+        "YYYY-MM-DD"
       )
     );
     setEndDate(
       moment(props.selectedInfo && props.selectedInfo.startStr).format(
-        "MM-DD-YYYY"
+        "YYYY-MM-DD"
       )
     );
   }, [props]);
