@@ -71,10 +71,10 @@ export default function DraggableDialog(props) {
 
   const handleDateChange = (name, value) => {
     if (name === "start Date") {
-      setStartDate(moment(value).format("MM-DD-YYYY"));
-      setEndDate(moment(value).format("MM-DD-YYYY"));
+      setStartDate(moment(value).format("YYYY-MM-DD"));
+      setEndDate(moment(value).format("YYYY-MM-DD"));
     } else if (name === "end Date") {
-      setEndDate(moment(value).format("MM-DD-YYYY"));
+      setEndDate(moment(value).format("YYYY-MM-DD"));
     }
   };
   const handleChange = (e) => {
