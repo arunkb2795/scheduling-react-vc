@@ -64,16 +64,8 @@ export default function DraggableDialog(props) {
     setOpen(props.open);
   }, [props]);
   useEffect(() => {
-    const {
-      agent,
-      title,
-      description,
-      start,
-      stop,
-      schedule_type,
-      customers,
-      time_zone,
-    } = props.eventClickInformation;
+    const { agent, title, description, start, stop, schedule_type, customers } =
+      props.eventClickInformation;
     let startTime = start && start.substring(0, 19);
     let endTime = stop && stop.substring(0, 19);
     setEventClickDetails(props.eventClickInformation);
@@ -84,9 +76,9 @@ export default function DraggableDialog(props) {
     setStartDate(start);
     setEndDate(stop);
     setAgentName(agent[0]);
-    setScheduleType(schedule_type[0]);
+    setScheduleType(schedule_type ? schedule_type[0] : "");
     setCustomersName(customers);
-    setTimeZone(time_zone);
+    setTimeZone(agent[0].time_zone);
   }, [open]);
 
   //handling more-less button
@@ -155,7 +147,7 @@ export default function DraggableDialog(props) {
   };
 
   const handleButtonClick = () => {
-    setIsSubmit(formValidator());
+    // setIsSubmit(formValidator());
 
     setUpdateData({
       id: props.eventClickInformation.id,
@@ -172,6 +164,7 @@ export default function DraggableDialog(props) {
 
   const callback = () => {
     if (isSubmit) {
+      console.log({updateData})
       props.handleUpdateData(updateData, open);
     }
   };
@@ -236,14 +229,14 @@ export default function DraggableDialog(props) {
   };
 
   useEffect(() => {
-    setAgents(
-      agentAvailibilityChecker(
-        startDate,
-        startTime,
-        endTime,
-        props.allScheduleInfo
-      )
-    );
+    // setAgents(
+    //   agentAvailibilityChecker(
+    //     startDate,
+    //     startTime,
+    //     endTime,
+    //     props.allScheduleInfo
+    //   )
+    // );
   }, [startDate, startTime, endTime]);
 
   return (
@@ -391,31 +384,36 @@ export default function DraggableDialog(props) {
             </div>
           </div>
 
-          <div style={{ display: "flex" }}>
-            <DescriptionOutlinedIcon
-              style={{
-                width: 28,
-                height: 28,
-                margin: "35px 10px 0px 0px",
-                color: "#685bc7",
-              }}
-            />
-            <div style={{ width: "100%" }}>
-              <AutocompleteTextField
-                label="Appointment Type*"
-                value={scheduleType}
-                options={props.customerList}
-                onChange={handleScheduleType}
-                placeholder="Select Appointment Type"
-                helperText={
-                  errorMessages.appointmentTypeError
-                    ? errorMessages.appointmentTypeError
-                    : ""
-                }
-                error={errorMessages.appointmentTypeError ? true : false}
+          {scheduleType ? (
+            <div style={{ display: "flex" }}>
+              <DescriptionOutlinedIcon
+                style={{
+                  width: 28,
+                  height: 28,
+                  margin: "35px 10px 0px 0px",
+                  color: "#685bc7",
+                }}
               />
+
+              <div style={{ width: "100%" }}>
+                <AutocompleteTextField
+                  label="Appointment Type*"
+                  value={scheduleType}
+                  options={props.customerList}
+                  onChange={handleScheduleType}
+                  placeholder="Select Appointment Type"
+                  helperText={
+                    errorMessages.appointmentTypeError
+                      ? errorMessages.appointmentTypeError
+                      : ""
+                  }
+                  error={errorMessages.appointmentTypeError ? true : false}
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            ""
+          )}
           <div style={{ display: "flex" }}>
             <div style={{ marginLeft: "40px", width: "100%" }}>
               <TextField

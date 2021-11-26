@@ -27,6 +27,7 @@ const eventDetailsSlice = createSlice({
     searchText: null,
     start: null,
     end: null,
+    type: null
   },
   reducers: {
     setEvent(state, action) {
@@ -58,6 +59,9 @@ const eventDetailsSlice = createSlice({
         })
       );
     },
+    createEvent(state, action) {
+      state.eventList=action.payload
+    },
     setIsLoading(state, action) {
       state.isLoading = action.payload;
     },
@@ -71,6 +75,9 @@ const eventDetailsSlice = createSlice({
       state.start = action.payload.start;
       state.end = action.payload.end;
     },
+    setType(state, action) {
+      state.type = action.payload
+    }
   },
 });
 
