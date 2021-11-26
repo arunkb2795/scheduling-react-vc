@@ -1,12 +1,16 @@
 import React from "react";
-import { createMuiTheme } from "@material-ui/core/styles";
+// import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from '@material-ui/core/styles';
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import FullCalendarPage from "./FullcalendarPage";
+import store from "./Redux/store";
+import { Provider } from "react-redux";
+
 import "./main.css";
 const fontSize = 14;
 const htmlFontSize = 12;
 const coef = fontSize / 14;
-const theme = createMuiTheme({
+const theme = createTheme({
   typography: {
     pxToRem: (size) => `${(size / htmlFontSize) * coef}rem`,
   },
@@ -14,9 +18,11 @@ const theme = createMuiTheme({
 
 function App() {
   return (
-    <MuiThemeProvider theme={theme}>
-      <FullCalendarPage />
-    </MuiThemeProvider>
+    <Provider store={store}>
+      <MuiThemeProvider theme={theme}>
+        <FullCalendarPage />
+      </MuiThemeProvider>
+    </Provider>
   );
 }
 
