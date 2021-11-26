@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Select from "react-select";
 import { useSelector, useDispatch } from "react-redux";
 import { eventDetailsAction } from "../../Redux/eventDetails-slice";
-import { getEventData } from "../../Redux/eventDetails-slice";
+import { getCalenderEvents } from "../../Redux/eventDetails-slice";
 export default function MultiSelect(props) {
   const { options } = props;
   const [selectedOption, setSelectedOption] = useState(null);
@@ -44,7 +44,7 @@ export default function MultiSelect(props) {
       return item.value;
     });
     dispatch(eventDetailsAction.setSelectedAgent(result.toString()));
-    dispatch(getEventData(result.toString(), searchText, start, end));
+    dispatch(getCalenderEvents(result.toString(), searchText, start, end));
   };
 
   return (

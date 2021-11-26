@@ -9,7 +9,11 @@ import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import { useSelector, useDispatch } from "react-redux";
 import { getAgentList } from "./Redux/agent-slice";
-import { getEventData, eventDetailsAction } from "./Redux/eventDetails-slice";
+import {
+  getCalenderEvents,
+  eventDetailsAction,
+} from "./Redux/eventDetails-slice";
+import { getAppointment } from "./Redux/appointment-slice";
 import SearchBox from "./Components/SearchBox";
 import MultiSelect from "./Components/MultiSelect";
 import AddSchedulePopup from "./AddSchedulePopup";
@@ -22,129 +26,17 @@ import TimeZonePicker from "./Components/TimeZonePicker";
 
 export default function FullCalendarPage() {
   const dispatch = useDispatch();
-  const [addOpen, setAddOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [eventClickInfo, setEventClickInfo] = useState({});
-  const [snackOpen, setSnackOpen] = useState(false);
-  const [selectedInfo, setSelectedInfo] = useState(null);
   const [consultantList, setConsultantList] = useState([]);
   const [customerList, setCustomerList] = useState([]);
-  const [updationData, setUpdation] = useState({});
-  const [snakBarMessage, setSnackMessage] = useState("");
-  const [eventInfo, setEventInfo] = useState([]);
-  const [creationData, setCreactionData] = useState({});
-  const [timeZone, setTimeZone] = useState(momentTimeZone.tz.guess());
 
   const { agentDropdownList, resourcesList, isLoading } = useSelector(
     (state) => state.agentReducer
   );
 
-  const {
-    eventList,
-    scheduleList,
-    selectedAgent,
-    searchText,
-    start,
-    end,
-    type,
-  } = useSelector((state) => state.eventDetailsReducer);
-
-  useEffect(() => {
-    dispatch(getEventData(selectedAgent, searchText, start, end));
-  }, [start, end]);
-
-  useEffect(() => {
-    dispatch(getAgentList());
-  }, []);
-
-  useEffect(() => {
-    if (creationData.title) {
-      axios
-        .post("/schedule/", creationData)
-        .then((response) => {
-          if (response.data) {
-            let arr = [...eventInfo];
-            let data = {
-              id: response.data.id,
-              agent: response.data.agent,
-              title: response.data.title,
-              start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
-              end: response.data.stop.substring(0, 19),
-            };
-            arr.push(data);
-            setEventInfo(arr);
-          } else {
-            setSnackMessage("Agent is not available for this time");
-          }
-        })
-        .then(() => {
-          setTimeout(() => {
-            setSnackOpen(true);
-            setSnackMessage("New Appointment Added successfully");
-          });
-        })
-        .catch((err) => {
-          console.log(err.response.data);
-          setSnackOpen(true);
-          setSnackMessage(err.response.data);
-        });
-    }
-  }, [creationData]);
-
-    useEffect(() => {
-      if (updationData.title) {
-        axios
-          .put(`/schedule/${updationData.id}`, updationData)
-          .then((response) => {
-            if (response.data) {
-              let data = {
-                id: response.data.id,
-                agent: response.data.agent,
-                title: response.data.title,
-                start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
-                end: response.data.stop.substring(0, 19),
-              };
-              const elementsIndex = eventInfo.findIndex(
-                (element) => element.id == updationData.id
-              );
-              let newArray = [...eventInfo];
-              newArray[elementsIndex] = data;
-              setEventInfo(newArray);
-            }
-          })
-          .then(() => {
-            setTimeout(() => {
-              setSnackOpen(true);
-              setSnackMessage("Appointment Updated successfully");
-            }, 1000);
-          });
-      }
-    }, [updationData]);
-
-  // const loadData = async (timeZone) => {
-  //   await axios
-  //     .get(`/schedule/?time_zone=${timeZone}`)
-  //     .then((response) => {
-  //       let arr = [];
-
-  //       for (let i = 0; i < response.data.length; i++) {
-  //         let data = {
-  //           id: response.data[i].id,
-  //           agent: response.data[i].agent,
-  //           title: response.data[i].title,
-  //           start: response.data[i].start.substring(0, 19), //2020-11-26T09:00:00
-  //           end: response.data[i].stop.substring(0, 19),
-  //         };
-  //         arr.push(data);
-  //       }
-  //       setEventInfo(arr);
-  //     })
-  //     .catch((error) => console.log(error));
-  // };
-
-  // useEffect(() => {
-  //   loadData(timeZone);
-  // }, [timeZone]);
+  const { events, selectedAgent, searchText, start, end } = useSelector(
+    (state) => state.eventDetailsReducer
+  );
 
   useEffect(() => {
     axios
@@ -164,26 +56,13 @@ export default function FullCalendarPage() {
       .catch((error) => console.log(error));
   }, []);
 
-  const handleDeleteEventHandler = (id, open) => {
-    axios
-      .delete(`/schedule/${id}`)
-      .then((response) => {
-        // loadData(timeZone);
-      })
-      .then(() => {
-        setTimeout(() => {
-          setSnackOpen(true);
-          setSnackMessage("Appointment Deleted successfully");
-        }, 1000);
-      })
-      .catch((error) => console.log(error));
-    setEditOpen(!open);
-  };
+  useEffect(() => {
+    dispatch(getCalenderEvents(selectedAgent, searchText, start, end));
+  }, [start, end]);
 
-  const handleUpdate = (updateData, open) => {
-    setUpdation(updateData);
-    setEditOpen(!open);
-  };
+  useEffect(() => {
+    dispatch(getAgentList());
+  }, []);
 
   useEffect(() => {
     if (agentDropdownList.length > 0) {
@@ -196,7 +75,7 @@ export default function FullCalendarPage() {
 
   useEffect(() => {
     if (!window.is_admin && selectedAgent) {
-      dispatch(getEventData(selectedAgent, searchText, start, end));
+      dispatch(getCalenderEvents(selectedAgent, searchText, start, end));
     }
   }, [selectedAgent]);
 
@@ -214,7 +93,7 @@ export default function FullCalendarPage() {
   };
 
   const handleSearchClick = () => {
-    dispatch(getEventData(selectedAgent, searchText, start, end));
+    dispatch(getCalenderEvents(selectedAgent, searchText, start, end));
   };
 
   const handleKeydown = (e) => {
@@ -223,46 +102,17 @@ export default function FullCalendarPage() {
     }
   };
 
-  //old api
-  const handleEventClick = async (clickInfo) => {
-    setAddOpen(false);
-    dispatch(eventDetailsAction.setType(clickInfo.event._def.extendedProps.type));
-    if (clickInfo.event._def.extendedProps.type === "schedule") {
-      await axios
-        .get(`/schedule-detail-calendar/${clickInfo.event.id}`)
-        .then((response) => {
-          setEventClickInfo(response.data);
-        })
-        .catch((error) => console.log(error));
-
-      setEditOpen(true);
-    } else if (clickInfo.event._def.extendedProps.type === "event") {
-      await axios
-        .get(`/events-detail-calendar/${clickInfo.event.id}`)
-        .then((response) => {
-          setEventClickInfo(response.data);
-        })
-        .catch((error) => console.log(error));
-
-      setEditOpen(true);
-    }
-    setSnackOpen(false);
+  const handleEventClick = async (eventInfo) => {
+    let type = eventInfo.event._def.extendedProps.type;
+    let id = eventInfo.event.id;
+    setEditOpen(true);
+    dispatch(eventDetailsAction.setType(type));
+    dispatch(getAppointment(id, type));
   };
 
-  const handleDateSelect = (selectInfo) => {
-    setAddOpen(true);
-    setSelectedInfo(selectInfo);
+  const handleClose = () => {
     setEditOpen(false);
-    setSnackOpen(false);
   };
-
-  const handleSubmit = (submitData, open) => {
-    setCreactionData(submitData);
-    console.log({ submitData });
-    setAddOpen(!open);
-  };
-
-  console.log({ eventClickInfo });
 
   return (
     !isLoading && (
@@ -306,38 +156,24 @@ export default function FullCalendarPage() {
           }}
           initialView={"resourceTimeGridDay"}
           resources={resourcesList}
-          events={[...eventList, ...scheduleList]}
-          select={handleDateSelect}
+          events={events}
+          // select={handleDateSelect}
           editable={false}
           selectable={true}
           selectMirror={true}
         />
-        {addOpen &&
-        moment(selectedInfo && selectedInfo.start).format("hh:mm:ss") &&
-        moment(selectedInfo && selectedInfo.end).format("hh:mm:ss") !==
-          "12:00:00" ? (
-          <AddSchedulePopup
-            open={addOpen}
-            selectedInfo={selectedInfo}
-            consultantList={consultantList}
-            customerList={customerList}
-            timeZoneData={timeZone}
-            handleDataSubmit={handleSubmit}
-            allScheduleInfo={eventInfo}
-          />
-        ) : null}
-
-        {editOpen && editOpen ? (
+        {editOpen && (
           <EditSchedulePopup
             open={editOpen}
+            handleClose={handleClose}
             consultantList={consultantList}
             customerList={customerList}
-            eventClickInformation={eventClickInfo && eventClickInfo}
-            handleDeleteEvent={handleDeleteEventHandler}
-            handleUpdateData={handleUpdate}
-            allScheduleInfo={[...eventList, ...scheduleList]}
+            // eventClickInformation={eventClickInfo && eventClickInfo}
+            // handleDeleteEvent={handleDeleteEventHandler}
+            // handleUpdateData={handleUpdate}
+            // allScheduleInfo={eventInfo}
           />
-        ) : null}
+        )}
       </div>
     )
   );

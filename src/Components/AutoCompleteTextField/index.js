@@ -37,7 +37,7 @@ function ComboBox(props) {
           renderInput={(params) => (
             <TextField
               {...params}
-              name={props.name}
+              // name={props.name}
               helperText={props.helperText}
               error={props.error}
               placeholder={props.placeholder}
