@@ -18,17 +18,22 @@ import SearchBox from "./Components/SearchBox";
 import MultiSelect from "./Components/MultiSelect";
 import AddSchedulePopup from "./AddSchedulePopup";
 import EditSchedulePopup from "./EditShedulePopup";
-import moment from "moment";
-import momentTimeZone from "moment-timezone";
 import axios from "./api/axios";
 import SnackBar from "./Components/SnackBar";
 import TimeZonePicker from "./Components/TimeZonePicker";
+import TimezoneList from "./Utils/TimezoneList";
+import momentTZ from "moment-timezone";
+import moment from "moment";
 
 export default function FullCalendarPage() {
   const dispatch = useDispatch();
+  const calendarRef = React.createRef();
+  const [addOpen, setAddOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [consultantList, setConsultantList] = useState([]);
-  const [customerList, setCustomerList] = useState([]);
+  const [selectedInfo, setSelectedInfo] = useState(null);
+  const [scheduleList, setScheduleList] = useState([]);
+  const [eventClickInfo, setEventClickInfo] = useState({});
 
   const { agentDropdownList, resourcesList, isLoading } = useSelector(
     (state) => state.agentReducer
@@ -51,7 +56,7 @@ export default function FullCalendarPage() {
     axios
       .get("/schedule_type/")
       .then((response) => {
-        setCustomerList(response.data);
+        setScheduleList(response.data);
       })
       .catch((error) => console.log(error));
   }, []);
@@ -105,13 +110,156 @@ export default function FullCalendarPage() {
   const handleEventClick = async (eventInfo) => {
     let type = eventInfo.event._def.extendedProps.type;
     let id = eventInfo.event.id;
+    setEventClickInfo(eventInfo);
     setEditOpen(true);
     dispatch(eventDetailsAction.setType(type));
     dispatch(getAppointment(id, type));
   };
 
+  const handleDateSelect = (selectInfo) => {
+    setAddOpen(true);
+    setSelectedInfo(selectInfo);
+  };
+
   const handleClose = () => {
     setEditOpen(false);
+    setAddOpen(false);
+  };
+
+  const handleDateClick = (dateClickInfo) => {
+    calendarRef.current
+      .getApi()
+      .changeView("resourceTimeGridDay", dateClickInfo.date);
+  };
+
+  const setStatus = (status) => {
+    if (status === "Completed") {
+      return "#28a745";
+    } else if (status === "Cancelled") {
+      return "#dc3545";
+    } else if (status === "No Show") {
+      return "#707070";
+    } else if (status === "Coc Violation") {
+      return "#FFFF00";
+    } else if (status === "Incomplete") {
+      return "#999900";
+    } else if (status === "Upcoming" || status === "Rescheduled") {
+      return "#685bc7";
+    }
+  };
+
+  const handleSubmit = (submitData) => {
+    console.log({ submitData });
+    if (submitData.title) {
+      axios
+        .post("/schedule/", submitData)
+        .then((response) => {
+          console.log(submitData);
+          if (response.data) {
+            let arr = [...events];
+            let data = {
+              id: response.data.id,
+              type: "schedule",
+              resourceId: response.data.agent[0].id,
+              title: response.data.title,
+              start: response.data.start.substring(0, 19),
+              end: response.data.stop.substring(0, 19),
+              backgroundColor: setStatus(response.data.status),
+              borderColor: setStatus(response.data.status),
+            };
+            arr.push(data);
+            dispatch(eventDetailsAction.setCalenderEvents(arr));
+          }
+        })
+        .then(() => {
+          console.log("appointment added");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
+  const handleUpdate = (updateData, type) => {
+    console.log("update data", updateData, type);
+    if (updateData.title) {
+      if (type === "schedule") {
+        axios.put(`/schedule/${updateData.id}`, updateData).then((response) => {
+          if (response.data) {
+            console.log("updated successfully", response.data);
+            let data = {
+              id: response.data.id,
+              type: "schedule",
+              resourceId: response.data.agent[0].id,
+              agent: response.data.agent,
+              title: response.data.title,
+              start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
+              end: response.data.stop.substring(0, 19),
+            };
+            const elementsIndex = events.findIndex(
+              (element) => element.id == updateData.id
+            );
+            let newArray = [...events];
+            newArray[elementsIndex] = data;
+            dispatch(eventDetailsAction.setCalenderEvents(newArray));
+          }
+        });
+      } else if (type === "event") {
+        axios.put(`/events/${updateData.id}`, updateData).then((response) => {
+          if (response.data) {
+            console.log("updated successfully");
+            let data = {
+              id: response.data.id,
+              type: "event",
+              resourceId: response.data.agent[0].id,
+              agent: response.data.agent,
+              title: response.data.title,
+              start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
+              end: response.data.stop.substring(0, 19),
+            };
+            const elementsIndex = events.findIndex(
+              (element) => element.id == updateData.id
+            );
+            let newArray = [...events];
+            newArray[elementsIndex] = data;
+            dispatch(eventDetailsAction.setCalenderEvents(newArray));
+          }
+        });
+      }
+    }
+  };
+
+  const handleDeleteEventHandler = (id, type) => {
+    console.log({ type });
+    if (type === "schedule") {
+      axios
+        .delete(`/schedule/${id}`)
+        .then((response) => {
+          if (!response.data) {
+            let newArray = [...events];
+            let data = newArray.filter((item) => item.id !== parseInt(id));
+            dispatch(eventDetailsAction.setCalenderEvents(data));
+          }
+        })
+        .then(() => {
+          console.log("deleted successfully");
+        })
+        .catch((error) => console.log(error));
+    } else if (type === "event") {
+      axios
+        .delete(`/events/${id}`)
+        .then((response) => {
+          if (!response.data) {
+            let newArray = [...events];
+            let data = newArray.filter((item) => item.id !== parseInt(id));
+            dispatch(eventDetailsAction.setCalenderEvents(data));
+          }
+        })
+        .then(() => {
+          console.log("deleted successfully");
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   return (
@@ -141,6 +289,8 @@ export default function FullCalendarPage() {
             resourceTimelinePlugin,
             resourceTimeGridPlugin,
           ]}
+          ref={calendarRef}
+          dateClick={handleDateClick}
           datesSet={handleSelectedDate}
           eventClick={handleEventClick}
           allDaySlot={false}
@@ -157,20 +307,36 @@ export default function FullCalendarPage() {
           initialView={"resourceTimeGridDay"}
           resources={resourcesList}
           events={events}
-          // select={handleDateSelect}
+          select={handleDateSelect}
           editable={false}
           selectable={true}
           selectMirror={true}
         />
+        {addOpen && (
+          <AddSchedulePopup
+            open={addOpen}
+            handleClose={handleClose}
+            selectedInfo={selectedInfo}
+            consultantList={consultantList}
+            scheduleList={scheduleList}
+            timezoneList={TimezoneList()}
+            // customerList={customerList}
+            // timeZoneData={timeZone}
+            handleDataSubmit={handleSubmit}
+            allScheduleInfo={events}
+          />
+        )}
         {editOpen && (
           <EditSchedulePopup
             open={editOpen}
             handleClose={handleClose}
             consultantList={consultantList}
-            customerList={customerList}
-            // eventClickInformation={eventClickInfo && eventClickInfo}
-            // handleDeleteEvent={handleDeleteEventHandler}
-            // handleUpdateData={handleUpdate}
+            // customerList={customerList}
+            scheduleList={scheduleList}
+            timezoneList={TimezoneList()}
+            eventClickInfo={eventClickInfo && eventClickInfo}
+            handleDeleteEvent={(id, type) => handleDeleteEventHandler(id, type)}
+            handleUpdateData={handleUpdate}
             // allScheduleInfo={eventInfo}
           />
         )}

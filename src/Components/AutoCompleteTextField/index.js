@@ -19,7 +19,6 @@ function ComboBox(props) {
       <InputLabel style={{ margin: "5px 0px 5px 0px", fontSize: 14 }}>
         {props.label}
       </InputLabel>
-
       <div style={{ marginBottom: 10 }}>
         <Autocomplete
           PopperComponent={PopperMy}

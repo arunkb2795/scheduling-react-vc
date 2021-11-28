@@ -64,7 +64,6 @@ export default function Tags(props) {
     axios
       .get("/customer/")
       .then((response) => {
-        console.log(response);
         setOptions(response.data);
       })
       .catch((error) => console.log(error));
@@ -135,24 +134,19 @@ export default function Tags(props) {
   };
 
   const updateUser = (data) => {
-    console.log("updated data : ", data);
-    console.log("selected data : ", selected);
     const result = selected.filter((item) => item.id !== data.id);
     let newArray = [...result, data];
-    console.log({ newArray });
     //getSelected(afterFilter);
     getSelected(newArray);
     setUser(initialFormState);
   };
 
   const onChipClik = (option) => {
-    console.log({ option });
     setEditOpen(true);
     setUser(option);
   };
 
   const handleDelete = (data) => {
-    console.log(data.id);
     axios
       .delete(`/customer/${data.id}`)
       .then((response) => {
@@ -169,7 +163,6 @@ export default function Tags(props) {
 
   const validateFunction = (user) => {
     let valid = true;
-    console.log({ user });
     if (!user.name) {
       valid = false;
       setNameError("Required");
@@ -187,7 +180,6 @@ export default function Tags(props) {
     }
     return valid;
   };
-  console.log("final data : ", { selected });
 
   return (
     <div>
@@ -285,7 +277,6 @@ export default function Tags(props) {
                   name: user.name,
                   email: user.email,
                 };
-                console.log(userData);
                 if (validateFunction(user)) {
                   addUser(userData);
                   setUser(initialFormState);
@@ -348,7 +339,6 @@ export default function Tags(props) {
                   name: user.name,
                   email: user.email,
                 };
-                console.log(userData);
                 if (validateFunction(user)) {
                   axios
                     .put(`/customer/${user.id}`, userData)

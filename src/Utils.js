@@ -41,6 +41,7 @@ export const agentAvailibilityChecker = (
   endTime,
   allScheduleInfo
 ) => {
+  console.log({allScheduleInfo})
   let result = allScheduleInfo.filter((el) => {
     if (
       moment(startTime).isSame(moment(el.start)) ||

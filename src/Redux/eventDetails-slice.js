@@ -147,5 +147,15 @@ export const getCalenderEvents = (id, searchText, start, end) => {
   };
 };
 
+export const addEvents = (data) => {
+  return async (dispatch) => {
+    try {
+        dispatch(eventDetailsAction.setCalenderEvents(data));
+    } catch(err) {
+      console.log(err);
+    }
+  }
+}
+
 export const eventDetailsAction = eventDetailsSlice.actions;
 export const eventDetailsReducer = eventDetailsSlice.reducer;

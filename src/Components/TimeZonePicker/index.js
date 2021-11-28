@@ -13,6 +13,7 @@ const PopperMy = function (props) {
 };
 
 function TimeZonePicker(props) {
+  const { options, value, onChange } = props;
   return (
     <div>
       <InputLabel style={{ margin: "5px 0px 5px 0px", fontSize: 14 }}>
@@ -22,12 +23,12 @@ function TimeZonePicker(props) {
       <div style={{ marginBottom: 10 }}>
         <Autocomplete
           PopperComponent={PopperMy}
-          options={props.timeZoneData}
-          value={props.value}
-          disableClearable
-          getOptionLabel={(option) => option}
+          id="combo-box-demo"
+          options={options}
+          getOptionLabel={(option) => option.label}
+          value={value}
           size="small"
-          onChange={props.onChange}
+          onChange={onChange}
           renderInput={(params) => (
             <TextField {...params} size="small" variant="outlined" />
           )}
@@ -38,3 +39,15 @@ function TimeZonePicker(props) {
 }
 
 export default TimeZonePicker;
+// <Autocomplete
+//   PopperComponent={PopperMy}
+//   options={props.timeZoneData}
+//   value={props.value}
+//   disableClearable
+//   getOptionLabel={(option) => option}
+//   size="small"
+//   onChange={props.onChange}
+//   renderInput={(params) => (
+//     <TextField {...params} size="small" variant="outlined" />
+//   )}
+// />;

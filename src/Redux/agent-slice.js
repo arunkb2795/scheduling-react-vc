@@ -30,7 +30,6 @@ const agentSlice = createSlice({
 });
 
 export const getAgentList = () => {
-  console.log("hello")
   return async (dispatch) => {
     try {
       dispatch(agentAction.setIsLoading(true));

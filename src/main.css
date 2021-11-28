@@ -1586,3 +1586,16 @@ a.fc-event:hover {
   border: 1px solid transparent;
   padding: 5px;
 }
+
+
+.fc-view-container {
+  width: auto;
+}
+
+.fc-view-container .fc-view {
+  overflow-x: scroll;
+}
+
+.fc-view-container .fc-view>table {
+  width: 2500px;
+}

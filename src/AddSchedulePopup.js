@@ -17,13 +17,17 @@ import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import ScheduleRoundedIcon from "@material-ui/icons/ScheduleRounded";
 import moment from "moment";
-import momentTimeZone from "moment-timezone";
+import momentTz from "moment-timezone";
 import CustomButton from "./Components/Button";
 import { startTimeFormatter, endTimeFormatter } from "./Utils";
 import { agentAvailibilityChecker } from "./Utils";
 import BasicDatePicker from "./Components/BasicDatePicker";
 import BasicTimePicker from "./Components/BasicTimePicker";
 import Editor from "./Components/CKEditor";
+import TimezoneList from "./Utils/TimezoneList";
+
+const DEFAULT_TIMEZONE = momentTz.tz.guess();
+
 function PaperComponent(props) {
   return (
     <Draggable
@@ -36,8 +40,23 @@ function PaperComponent(props) {
 }
 
 export default function DraggableDialog(props) {
-  const [open, setOpen] = React.useState(false);
+  const {
+    open,
+    handleClose,
+    consultantList,
+    timezoneList,
+    scheduleList,
+    selectedInfo,
+    handleDataSubmit,
+    allScheduleInfo,
+  } = props;
   const [agents, setAgents] = useState([]);
+  const [moderatorList, setModeratorList] = useState([]);
+  const [agentList, setAgentList] = useState([]);
+  const [scheduleListData, setScheduleList] = useState([]);
+  const [selectedModerator, setSelectedModerator] = useState({});
+  const [selectedAgent, setSelectedAgent] = useState({});
+  const [selectedTimeZone, setSelectedTimeZone] = useState();
   const [timeZone, setTimeZone] = useState("");
   const [more, setMore] = useState(false);
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
@@ -46,7 +65,6 @@ export default function DraggableDialog(props) {
   const [end, endTime] = useState(moment());
   const [appointmentSubject, setAppointmentSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [selectedAgent, setSelectedAgent] = useState({});
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [selectedAppointmentType, setSelectedAppointmentType] = useState([]);
   const [submitData, setSubmitData] = useState({});
@@ -57,17 +75,17 @@ export default function DraggableDialog(props) {
     customerError: "",
     timeError: "",
   });
-  const [isSubmit, setIsSubmit] = useState(true);
-  const handleClose = () => {
-    setErrorMessages({
-      agentNameError: "",
-      appointmentTypeError: "",
-      appointmentSubjectError: "",
-      customerError: "",
-      timeError: "",
-    });
-    setOpen(false);
-  };
+
+  // const [isSubmit, setIsSubmit] = useState(true);
+  // const handleClose = () => {
+  //   setErrorMessages({
+  //     agentNameError: "",
+  //     appointmentTypeError: "",
+  //     appointmentSubjectError: "",
+  //     customerError: "",
+  //     timeError: "",
+  //   });
+  // };
 
   const handleDateChange = (name, value) => {
     if (name === "start Date") {
@@ -77,6 +95,7 @@ export default function DraggableDialog(props) {
       setEndDate(moment(value).format("YYYY-MM-DD"));
     }
   };
+
   const handleChange = (e) => {
     setErrorMessages({
       ...errorMessages,
@@ -89,40 +108,74 @@ export default function DraggableDialog(props) {
     const data = editor.getData();
     setDescription(data);
   };
-  useEffect(() => startTime(props.selectedInfo && props.selectedInfo.start), [
-    props,
-  ]);
-  useEffect(() => endTime(props.selectedInfo && props.selectedInfo.end), [
-    props,
-  ]);
-  useEffect(() => setTimeZone(props.timeZoneData && props.timeZoneData), [
-    props.timeZoneData,
-  ]);
+
+  // useEffect(
+  //   () => startTime(props.selectedInfo && props.selectedInfo.start),
+  //   [props]
+  // );
+  // useEffect(
+  //   () => endTime(props.selectedInfo && props.selectedInfo.end),
+  //   [props]
+  // );
+  // useEffect(
+  //   () => setTimeZone(props.timeZoneData && props.timeZoneData),
+  //   [props.timeZoneData]
+  // );
+
+  // useEffect(() => {
+  //   setStartDate(
+  //     moment(props.selectedInfo && props.selectedInfo.startStr).format(
+  //       "YYYY-MM-DD"
+  //     )
+  //   );
+  //   setEndDate(
+  //     moment(props.selectedInfo && props.selectedInfo.startStr).format(
+  //       "YYYY-MM-DD"
+  //     )
+  //   );
+  // }, [props]);
+
+  // useEffect(() => {
+  //   setOpen(props.open);
+  // }, [props]);
 
   useEffect(() => {
-    setStartDate(
-      moment(props.selectedInfo && props.selectedInfo.startStr).format(
-        "YYYY-MM-DD"
-      )
+    setAgentList(consultantList);
+    setModeratorList(consultantList);
+    setScheduleList(scheduleList);
+    let defaultTimezone = TimezoneList().filter(
+      (item) => item.value === DEFAULT_TIMEZONE
     );
-    setEndDate(
-      moment(props.selectedInfo && props.selectedInfo.startStr).format(
-        "YYYY-MM-DD"
-      )
-    );
-  }, [props]);
+    setTimeZone(defaultTimezone[0] ?? TimezoneList()[33]);
+  }, []);
 
   useEffect(() => {
-    setOpen(props.open);
-  }, [props]);
+    startTime(selectedInfo?.start);
+    endTime(selectedInfo?.end);
+    setStartDate(moment(selectedInfo?.startStr).format("YYYY-MM-DD"));
+    setEndDate(moment(selectedInfo?.startStr).format("YYYY-MM-DD"));
+  }, [selectedInfo]);
 
-  const handleAgentName = (e, value) => {
+  const handleAgentChange = (e, value) => {
     setErrorMessages({
       ...errorMessages,
       agentNameError: "",
     });
     setSelectedAgent(value);
+    let data = consultantList.filter((item) => item.id !== value.id);
+    setModeratorList(data);
   };
+
+  const handleModeratorChange = (e, value) => {
+    setErrorMessages({
+      ...errorMessages,
+      agentNameError: "",
+    });
+    setSelectedModerator(value);
+    let data = consultantList.filter((item) => item.id !== value.id);
+    setAgentList(data);
+  };
+
   const handleCustomerName = (value) => {
     setErrorMessages({
       ...errorMessages,
@@ -148,82 +201,96 @@ export default function DraggableDialog(props) {
     setSelectedAppointmentType(value);
   };
 
-  const formValidator = (
-    selectedAgent,
-    selectedCustomers,
-    selectedAppointmentType,
-    appointmentSubject,
-    start,
-    end
-  ) => {
-    let formValid = true;
-    if (Object.keys(selectedAgent).length <= 0) {
-      formValid = false;
-      setErrorMessages({
-        ...errorMessages,
-        agentNameError: "Required",
-      });
-    }
-    if (!appointmentSubject) {
-      formValid = false;
-      setErrorMessages({
-        ...errorMessages,
-        appointmentSubjectError: "Required",
-      });
-    }
-    if (Object.keys(selectedAppointmentType).length <= 0) {
-      formValid = false;
-      setErrorMessages({
-        ...errorMessages,
-        appointmentTypeError: "Required",
-      });
-    }
-    if (selectedCustomers.length <= 0) {
-      formValid = false;
-      setErrorMessages({
-        ...errorMessages,
-        customerError: "Required",
-      });
-    }
+  // const formValidator = (
+  //   selectedAgent,
+  //   selectedCustomers,
+  //   selectedAppointmentType,
+  //   appointmentSubject,
+  //   start,
+  //   end
+  // ) => {
+  //   let formValid = true;
+  //   if (Object.keys(selectedAgent).length <= 0) {
+  //     formValid = false;
+  //     setErrorMessages({
+  //       ...errorMessages,
+  //       agentNameError: "Required",
+  //     });
+  //   }
+  //   if (!appointmentSubject) {
+  //     formValid = false;
+  //     setErrorMessages({
+  //       ...errorMessages,
+  //       appointmentSubjectError: "Required",
+  //     });
+  //   }
+  //   if (Object.keys(selectedAppointmentType).length <= 0) {
+  //     formValid = false;
+  //     setErrorMessages({
+  //       ...errorMessages,
+  //       appointmentTypeError: "Required",
+  //     });
+  //   }
+  //   if (selectedCustomers.length <= 0) {
+  //     formValid = false;
+  //     setErrorMessages({
+  //       ...errorMessages,
+  //       customerError: "Required",
+  //     });
+  //   }
 
-    if (moment(start).isAfter(moment(end))) {
-      formValid = false;
-      setErrorMessages({
-        ...errorMessages,
-        timeError: "Invalid Time",
-      });
-    }
+  //   if (moment(start).isAfter(moment(end))) {
+  //     formValid = false;
+  //     setErrorMessages({
+  //       ...errorMessages,
+  //       timeError: "Invalid Time",
+  //     });
+  //   }
 
-    return formValid;
-  };
+  //   return formValid;
+  // };
 
   const handleButtonClick = () => {
-    setIsSubmit(
-      formValidator(
-        selectedAgent,
-        selectedCustomers,
-        selectedAppointmentType,
-        appointmentSubject,
-        startTimeFormatter(startDate, start, timeZone),
-        endTimeFormatter(endDate, end, timeZone)
-      )
-    );
+    // console.log(timeZone)
+    // console.log({ selectedModerator });
+    // console.log({ selectedAgent });
+    // console.log({ selectedCustomers });
+    // console.log(
+    //   startTimeFormatter(startDate, start, timeZone.value),
+    //   endTimeFormatter(endDate, end, timeZone.value)
+    // );
+    // console.log({ selectedAppointmentType });
+    // console.log({ appointmentSubject });
+    // console.log({ description });
+
+    // setIsSubmit(
+    //   formValidator(
+    //     selectedAgent,
+    //     selectedCustomers,
+    //     selectedAppointmentType,
+    //     appointmentSubject,
+    //     startTimeFormatter(startDate, start, timeZone),
+    //     endTimeFormatter(endDate, end, timeZone)
+    //   )
+    // );
     setSubmitData({
       agent: `${selectedAgent.id}`,
+      moderator: `${selectedModerator.id}`,
       customers: selectedCustomers,
       schedule_type: `${selectedAppointmentType.id}`,
       title: appointmentSubject,
       description: description,
-      start: startTimeFormatter(startDate, start, timeZone),
-      stop: endTimeFormatter(endDate, end, timeZone),
-      time_zone: timeZone,
+      start: startTimeFormatter(startDate, start, timeZone.value),
+      stop: endTimeFormatter(endDate, end, timeZone.value),
+      time_zone: timeZone.value,
     });
   };
 
   const callback = () => {
-    if (isSubmit) {
-      props.handleDataSubmit(submitData, open);
-    }
+    // if (isSubmit) {
+    // props.handleDataSubmit(submitData, open);
+    handleDataSubmit(submitData);
+    // }
   };
 
   useEffect(() => {
@@ -238,17 +305,19 @@ export default function DraggableDialog(props) {
     name === "fromTime" ? startTime(value) : endTime(value);
   };
 
-  const handleTimePicker = (e, value) => {
+  const handleTimezoneChange = (e, value) => {
     setTimeZone(value);
+    console.log(value);
   };
 
-  useEffect(() => {
-    let startz = startTimeFormatter(startDate, start, timeZone);
-    let endz = endTimeFormatter(endDate, end, timeZone);
-    setAgents(
-      agentAvailibilityChecker(startDate, startz, endz, props.allScheduleInfo)
-    );
-  }, [startDate, start, end]);
+  // useEffect(() => {
+  //   let startz = startTimeFormatter(startDate, start, timeZone.value);
+  //   let endz = endTimeFormatter(endDate, end, timeZone.value);
+  //   setAgents(
+  //     agentAvailibilityChecker(startDate, startz, endz, allScheduleInfo)
+  //   );
+
+  // }, [startDate, start, end]);
 
   return (
     <div>
@@ -288,10 +357,32 @@ export default function DraggableDialog(props) {
             <div style={{ width: "100%" }}>
               <AutocompleteTextField
                 label="Consultant Name*"
-                options={props.consultantList}
-                disableOptions={agents}
-                onChange={handleAgentName}
+                options={agentList}
+                // disableOptions={agents}
+                onChange={handleAgentChange}
                 placeholder="Select consultant"
+                helperText={errorMessages.agentNameError}
+                error={errorMessages.agentNameError ? true : false}
+              />
+            </div>
+          </div>
+          <div style={{ display: "flex" }}>
+            <PersonOutlineOutlinedIcon
+              style={{
+                width: 28,
+                height: 28,
+                margin: "30px 10px 0px 0px",
+                color: "#685bc7",
+              }}
+            />
+            <div style={{ width: "100%" }}>
+              <AutocompleteTextField
+                label="Moderator Name*"
+                options={moderatorList}
+                // value={moderator.length ? moderator[0] : []}
+                // disableOptions={selectedAgent}
+                onChange={handleModeratorChange}
+                placeholder="Select moderator"
                 helperText={errorMessages.agentNameError}
                 error={errorMessages.agentNameError ? true : false}
               />
@@ -317,6 +408,7 @@ export default function DraggableDialog(props) {
               />
             </div>
           </div>
+
           <div style={{ display: "flex" }}>
             <ScheduleRoundedIcon
               style={{
@@ -329,9 +421,9 @@ export default function DraggableDialog(props) {
             <div style={{ width: "100%" }}>
               <TimeZonePicker
                 label="Time Zone*"
-                timeZoneData={momentTimeZone.tz.names()}
+                options={timezoneList}
                 value={timeZone}
-                onChange={handleTimePicker}
+                onChange={handleTimezoneChange}
               />
             </div>
           </div>
@@ -409,7 +501,7 @@ export default function DraggableDialog(props) {
             <div style={{ width: "100%" }}>
               <AutocompleteTextField
                 label="Appointment Type*"
-                options={props.customerList}
+                options={scheduleListData}
                 onChange={handleAppointmentType}
                 placeholder="Select appointment type"
                 helperText={

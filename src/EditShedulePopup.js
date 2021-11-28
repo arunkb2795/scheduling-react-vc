@@ -20,11 +20,13 @@ import ScheduleRoundedIcon from "@material-ui/icons/ScheduleRounded";
 import { startTimeFormatter, endTimeFormatter } from "./Utils";
 import moment from "moment";
 import CustomButton from "./Components/Button";
-import momentTimeZone from "moment-timezone";
+import momentTz from "moment-timezone";
 import { agentAvailibilityChecker } from "./Utils";
 import BasicDatePicker from "./Components/BasicDatePicker";
 import BasicTimePicker from "./Components/BasicTimePicker";
 import Editor from "./Components/CKEditor";
+import TimezoneList from "./Utils/TimezoneList";
+const DEFAULT_TIMEZONE = momentTz.tz.guess();
 
 function PaperComponent(props) {
   return (
@@ -38,6 +40,25 @@ function PaperComponent(props) {
 }
 
 export default function DraggableDialog(props) {
+  const [selectedAgent, setSelectedAgent] = useState({});
+  const [selectedModerator, setSelectedModerator] = useState({});
+  const [moderatorList, setModeratorList] = useState([]);
+  const [agentList, setAgentList] = useState([]);
+  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  const [selectedAppointmentType, setSelectedAppointmentType] = useState([]);
+  const [selectedStartTime, setSelectedStartTime] = useState(moment());
+  const [selectedEndTime, setSelectedEndTime] = useState(moment());
+  const [selectedStartDate, setSelectedStartDate] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [selectedEndDate, setSelectedEndDate] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [appointmentSubject, setAppointmentSubject] = useState("");
+  const [selectedDescription, setSelectedDescription] = useState("");
+  const [updateData, setUpdateData] = useState({});
+  const [type, setType] = useState(null);
+
   // const [agents, setAgents] = useState([]);
   // const [customersName, setCustomersName] = useState([]);
   // const [timeZone, setTimeZone] = useState("");
@@ -48,8 +69,7 @@ export default function DraggableDialog(props) {
   // const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   // const [startTime, setStartTime] = useState("");
   // const [endTime, setEndTime] = useState("");
-  // const [appointmentSubject, setAppointmentSubject] = useState("");
-  // const [description, setDescription] = useState("");
+
   // const [eventClickDetails, setEventClickDetails] = useState({});
   // const [updateData, setUpdateData] = useState({});
   //handling more-less button
@@ -62,12 +82,13 @@ export default function DraggableDialog(props) {
     timeError: "",
   });
 
+  const [time_zone, selectedTimeZone] = useState([]);
+
   const {
     agent,
     customers,
     moderator,
     timeZone,
-    date,
     startTime,
     endTime,
     title,
@@ -76,9 +97,80 @@ export default function DraggableDialog(props) {
     appointmentLoading,
   } = useSelector((state) => state.appointmentReducer);
 
-  const { consultantList, customerList, open, handleClose } = props;
+  const {
+    consultantList,
+    scheduleList,
+    open,
+    handleClose,
+    timezoneList,
+    handleDeleteEvent,
+    eventClickInfo,
+    handleUpdateData,
+  } = props;
 
-  console.log(agent, appointmentLoading, customers);
+  useEffect(() => {
+    if (!appointmentLoading && agent[0]) {
+      setSelectedAgent(agent[0]);
+      setSelectedModerator(moderator.length ? moderator[0] : {});
+      setAgentList(consultantList);
+      setModeratorList(consultantList);
+      setSelectedAppointmentType(schedule_type[0]);
+      setSelectedDescription(description);
+      setSelectedStartTime(startTime);
+      setSelectedEndTime(endTime);
+      setSelectedStartDate(moment(startTime).format("YYYY-MM-DD"));
+      setSelectedEndDate(moment(endTime).format("YYYY-MM-DD"));
+      setAppointmentSubject(title);
+      setType(eventClickInfo.event._def.extendedProps.type);
+
+      if (timeZone) {
+        let defaultTimezone = TimezoneList().filter(
+          (item) => item.value === timeZone
+        );
+        selectedTimeZone(defaultTimezone[0] ?? TimezoneList()[33]);
+      } else {
+        let defaultTimezone = TimezoneList().filter(
+          (item) => item.value === DEFAULT_TIMEZONE
+        );
+        selectedTimeZone(defaultTimezone[0] ?? TimezoneList()[33]);
+      }
+    }
+  }, [appointmentLoading]);
+
+  // useEffect(() => {
+
+  //   // if (moderator.length) {
+  //   //   let data = consultantList.filter((item) => item.id !== moderator[0].id);
+
+  //   //   setAgentList(data);
+  //   // } else {
+  //   //   setAgentList(consultantList);
+  //   // }
+  //   // if (agent[0]) {
+  //   //   let data = consultantList.filter((item) => item.id !== agent[0].id);
+  //   //   setModeratorList(data);
+  //   // }
+  // }, [timeZone]);
+
+  const handleAgentChange = (e, value) => {
+    setErrorMessages({
+      ...errorMessages,
+      agentNameError: "",
+    });
+    setSelectedAgent(value);
+    let data = consultantList.filter((item) => item.id !== value.id);
+    setModeratorList(data);
+  };
+
+  const handleModeratorChange = (e, value) => {
+    setErrorMessages({
+      ...errorMessages,
+      agentNameError: "",
+    });
+    setSelectedModerator(value);
+    let data = consultantList.filter((item) => item.id !== value.id);
+    setAgentList(data);
+  };
 
   // useEffect(() => {
   //   const { agent, title, description, start, stop, schedule_type, customers } =
@@ -98,12 +190,116 @@ export default function DraggableDialog(props) {
   //   setTimeZone(agent[0].time_zone);
   // }, [open]);
 
-  const handleCustomerName = (data) => {
-    console.log(data);
+  const handleCustomerName = (value) => {
+    setErrorMessages({
+      ...errorMessages,
+      customerError: "",
+    });
+    let arr = [];
+    let userData = {};
+    for (let i = 0; i < value.length; i++) {
+      userData = {
+        name: value[i].name,
+        email: value[i].email,
+      };
+      arr.push(userData);
+    }
+    setSelectedCustomers(arr);
   };
 
+  const handleAppointmentType = (e, value) => {
+    setErrorMessages({
+      ...errorMessages,
+      appointmentTypeError: "",
+    });
+    setSelectedAppointmentType(value);
+  };
+
+  const handleTimeChange = (name, value) => {
+    setErrorMessages({
+      ...errorMessages,
+      timeError: "",
+    });
+    name === "fromTime"
+      ? setSelectedStartTime(value)
+      : setSelectedEndTime(value);
+  };
+
+  const handleTimezoneChange = (e, value) => {
+    selectedTimeZone(value);
+  };
+
+  const handleDateChange = (name, value) => {
+    if (name === "start Date") {
+      setSelectedStartDate(moment(value).format("YYYY-MM-DD"));
+      setSelectedEndDate(moment(value).format("YYYY-MM-DD"));
+    } else if (name === "end Date") {
+      setSelectedEndDate(moment(value).format("YYYY-MM-DD"));
+    }
+  };
+
+  const handleAppointmentSubject = (e) => {
+    setErrorMessages({
+      ...errorMessages,
+      appointmentSubjectError: "",
+    });
+    setAppointmentSubject(e.target.value);
+  };
+
+  const handleDescription = (event, editor) => {
+    const data = editor.getData();
+    setSelectedDescription(data);
+  };
+
+  const handleButtonClick = () => {
+    // console.log(
+    //   selectedAgent,
+    //   selectedModerator,
+    //   selectedCustomers,
+    //   selectedAppointmentType,
+    //   selectedStartTime,
+    //   selectedEndTime,
+    //   selectedStartDate,
+    //   selectedEndDate,
+    //   appointmentSubject,
+    //   selectedDescription
+    // );
+    // setIsSubmit(formValidator());
+    setUpdateData({
+      id: eventClickInfo.event.id,
+      agent: `${selectedAgent.id}`,
+      moderator: `${selectedModerator.id}`,
+      customers: selectedCustomers,
+      schedule_type: selectedAppointmentType
+        ? `${selectedAppointmentType.id}`
+        : null,
+      title: appointmentSubject,
+      description: selectedDescription,
+      time_zone: time_zone.value,
+      start: startTimeFormatter(
+        selectedStartDate,
+        selectedStartTime,
+        time_zone.value
+      ),
+      stop: endTimeFormatter(selectedEndDate, selectedEndTime, time_zone.value),
+    });
+  };
+
+  console.log("type", eventClickInfo.event._def.extendedProps.type);
+  const callback = () => {
+    // if (isSubmit) {
+    //   props.handleUpdateData(updateData, open);
+    // }
+    handleUpdateData(updateData, type);
+  };
+
+  useEffect(() => {
+    callback(updateData);
+  }, [updateData]);
+
   return (
-    !appointmentLoading && (
+    !appointmentLoading &&
+    agent.length && (
       <div>
         <Dialog
           open={open}
@@ -141,10 +337,10 @@ export default function DraggableDialog(props) {
               <div style={{ width: "100%" }}>
                 <AutocompleteTextField
                   label="Consultant Name*"
-                  options={consultantList}
-                  value={agent[0]}
+                  options={agentList}
+                  value={selectedAgent}
                   // disableOptions={agents}
-                  // onChange={handleAgentName}
+                  onChange={handleAgentChange}
                   placeholder="Select consultant"
                   helperText={errorMessages.agentNameError}
                   error={errorMessages.agentNameError ? true : false}
@@ -163,10 +359,10 @@ export default function DraggableDialog(props) {
               <div style={{ width: "100%" }}>
                 <AutocompleteTextField
                   label="Moderator Name*"
-                  options={consultantList}
-                  value={moderator.length ? moderator[0] : []}
+                  options={moderatorList}
+                  value={selectedModerator}
                   // disableOptions={agents}
-                  // onChange={handleAgentName}
+                  onChange={handleModeratorChange}
                   placeholder="Select moderator"
                   helperText={errorMessages.agentNameError}
                   error={errorMessages.agentNameError ? true : false}
@@ -207,9 +403,9 @@ export default function DraggableDialog(props) {
               <div style={{ width: "100%" }}>
                 <TimeZonePicker
                   label="Time Zone*"
-                  timeZoneData={momentTimeZone.tz.names()}
-                  value={timeZone}
-                  // onChange={handleTimePicker}
+                  options={timezoneList}
+                  value={time_zone}
+                  onChange={handleTimezoneChange}
                 />
               </div>
             </div>
@@ -236,15 +432,15 @@ export default function DraggableDialog(props) {
                   label="Start Date & Time*"
                   name="start Date"
                   format="MM/dd/yyyy"
-                  value={date}
+                  value={selectedStartDate}
                   disableFrom={new Date()}
-                  // onHandleDateChange={handleDateChange}
+                  onHandleDateChange={handleDateChange}
                 />
                 <BasicTimePicker
                   label=""
                   name="fromTime"
-                  value={startTime}
-                  // onChange={handleTimeChange}
+                  value={selectedStartTime}
+                  onChange={handleTimeChange}
                   helperText={
                     errorMessages.timeError ? errorMessages.timeError : ""
                   }
@@ -255,14 +451,14 @@ export default function DraggableDialog(props) {
                   label="End Date & Time*"
                   name="end Date"
                   format="MM/dd/yyyy"
-                  value={date}
-                  disableFrom={date}
-                  // onHandleDateChange={handleDateChange}
+                  value={selectedEndDate}
+                  disableFrom={selectedStartDate}
+                  onHandleDateChange={handleDateChange}
                 />
                 <BasicTimePicker
                   name="toTime"
-                  value={endTime}
-                  // onChange={handleTimeChange}
+                  value={selectedEndTime}
+                  onChange={handleTimeChange}
                   helperText={
                     errorMessages.timeError ? errorMessages.timeError : ""
                   }
@@ -274,8 +470,8 @@ export default function DraggableDialog(props) {
               <div style={{ marginLeft: "40px", width: "100%" }}>
                 <TextField
                   label="Appointment Title*"
-                  value={title}
-                  // onChange={handleChange}
+                  value={appointmentSubject}
+                  onChange={handleAppointmentSubject}
                   placeholder="Type appointment title here"
                   helperText={
                     errorMessages.appointmentSubjectError
@@ -286,11 +482,70 @@ export default function DraggableDialog(props) {
                 />
               </div>
             </div>
+            <div style={{ display: "flex" }}>
+              <DescriptionOutlinedIcon
+                style={{
+                  width: 28,
+                  height: 28,
+                  margin: "35px 10px 0px 0px",
+                  color: "#685bc7",
+                }}
+              />
+
+              <div style={{ width: "100%" }}>
+                <AutocompleteTextField
+                  label="Appointment Type*"
+                  value={selectedAppointmentType}
+                  options={scheduleList}
+                  onChange={handleAppointmentType}
+                  placeholder="Select Appointment Type"
+                  helperText={
+                    errorMessages.appointmentTypeError
+                      ? errorMessages.appointmentTypeError
+                      : ""
+                  }
+                  error={errorMessages.appointmentTypeError ? true : false}
+                />
+              </div>
+            </div>
+            <div style={{ float: "right" }}>
+              <button
+                onClick={() => setMore(!more)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  outline: "none",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                }}
+              >
+                {more ? "Less" : "More"}
+              </button>
+            </div>
+
+            {more ? (
+              <div style={{ width: "100%" }}>
+                <Editor
+                  label="Description"
+                  value={selectedDescription}
+                  onChange={handleDescription}
+                />
+              </div>
+            ) : null}
           </DialogContent>
           <DialogActions>
-            <CustomButton color="secondary">Remove</CustomButton>
+            <CustomButton
+              color="secondary"
+              onClick={() => handleDeleteEvent(eventClickInfo.event.id,type)}
+            >
+              Remove
+            </CustomButton>
             <div style={{ paddingRight: 30 }}>
-              <CustomButton color="primary" variant="outlined">
+              <CustomButton
+                onClick={handleButtonClick}
+                color="primary"
+                variant="outlined"
+              >
                 Save Changes
               </CustomButton>
             </div>
