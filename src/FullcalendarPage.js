@@ -7,6 +7,7 @@ import listPlugin from "@fullcalendar/list";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
+import scrollGridPlugin from "@fullcalendar/scrollgrid";
 import { useSelector, useDispatch } from "react-redux";
 import { getAgentList } from "./Redux/agent-slice";
 import {
@@ -304,6 +305,7 @@ export default function FullCalendarPage() {
             timeGridPlugin,
             resourceTimelinePlugin,
             resourceTimeGridPlugin,
+            scrollGridPlugin,
           ]}
           ref={calendarRef}
           dateClick={handleDateClick}
@@ -329,6 +331,8 @@ export default function FullCalendarPage() {
           editable={false}
           selectable={true}
           selectMirror={true}
+          // height="auto"
+          dayMinWidth={150}
         />
         {addOpen && (
           <AddSchedulePopup
