@@ -24,6 +24,8 @@ import TimeZonePicker from "./Components/TimeZonePicker";
 import TimezoneList from "./Utils/TimezoneList";
 import momentTZ from "moment-timezone";
 import moment from "moment";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function FullCalendarPage() {
   const dispatch = useDispatch();
@@ -154,7 +156,6 @@ export default function FullCalendarPage() {
       axios
         .post("/schedule/", submitData)
         .then((response) => {
-          console.log(submitData);
           if (response.data) {
             let arr = [...events];
             let data = {
@@ -172,59 +173,78 @@ export default function FullCalendarPage() {
           }
         })
         .then(() => {
-          console.log("appointment added");
+          toast.success("appointment added successfully");
+          setAddOpen(false);
         })
         .catch((err) => {
+          toast.error("something went wrong");
           console.log(err);
         });
     }
   };
 
   const handleUpdate = (updateData, type) => {
-    console.log("update data", updateData, type);
     if (updateData.title) {
       if (type === "schedule") {
-        axios.put(`/schedule/${updateData.id}`, updateData).then((response) => {
-          if (response.data) {
-            console.log("updated successfully", response.data);
-            let data = {
-              id: response.data.id,
-              type: "schedule",
-              resourceId: response.data.agent[0].id,
-              agent: response.data.agent,
-              title: response.data.title,
-              start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
-              end: response.data.stop.substring(0, 19),
-            };
-            const elementsIndex = events.findIndex(
-              (element) => element.id == updateData.id
-            );
-            let newArray = [...events];
-            newArray[elementsIndex] = data;
-            dispatch(eventDetailsAction.setCalenderEvents(newArray));
-          }
-        });
+        axios
+          .put(`/schedule/${updateData.id}`, updateData)
+          .then((response) => {
+            if (response.data) {
+              let data = {
+                id: response.data.id,
+                type: "schedule",
+                resourceId: response.data.agent[0].id,
+                agent: response.data.agent,
+                title: response.data.title,
+                start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
+                end: response.data.stop.substring(0, 19),
+              };
+              const elementsIndex = events.findIndex(
+                (element) => element.id == updateData.id
+              );
+              let newArray = [...events];
+              newArray[elementsIndex] = data;
+              dispatch(eventDetailsAction.setCalenderEvents(newArray));
+            }
+          })
+          .then(() => {
+            toast.success("appointment updated successfully");
+            setEditOpen(false);
+          })
+          .catch((err) => {
+            toast.error("something went wrong");
+            console.log(err);
+          });
       } else if (type === "event") {
-        axios.put(`/events/${updateData.id}`, updateData).then((response) => {
-          if (response.data) {
-            console.log("updated successfully");
-            let data = {
-              id: response.data.id,
-              type: "event",
-              resourceId: response.data.agent[0].id,
-              agent: response.data.agent,
-              title: response.data.title,
-              start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
-              end: response.data.stop.substring(0, 19),
-            };
-            const elementsIndex = events.findIndex(
-              (element) => element.id == updateData.id
-            );
-            let newArray = [...events];
-            newArray[elementsIndex] = data;
-            dispatch(eventDetailsAction.setCalenderEvents(newArray));
-          }
-        });
+        axios
+          .put(`/events/${updateData.id}`, updateData)
+          .then((response) => {
+            if (response.data) {
+              let data = {
+                id: response.data.id,
+                type: "event",
+                resourceId: response.data.agent[0].id,
+                agent: response.data.agent,
+                title: response.data.title,
+                start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
+                end: response.data.stop.substring(0, 19),
+              };
+              const elementsIndex = events.findIndex(
+                (element) => element.id == updateData.id
+              );
+              let newArray = [...events];
+              newArray[elementsIndex] = data;
+              dispatch(eventDetailsAction.setCalenderEvents(newArray));
+            }
+          })
+          .then(() => {
+            toast.success("appointment updated successfully");
+            setEditOpen(false);
+          })
+          .catch((err) => {
+            toast.error("something went wrong");
+            console.log(err);
+          });
       }
     }
   };
@@ -242,9 +262,13 @@ export default function FullCalendarPage() {
           }
         })
         .then(() => {
-          console.log("deleted successfully");
+          setEditOpen(false);
+          toast.success("appointment deleted successfully");
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          toast.error("something went wrong.");
+          console.log(error);
+        });
     } else if (type === "event") {
       axios
         .delete(`/events/${id}`)
@@ -256,9 +280,13 @@ export default function FullCalendarPage() {
           }
         })
         .then(() => {
-          console.log("deleted successfully");
+          setEditOpen(false);
+          toast.success("appointment deleted successfully");
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          console.log(error);
+          toast.error("something went wrong.");
+        });
     }
   };
 
@@ -340,6 +368,7 @@ export default function FullCalendarPage() {
             // allScheduleInfo={eventInfo}
           />
         )}
+        <ToastContainer />
       </div>
     )
   );

@@ -70,13 +70,13 @@ export default function DraggableDialog(props) {
   const [submitData, setSubmitData] = useState({});
   const [errorMessages, setErrorMessages] = useState({
     agentNameError: "",
-    appointmentTypeError: "",
+    // appointmentTypeError: "",
     appointmentSubjectError: "",
     customerError: "",
     timeError: "",
   });
 
-  // const [isSubmit, setIsSubmit] = useState(true);
+  const [isSubmit, setIsSubmit] = useState(true);
   // const handleClose = () => {
   //   setErrorMessages({
   //     agentNameError: "",
@@ -109,36 +109,6 @@ export default function DraggableDialog(props) {
     setDescription(data);
   };
 
-  // useEffect(
-  //   () => startTime(props.selectedInfo && props.selectedInfo.start),
-  //   [props]
-  // );
-  // useEffect(
-  //   () => endTime(props.selectedInfo && props.selectedInfo.end),
-  //   [props]
-  // );
-  // useEffect(
-  //   () => setTimeZone(props.timeZoneData && props.timeZoneData),
-  //   [props.timeZoneData]
-  // );
-
-  // useEffect(() => {
-  //   setStartDate(
-  //     moment(props.selectedInfo && props.selectedInfo.startStr).format(
-  //       "YYYY-MM-DD"
-  //     )
-  //   );
-  //   setEndDate(
-  //     moment(props.selectedInfo && props.selectedInfo.startStr).format(
-  //       "YYYY-MM-DD"
-  //     )
-  //   );
-  // }, [props]);
-
-  // useEffect(() => {
-  //   setOpen(props.open);
-  // }, [props]);
-
   useEffect(() => {
     setAgentList(consultantList);
     setModeratorList(consultantList);
@@ -167,10 +137,6 @@ export default function DraggableDialog(props) {
   };
 
   const handleModeratorChange = (e, value) => {
-    setErrorMessages({
-      ...errorMessages,
-      agentNameError: "",
-    });
     setSelectedModerator(value);
     let data = consultantList.filter((item) => item.id !== value.id);
     setAgentList(data);
@@ -194,85 +160,72 @@ export default function DraggableDialog(props) {
   };
 
   const handleAppointmentType = (e, value) => {
-    setErrorMessages({
-      ...errorMessages,
-      appointmentTypeError: "",
-    });
+    // setErrorMessages({
+    //   ...errorMessages,
+    //   appointmentTypeError: "",
+    // });
     setSelectedAppointmentType(value);
   };
 
-  // const formValidator = (
-  //   selectedAgent,
-  //   selectedCustomers,
-  //   selectedAppointmentType,
-  //   appointmentSubject,
-  //   start,
-  //   end
-  // ) => {
-  //   let formValid = true;
-  //   if (Object.keys(selectedAgent).length <= 0) {
-  //     formValid = false;
-  //     setErrorMessages({
-  //       ...errorMessages,
-  //       agentNameError: "Required",
-  //     });
-  //   }
-  //   if (!appointmentSubject) {
-  //     formValid = false;
-  //     setErrorMessages({
-  //       ...errorMessages,
-  //       appointmentSubjectError: "Required",
-  //     });
-  //   }
-  //   if (Object.keys(selectedAppointmentType).length <= 0) {
-  //     formValid = false;
-  //     setErrorMessages({
-  //       ...errorMessages,
-  //       appointmentTypeError: "Required",
-  //     });
-  //   }
-  //   if (selectedCustomers.length <= 0) {
-  //     formValid = false;
-  //     setErrorMessages({
-  //       ...errorMessages,
-  //       customerError: "Required",
-  //     });
-  //   }
+  const formValidator = (
+    selectedAgent,
+    selectedCustomers,
+    // selectedAppointmentType,
+    appointmentSubject,
+    start,
+    end
+  ) => {
+    let formValid = true;
+    if (Object.keys(selectedAgent).length <= 0) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        agentNameError: "Required",
+      });
+    }
+    if (!appointmentSubject) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        appointmentSubjectError: "Required",
+      });
+    }
+    // if (Object.keys(selectedAppointmentType).length <= 0) {
+    //   formValid = false;
+    //   setErrorMessages({
+    //     ...errorMessages,
+    //     appointmentTypeError: "Required",
+    //   });
+    // }
+    if (selectedCustomers.length <= 0) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        customerError: "Required",
+      });
+    }
 
-  //   if (moment(start).isAfter(moment(end))) {
-  //     formValid = false;
-  //     setErrorMessages({
-  //       ...errorMessages,
-  //       timeError: "Invalid Time",
-  //     });
-  //   }
+    if (moment(start).isAfter(moment(end))) {
+      formValid = false;
+      setErrorMessages({
+        ...errorMessages,
+        timeError: "Invalid Time",
+      });
+    }
 
-  //   return formValid;
-  // };
+    return formValid;
+  };
 
   const handleButtonClick = () => {
-    // console.log(timeZone)
-    // console.log({ selectedModerator });
-    // console.log({ selectedAgent });
-    // console.log({ selectedCustomers });
-    // console.log(
-    //   startTimeFormatter(startDate, start, timeZone.value),
-    //   endTimeFormatter(endDate, end, timeZone.value)
-    // );
-    // console.log({ selectedAppointmentType });
-    // console.log({ appointmentSubject });
-    // console.log({ description });
-
-    // setIsSubmit(
-    //   formValidator(
-    //     selectedAgent,
-    //     selectedCustomers,
-    //     selectedAppointmentType,
-    //     appointmentSubject,
-    //     startTimeFormatter(startDate, start, timeZone),
-    //     endTimeFormatter(endDate, end, timeZone)
-    //   )
-    // );
+    setIsSubmit(
+      formValidator(
+        selectedAgent,
+        selectedCustomers,
+        appointmentSubject,
+        startTimeFormatter(startDate, start, timeZone.value),
+        endTimeFormatter(endDate, end, timeZone.value)
+      )
+    );
     setSubmitData({
       agent: `${selectedAgent.id}`,
       moderator: `${selectedModerator.id}`,
@@ -287,10 +240,9 @@ export default function DraggableDialog(props) {
   };
 
   const callback = () => {
-    // if (isSubmit) {
-    // props.handleDataSubmit(submitData, open);
-    handleDataSubmit(submitData);
-    // }
+    if (isSubmit) {
+      handleDataSubmit(submitData);
+    }
   };
 
   useEffect(() => {
@@ -377,7 +329,7 @@ export default function DraggableDialog(props) {
             />
             <div style={{ width: "100%" }}>
               <AutocompleteTextField
-                label="Moderator Name*"
+                label="Moderator Name"
                 options={moderatorList}
                 // value={moderator.length ? moderator[0] : []}
                 // disableOptions={selectedAgent}
@@ -488,7 +440,6 @@ export default function DraggableDialog(props) {
               />
             </div>
           </div>
-
           <div style={{ display: "flex" }}>
             <DescriptionOutlinedIcon
               style={{
@@ -500,16 +451,10 @@ export default function DraggableDialog(props) {
             />
             <div style={{ width: "100%" }}>
               <AutocompleteTextField
-                label="Appointment Type*"
+                label="Appointment Type"
                 options={scheduleListData}
                 onChange={handleAppointmentType}
                 placeholder="Select appointment type"
-                helperText={
-                  errorMessages.appointmentTypeError
-                    ? errorMessages.appointmentTypeError
-                    : ""
-                }
-                error={errorMessages.appointmentTypeError ? true : false}
               />
             </div>
           </div>
@@ -569,3 +514,28 @@ export default function DraggableDialog(props) {
     </div>
   );
 }
+
+// <div style={{ display: "flex" }}>
+//   <DescriptionOutlinedIcon
+//     style={{
+//       width: 28,
+//       height: 28,
+//       margin: "35px 10px 0px 0px",
+//       color: "#685bc7",
+//     }}
+//   />
+//   <div style={{ width: "100%" }}>
+//     <AutocompleteTextField
+//       label="Appointment Type*"
+//       options={scheduleListData}
+//       onChange={handleAppointmentType}
+//       placeholder="Select appointment type"
+//       helperText={
+//         errorMessages.appointmentTypeError
+//           ? errorMessages.appointmentTypeError
+//           : ""
+//       }
+//       error={errorMessages.appointmentTypeError ? true : false}
+//     />
+//   </div>
+// </div>;
