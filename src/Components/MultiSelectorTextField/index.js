@@ -16,6 +16,10 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Popper from "@material-ui/core/Popper";
 import Paper from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
+import TimeZonePicker from "../TimeZonePicker";
+import TimezoneList from "../../Utils/TimezoneList";
+
+
 
 //import UserForm from './UserForm'
 
@@ -39,7 +43,7 @@ function PaperComponent(props) {
 }
 
 export default function Tags(props) {
-  const initialFormState = { id: null, name: "", email: "" };
+  const initialFormState = { id: null, name: "", email: ""};
   const [dropdownOpen, setDropDownOpen] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [editOpen, setEditOpen] = React.useState(false);
@@ -53,6 +57,7 @@ export default function Tags(props) {
   const loading = dropdownOpen && options.length === 0;
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [timeZone, setTimeZone] = useState(TimezoneList()[33]);
 
   useEffect(() => {
     var active = true;
@@ -81,6 +86,7 @@ export default function Tags(props) {
 
   function handleClickOpen() {
     setOpen(!open);
+    setTimeZone(TimezoneList()[33])
   }
 
   function handleClose() {
@@ -108,6 +114,12 @@ export default function Tags(props) {
     }
     setUser({ ...user, [name]: value });
   };
+
+  const handleTimezoneChange = (e, value) => {
+    console.log(value)
+    setTimeZone(value)
+    // setUser({...user,['time_zone']:value.value})
+  }
 
   useEffect(() => {
     createdValue.name
@@ -180,6 +192,8 @@ export default function Tags(props) {
     }
     return valid;
   };
+
+  console.log(user)
 
   return (
     <div>
@@ -276,6 +290,7 @@ export default function Tags(props) {
                 let userData = {
                   name: user.name,
                   email: user.email,
+                  time_zone: timeZone.value,
                 };
                 if (validateFunction(user)) {
                   addUser(userData);
@@ -302,6 +317,14 @@ export default function Tags(props) {
                 helperText={emailError}
                 error={emailError ? true : false}
               />
+              <div style={{ width: "100%" }}>
+                <TimeZonePicker
+                  label="Time Zone*"
+                  options={TimezoneList()}
+                  value={timeZone}
+                  onChange={handleTimezoneChange}
+                />
+              </div>
               {/* <Divider component="Button" /> */}
               <DialogActions style={{ padding: 0, margin: "12px 0px" }}>
                 <Button

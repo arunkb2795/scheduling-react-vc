@@ -53,38 +53,15 @@ const eventDetailsSlice = createSlice({
   },
 });
 
-export const getCalenderEvents = (id, searchText, start, end) => {
+export const getCalenderEvents = (id, start, end) => {
   return async (dispatch) => {
     try {
-      if (searchText && id) {
+      if (start && end) {
         let data = [];
         dispatch(eventDetailsAction.setIsLoading(true));
-        const scheduleResponse =
-          await scheduleClient.getScheduleDetailsBySearch(
-            id,
-            searchText,
-            start,
-            end
-          );
-        let scheduleData = scheduleResponse.data.map(
-          ({ id, title, start, stop, agent, status }) => ({
-            id: id,
-            type: "schedule",
-            resourceId: agent[0].id,
-            title: title,
-            start: start,
-            end: stop,
-            backgroundColor: setStatus(status),
-            borderColor: setStatus(status),
-          })
-        );
-        const eventResponse = await scheduleClient.getEventDetailsBySearch(
-          id,
-          searchText,
-          start,
-          end
-        );
-
+        const eventResponse = id
+          ? await scheduleClient.getEventDetails(id, start, end)
+          : await scheduleClient.getAllEvents(start, end);
         let eventData = eventResponse.data.map(
           ({ id, title, start, stop, agent, status }) => ({
             id: id,
@@ -97,34 +74,9 @@ export const getCalenderEvents = (id, searchText, start, end) => {
             borderColor: setStatus(status),
           })
         );
-        data = [...eventData, ...scheduleData];
-        dispatch(eventDetailsAction.setCalenderEvents(data));
-        dispatch(eventDetailsAction.setIsLoading(false));
-      } else if (id) {
-        let data = [];
-        dispatch(eventDetailsAction.setIsLoading(true));
-        const eventResponse = await scheduleClient.getEventDetails(
-          id,
-          start,
-          end
-        );
-        let eventData = eventResponse.data.map(
-          ({ id, title, start, stop, agent, status }) => ({
-            id: id,
-            type: "event",
-            resourceId: agent[0].id,
-            title: title,
-            start: start,
-            end: stop,
-            backgroundColor: setStatus(status),
-            borderColor: setStatus(status),
-          })
-        );
-        const scheduleResponse = await scheduleClient.getScheduleDetails(
-          id,
-          start,
-          end
-        );
+        const scheduleResponse = id
+          ? await scheduleClient.getScheduleDetails(id,start, end)
+          : await scheduleClient.getAllSchedules(start, end);
         let scheduleData = scheduleResponse.data.map(
           ({ id, title, start, stop, agent, status }) => ({
             id: id,
@@ -150,12 +102,12 @@ export const getCalenderEvents = (id, searchText, start, end) => {
 export const addEvents = (data) => {
   return async (dispatch) => {
     try {
-        dispatch(eventDetailsAction.setCalenderEvents(data));
-    } catch(err) {
+      dispatch(eventDetailsAction.setCalenderEvents(data));
+    } catch (err) {
       console.log(err);
     }
-  }
-}
+  };
+};
 
 export const eventDetailsAction = eventDetailsSlice.actions;
 export const eventDetailsReducer = eventDetailsSlice.reducer;

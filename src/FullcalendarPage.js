@@ -41,7 +41,7 @@ export default function FullCalendarPage() {
     (state) => state.agentReducer
   );
 
-  const { events, selectedAgent, searchText, start, end } = useSelector(
+  const { events, selectedAgent, type, start, end } = useSelector(
     (state) => state.eventDetailsReducer
   );
 
@@ -64,27 +64,43 @@ export default function FullCalendarPage() {
   }, []);
 
   useEffect(() => {
-    dispatch(getCalenderEvents(selectedAgent, searchText, start, end));
+    if (window.is_admin) {
+      let id = null;
+      dispatch(getCalenderEvents(id, start, end));
+    }
   }, [start, end]);
+
+  useEffect(() => {
+    if (!window.is_admin) {
+      if (agentDropdownList.length > 0) {
+        let agent = agentDropdownList.filter((agent) => {
+          return window.signed_in_user_email === agent.email;
+        });
+        let id = agent[0].value;
+        console.log("agent id", agent);
+        dispatch(getCalenderEvents(id, start, end));
+      }
+    }
+  }, [agentDropdownList]);
 
   useEffect(() => {
     dispatch(getAgentList());
   }, []);
 
-  useEffect(() => {
-    if (agentDropdownList.length > 0) {
-      let agentId = agentDropdownList.filter((agent) => {
-        return window.signed_in_user_email === agent.email;
-      });
-      dispatch(eventDetailsAction.setSelectedAgent(agentId[0]?.value));
-    }
-  }, [agentDropdownList]);
+  // useEffect(() => {
+  //   if (agentDropdownList.length > 0) {
+  //     let agentId = agentDropdownList.filter((agent) => {
+  //       return window.signed_in_user_email === agent.email;
+  //     });
+  //     dispatch(eventDetailsAction.setSelectedAgent(agentId[0]?.value));
+  //   }
+  // }, [agentDropdownList]);
 
-  useEffect(() => {
-    if (!window.is_admin && selectedAgent) {
-      dispatch(getCalenderEvents(selectedAgent, searchText, start, end));
-    }
-  }, [selectedAgent]);
+  // useEffect(() => {
+  //   if (!window.is_admin && selectedAgent) {
+  //     dispatch(getCalenderEvents(start, end));
+  //   }
+  // }, [selectedAgent]);
 
   const handleSelectedDate = (data) => {
     dispatch(
@@ -93,20 +109,6 @@ export default function FullCalendarPage() {
         end: moment(data.end).format("YYYY-MM-DD"),
       })
     );
-  };
-
-  const handleSearchChange = (e) => {
-    dispatch(eventDetailsAction.setSearchText(e.target.value));
-  };
-
-  const handleSearchClick = () => {
-    dispatch(getCalenderEvents(selectedAgent, searchText, start, end));
-  };
-
-  const handleKeydown = (e) => {
-    if (e.key === "Enter") {
-      handleSearchClick();
-    }
   };
 
   const handleEventClick = async (eventInfo) => {
@@ -293,20 +295,6 @@ export default function FullCalendarPage() {
   return (
     !isLoading && (
       <div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div style={{ minWidth: "500px", padding: "20px 20px 20px 0" }}>
-            {window.is_admin ? (
-              <MultiSelect options={agentDropdownList} />
-            ) : null}
-          </div>
-          <div style={{ padding: "20px 0px" }}>
-            <SearchBox
-              handleChange={handleSearchChange}
-              handleSearchClick={handleSearchClick}
-              handleKeydown={handleKeydown}
-            />
-          </div>
-        </div>
         <FullCalendar
           plugins={[
             adaptivePlugin,
@@ -330,9 +318,11 @@ export default function FullCalendarPage() {
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "resourceTimeGridDay,timeGridWeek,dayGridMonth,listWeek",
+            right: window.is_admin
+              ? "resourceTimeGridDay,timeGridWeek,dayGridMonth,listWeek"
+              : "timeGridDay,timeGridWeek,dayGridMonth,listWeek",
           }}
-          initialView={"resourceTimeGridDay"}
+          initialView={window.is_admin ? "resourceTimeGridDay" : "timeGridDay"}
           resources={resourcesList}
           events={events}
           select={handleDateSelect}

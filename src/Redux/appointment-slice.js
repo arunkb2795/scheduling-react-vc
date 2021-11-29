@@ -44,7 +44,7 @@ export const getAppointment = (id, type) => {
         let data = {
           agent: appointmentResponse.data.agent,
           customers: appointmentResponse.data.customers,
-          moderator: [],
+          moderator: appointmentResponse.data.moderator.length?appointmentResponse.data.moderator:[],
           date: appointmentResponse.data.date,
           startTime: appointmentResponse.data.start,
           endTime: appointmentResponse.data.stop,
@@ -61,7 +61,7 @@ export const getAppointment = (id, type) => {
         let data = {
           agent: appointmentResponse.data.agent,
           customers: appointmentResponse.data.customers,
-          moderator: appointmentResponse.data.moderator,
+          moderator: appointmentResponse.data.moderator.length?appointmentResponse.data.moderator:[],
           date: moment(appointmentResponse.data.start).format("YYYY-MM-DD"),
           startTime: appointmentResponse.data.start,
           endTime: appointmentResponse.data.stop,

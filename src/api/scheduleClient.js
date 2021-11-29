@@ -31,4 +31,14 @@ export default {
   getEventById(id) {
     return client.get(`/events-detail-calendar/${id}`);
   },
+  getAllSchedules(start, end) {
+    return client.get(
+      `/schedule-list-manageschedule/?start_date=${start}&end_date=${end}`
+    );
+  },
+  getAllEvents(start, end) {
+    return client.get(
+      `/events-list-manageschedule/?start_date=${start}&end_date=${end}`
+    );
+  },
 };
