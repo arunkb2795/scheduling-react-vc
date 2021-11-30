@@ -88,7 +88,7 @@ export default function FullCalendarPage() {
         dispatch(getCalenderEvents(id, start, end));
       }
     }
-  }, [agentDropdownList]);
+  }, [agentDropdownList,start,end]);
 
   useEffect(() => {
     dispatch(getAgentList());
