@@ -353,9 +353,7 @@ export default function FullCalendarPage() {
           selectable={true}
           selectMirror={true}
           // height="auto"
-          dayMinWidth={150}
-          resourceRender={function (info) { return info }}
-          
+          dayMinWidth={320}
         />
         {addOpen && (
           <AddSchedulePopup

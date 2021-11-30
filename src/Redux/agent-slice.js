@@ -18,9 +18,9 @@ const agentSlice = createSlice({
         ...rest,
       }));
 
-      state.resourcesList = action.payload.map(({ id, name }) => ({
+      state.resourcesList = action.payload.map(({ id, name,time_zone }) => ({
         id: id,
-        title: name,
+        title: `${name} (${time_zone})`,
       }));
     },
     setIsLoading(state, action) {
@@ -47,3 +47,8 @@ export const getAgentList = () => {
 
 export const agentAction = agentSlice.actions;
 export const agentReducer = agentSlice.reducer;
+
+// `${(document.getElementsByClassName(
+//           ".fc-col-header-cell-cushion"
+//         ).innerHTML = `<h1>${name}</h1>`
+//         )}`,
