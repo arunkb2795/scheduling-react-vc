@@ -323,6 +323,7 @@ export default function Tags(props) {
                   options={TimezoneList()}
                   value={timeZone}
                   onChange={handleTimezoneChange}
+                  disabled={false}
                 />
               </div>
               {/* <Divider component="Button" /> */}

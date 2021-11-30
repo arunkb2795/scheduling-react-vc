@@ -260,15 +260,17 @@ export default function DraggableDialog(props) {
         appointmentSubjectError: "Required",
       });
     }
-    if (
-      Object.keys(selectedAppointmentType).length <= 0 &&
-      type === "schedule"
-    ) {
-      formValid = false;
-      setErrorMessages({
-        ...errorMessages,
-        appointmentTypeError: "Required",
-      });
+    if (selectedAppointmentType && type === "schedule") {
+      if (
+        Object.keys(selectedAppointmentType).length <= 0 &&
+        type === "schedule"
+      ) {
+        formValid = false;
+        setErrorMessages({
+          ...errorMessages,
+          appointmentTypeError: "Required",
+        });
+      }
     }
     if (selectedCustomers.length <= 0) {
       formValid = false;
@@ -431,6 +433,7 @@ export default function DraggableDialog(props) {
                   options={timezoneList}
                   value={time_zone}
                   onChange={handleTimezoneChange}
+                  disabled={true}
                 />
               </div>
             </div>

@@ -19,7 +19,7 @@ const setStatus = (status) => {
 const eventDetailsSlice = createSlice({
   name: "event-details",
   initialState: {
-    isLoading: false,
+    isLoadingSchedule: false,
     events: [],
     selectedAgent: null,
     searchText: null,
@@ -35,7 +35,7 @@ const eventDetailsSlice = createSlice({
       state.events = action.payload;
     },
     setIsLoading(state, action) {
-      state.isLoading = action.payload;
+      state.isLoadingSchedule = action.payload;
     },
     setSelectedAgent(state, action) {
       state.selectedAgent = action.payload;

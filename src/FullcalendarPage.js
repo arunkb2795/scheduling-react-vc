@@ -27,6 +27,7 @@ import momentTZ from "moment-timezone";
 import moment from "moment";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 export default function FullCalendarPage() {
   const dispatch = useDispatch();
@@ -42,9 +43,14 @@ export default function FullCalendarPage() {
     (state) => state.agentReducer
   );
 
-  const { events, selectedAgent, type, start, end } = useSelector(
-    (state) => state.eventDetailsReducer
-  );
+  const {
+    events,
+    selectedAgent,
+    type,
+    start,
+    end,
+    isLoadingSchedule = true,
+  } = useSelector((state) => state.eventDetailsReducer);
 
   useEffect(() => {
     axios
@@ -180,7 +186,7 @@ export default function FullCalendarPage() {
           setAddOpen(false);
         })
         .catch((err) => {
-          toast.error("something went wrong");
+          toast.error("Sorry! Consultant is not available on this time-slot");
           console.log(err);
         });
     }
@@ -215,7 +221,7 @@ export default function FullCalendarPage() {
             setEditOpen(false);
           })
           .catch((err) => {
-            toast.error("something went wrong");
+            toast.error("Sorry! Consultant is not available on this time-slot");
             console.log(err);
           });
       } else if (type === "event") {
@@ -245,7 +251,7 @@ export default function FullCalendarPage() {
             setEditOpen(false);
           })
           .catch((err) => {
-            toast.error("something went wrong");
+            toast.error("Sorry! Consultant is not available on this time-slot");
             console.log(err);
           });
       }
@@ -269,7 +275,7 @@ export default function FullCalendarPage() {
           toast.success("appointment deleted successfully");
         })
         .catch((error) => {
-          toast.error("something went wrong.");
+          toast.error("Something went wrong!");
           console.log(error);
         });
     } else if (type === "event") {
@@ -288,7 +294,7 @@ export default function FullCalendarPage() {
         })
         .catch((error) => {
           console.log(error);
-          toast.error("something went wrong.");
+          toast.error("Something went wrong!");
         });
     }
   };
@@ -296,6 +302,21 @@ export default function FullCalendarPage() {
   return (
     !isLoading && (
       <div>
+        {isLoadingSchedule && (
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              zIndex: 2,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <p style={{ paddingTop: "3px" }}>Loading...</p>
+            <CircularProgress size={30} />
+          </div>
+        )}
         <FullCalendar
           plugins={[
             adaptivePlugin,
@@ -333,6 +354,8 @@ export default function FullCalendarPage() {
           selectMirror={true}
           // height="auto"
           dayMinWidth={150}
+          resourceRender={function (info) { return info }}
+          
         />
         {addOpen && (
           <AddSchedulePopup

@@ -13,7 +13,7 @@ const PopperMy = function (props) {
 };
 
 function TimeZonePicker(props) {
-  const { options, value, onChange } = props;
+  const { options, value, onChange,disabled } = props;
   return (
     <div>
       <InputLabel style={{ margin: "5px 0px 5px 0px", fontSize: 14 }}>
@@ -22,6 +22,7 @@ function TimeZonePicker(props) {
 
       <div style={{ marginBottom: 10 }}>
         <Autocomplete
+          disabled={disabled}
           PopperComponent={PopperMy}
           id="combo-box-demo"
           options={options}

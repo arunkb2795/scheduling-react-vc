@@ -388,6 +388,7 @@ export default function DraggableDialog(props) {
                 options={timezoneList}
                 value={timeZone}
                 onChange={handleTimezoneChange}
+                disabled={true}
               />
             </div>
           </div>
