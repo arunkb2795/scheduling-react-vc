@@ -28,6 +28,7 @@ import moment from "moment";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import styles from './styles.module.scss'
 
 export default function FullCalendarPage() {
   const dispatch = useDispatch();
@@ -156,7 +157,7 @@ export default function FullCalendarPage() {
       return "#FFFF00";
     } else if (status === "Incomplete") {
       return "#999900";
-    } else if (status === "Upcoming" || status === "Rescheduled") {
+    } else if (status === "Upcoming" || status === "Rescheduled"|| status === "New") {
       return "#685bc7";
     }
   };
@@ -357,6 +358,34 @@ export default function FullCalendarPage() {
           // height="auto"
           dayMinWidth={calendarView === "resourceTimeGridDay" ? 320 : undefined}
         />
+
+        <div className={styles.dot}>
+          <div className={styles.dotItems}>
+            <p className={styles.completed}></p>
+            <p className={styles.text}>Completed</p>
+          </div>
+          <div className={styles.dotItems}>
+            <p className={styles.cancelled}></p>
+            <p className={styles.text}>Cancelled</p>
+          </div>
+          <div className={styles.dotItems}>
+            <p className={styles.noShow}></p>
+            <p className={styles.text}>No Show</p>
+          </div>
+          <div className={styles.dotItems}>
+            <p className={styles.coc_violation}></p>
+            <p className={styles.text}>Coc Violation</p>
+          </div>
+          <div className={styles.dotItems}>
+            <p className={styles.inComplete}></p>
+            <p className={styles.text}>Incomplete</p>
+          </div>
+          <div className={styles.dotItems}>
+            <p className={styles.upComing}></p>
+            <p className={styles.text}>Upcoming/Reschedule/New</p>
+          </div>
+        </div>
+
         {addOpen && (
           <AddSchedulePopup
             open={addOpen}

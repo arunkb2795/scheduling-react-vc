@@ -20,13 +20,10 @@ import moment from "moment";
 import momentTz from "moment-timezone";
 import CustomButton from "./Components/Button";
 import { startTimeFormatter, endTimeFormatter } from "./Utils";
-import { agentAvailibilityChecker } from "./Utils";
 import BasicDatePicker from "./Components/BasicDatePicker";
 import BasicTimePicker from "./Components/BasicTimePicker";
 import Editor from "./Components/CKEditor";
 import TimezoneList from "./Utils/TimezoneList";
-
-const DEFAULT_TIMEZONE = momentTz.tz.guess();
 
 function PaperComponent(props) {
   return (
@@ -50,6 +47,9 @@ export default function DraggableDialog(props) {
     handleDataSubmit,
     allScheduleInfo,
   } = props;
+
+  console.log({ scheduleList, consultantList });
+
   const [agents, setAgents] = useState([]);
   const [moderatorList, setModeratorList] = useState([]);
   const [agentList, setAgentList] = useState([]);
@@ -77,6 +77,7 @@ export default function DraggableDialog(props) {
   });
 
   const [isSubmit, setIsSubmit] = useState(true);
+
   // const handleClose = () => {
   //   setErrorMessages({
   //     agentNameError: "",
@@ -112,17 +113,7 @@ export default function DraggableDialog(props) {
   useEffect(() => {
     setAgentList(consultantList);
     setModeratorList(consultantList);
-    setScheduleList(scheduleList);
   }, []);
-
-  // useEffect(() => {
-  //   if (selectedInfo) {
-  //     let agent = consultantList.filter(
-  //       (agent) => agent.id === parseInt(selectedInfo?.resource?._resource.id)
-  //     );
-  //     setSelectedAgent(agent[0]);
-  //   }
-  // }, [selectedInfo]);
 
   useEffect(() => {
     startTime(selectedInfo?.start);
@@ -143,6 +134,10 @@ export default function DraggableDialog(props) {
     setTimeZone(agentTimezone[0]);
     let data = consultantList.filter((item) => item.id !== value.id);
     setModeratorList(data);
+    setSelectedAppointmentType([]);
+    let scheduleArray = consultantList.filter((item) => item.id === value.id);
+    console.log(scheduleArray[0].schedule_types);
+    setScheduleList(scheduleArray[0].schedule_types);
   };
 
   const handleModeratorChange = (e, value) => {
@@ -239,14 +234,14 @@ export default function DraggableDialog(props) {
     );
     setSubmitData({
       agent: `${selectedAgent.id}`,
-      moderator: `${selectedModerator.id}`,
+      moderator: selectedModerator.id ? `${selectedModerator.id}` : "",
       customers: selectedCustomers,
       schedule_type: `${selectedAppointmentType.id}`,
       title: appointmentSubject,
       description: description,
       start: startTimeFormatter(startDate, start, timeZone.value),
       stop: endTimeFormatter(endDate, end, timeZone.value),
-      time_zone: timeZone.value,
+      time_zone: selectedCustomers[0].time_zone,
     });
   };
 
@@ -322,7 +317,6 @@ export default function DraggableDialog(props) {
                 label="Consultant Name*"
                 options={agentList}
                 value={selectedAgent}
-                // disableOptions={agents}
                 onChange={handleAgentChange}
                 placeholder="Select consultant"
                 helperText={errorMessages.agentNameError}
@@ -343,8 +337,6 @@ export default function DraggableDialog(props) {
               <AutocompleteTextField
                 label="Moderator Name"
                 options={moderatorList}
-                // value={moderator.length ? moderator[0] : []}
-                // disableOptions={selectedAgent}
                 onChange={handleModeratorChange}
                 placeholder="Select moderator"
                 helperText={errorMessages.agentNameError}
@@ -466,6 +458,7 @@ export default function DraggableDialog(props) {
               <AutocompleteTextField
                 label="Appointment Type*"
                 options={scheduleListData}
+                value={selectedAppointmentType}
                 onChange={handleAppointmentType}
                 placeholder="Select appointment type"
                 helperText={
@@ -533,28 +526,3 @@ export default function DraggableDialog(props) {
     </div>
   );
 }
-
-// <div style={{ display: "flex" }}>
-//   <DescriptionOutlinedIcon
-//     style={{
-//       width: 28,
-//       height: 28,
-//       margin: "35px 10px 0px 0px",
-//       color: "#685bc7",
-//     }}
-//   />
-//   <div style={{ width: "100%" }}>
-//     <AutocompleteTextField
-//       label="Appointment Type*"
-//       options={scheduleListData}
-//       onChange={handleAppointmentType}
-//       placeholder="Select appointment type"
-//       helperText={
-//         errorMessages.appointmentTypeError
-//           ? errorMessages.appointmentTypeError
-//           : ""
-//       }
-//       error={errorMessages.appointmentTypeError ? true : false}
-//     />
-//   </div>
-// </div>;

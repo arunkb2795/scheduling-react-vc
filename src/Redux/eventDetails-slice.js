@@ -12,7 +12,7 @@ const setStatus = (status) => {
     return "#FFFF00";
   } else if (status === "Incomplete") {
     return "#999900";
-  } else if (status === "Upcoming" || status === "Rescheduled") {
+  } else if (status === "Upcoming" || status === "Rescheduled"|| status === "New") {
     return "#685bc7";
   }
 };
@@ -62,12 +62,13 @@ export const getCalenderEvents = (id, start, end) => {
         const eventResponse = id
           ? await scheduleClient.getEventDetails(id, start, end)
           : await scheduleClient.getAllEvents(start, end);
+        console.log({eventResponse})
         let eventData = eventResponse.data.map(
           ({ id, title, start, stop, agent, status }) => ({
             id: id,
             type: "event",
             resourceId: agent[0].id,
-            title: title,
+            title: `ID: #${id} Type: Event Title :${title} Consultant :${agent[0].name} `,
             start: start,
             end: stop,
             backgroundColor: setStatus(status),
@@ -77,12 +78,13 @@ export const getCalenderEvents = (id, start, end) => {
         const scheduleResponse = id
           ? await scheduleClient.getScheduleDetails(id,start, end)
           : await scheduleClient.getAllSchedules(start, end);
+        console.log({scheduleResponse});
         let scheduleData = scheduleResponse.data.map(
           ({ id, title, start, stop, agent, status }) => ({
             id: id,
             type: "schedule",
             resourceId: agent[0].id,
-            title: title,
+            title: `ID: #${id} Type: Schedule Title :${title} Consultant :${agent[0].name} `,
             start: start,
             end: stop,
             backgroundColor: setStatus(status),

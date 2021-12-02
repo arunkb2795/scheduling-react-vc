@@ -1,9 +1,8 @@
 import axios from "axios";
 import querystring from "querystring";
-const token = "07fad53bb67a22e2b1b610c7a57e977a67988f66";
-const phpURL = "https://schedule-app.litmus7.com/";
-// const token = window.schedule_token;
-// const phpURL= window.schedule_app_url;
+
+const token = window.schedule_token;
+const phpURL= window.schedule_app_url;
 
 const getClient = (url) => {
   const options = {

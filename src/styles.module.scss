@@ -1,0 +1,60 @@
+.dot {
+  display: flex;
+  .dotItems {
+    display: flex;
+    align-items: center;
+    .text {
+      margin: 0px;
+    }
+  }
+}
+
+.completed {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin: 2px;
+  background-color: #28a745;
+}
+.cancelled {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin: 2px;
+  background-color: #dc3545;
+}
+.noShow {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin: 2px;
+  background-color: #707070;
+}
+.coc_violation {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin: 2px;
+  background-color: #ffff00;
+}
+.inComplete {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin: 2px;
+  background-color: #999900;
+}
+.upComing {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin: 2px;
+  background-color: #685bc7;
+}
+.reschedule {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin: 2px;
+  background-color: #685bc7;
+}
