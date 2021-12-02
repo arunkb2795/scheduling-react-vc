@@ -344,8 +344,8 @@ export default function FullCalendarPage() {
             left: "prev,next today",
             center: "title",
             right: window.is_admin
-              ? "resourceTimeGridDay,timeGridWeek,dayGridMonth,listWeek"
-              : "timeGridDay,timeGridWeek,dayGridMonth,listWeek",
+              ? "resourceTimeGridDay,timeGridWeek,dayGridMonth,listYear"
+              : "timeGridDay,timeGridWeek,dayGridMonth,listYear",
           }}
           initialView={window.is_admin ? "resourceTimeGridDay" : "timeGridDay"}
           resources={resourcesList}
@@ -355,7 +355,7 @@ export default function FullCalendarPage() {
           selectable={true}
           selectMirror={true}
           // height="auto"
-          dayMinWidth={calendarView === "resourceTimeGridDay" ? 320 : 150}
+          dayMinWidth={calendarView === "resourceTimeGridDay" ? 320 : undefined}
         />
         {addOpen && (
           <AddSchedulePopup
