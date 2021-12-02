@@ -38,6 +38,7 @@ export default function FullCalendarPage() {
   const [selectedInfo, setSelectedInfo] = useState(null);
   const [scheduleList, setScheduleList] = useState([]);
   const [eventClickInfo, setEventClickInfo] = useState({});
+  const [calendarView, setCalenderView] = useState("resourceTimeGridDay");
 
   const { agentDropdownList, resourcesList, isLoading } = useSelector(
     (state) => state.agentReducer
@@ -88,7 +89,7 @@ export default function FullCalendarPage() {
         dispatch(getCalenderEvents(id, start, end));
       }
     }
-  }, [agentDropdownList,start,end]);
+  }, [agentDropdownList, start, end]);
 
   useEffect(() => {
     dispatch(getAgentList());
@@ -110,6 +111,7 @@ export default function FullCalendarPage() {
   // }, [selectedAgent]);
 
   const handleSelectedDate = (data) => {
+    setCalenderView(data?.view?.type);
     dispatch(
       eventDetailsAction.setDate({
         start: moment(data.start).format("YYYY-MM-DD"),
@@ -353,7 +355,7 @@ export default function FullCalendarPage() {
           selectable={true}
           selectMirror={true}
           // height="auto"
-          dayMinWidth={320}
+          dayMinWidth={calendarView === "resourceTimeGridDay" ? 320 : 150}
         />
         {addOpen && (
           <AddSchedulePopup
