@@ -45,6 +45,8 @@ export default function FullCalendarPage() {
     (state) => state.agentReducer
   );
 
+  console.log({ resourcesList });
+
   const {
     events,
     selectedAgent,
@@ -331,6 +333,7 @@ export default function FullCalendarPage() {
             resourceTimeGridPlugin,
             scrollGridPlugin,
           ]}
+          resourceOrder={"type"}
           ref={calendarRef}
           dateClick={handleDateClick}
           datesSet={handleSelectedDate}

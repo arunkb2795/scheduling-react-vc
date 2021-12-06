@@ -18,10 +18,13 @@ const agentSlice = createSlice({
         ...rest,
       }));
 
-      state.resourcesList = action.payload.map(({ id, name,time_zone }) => ({
-        id: id,
-        title: `${name} (${time_zone})`,
-      }));
+      state.resourcesList = action.payload.map(
+        ({ id, name, time_zone }, index) => ({
+          id: id,
+          title: `${name} (${time_zone})`,
+          type: index,
+        })
+      );
     },
     setIsLoading(state, action) {
       state.isLoading = action.payload;
