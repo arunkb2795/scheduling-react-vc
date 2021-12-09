@@ -28,7 +28,7 @@ import moment from "moment";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import styles from './styles.module.scss'
+import styles from "./styles.module.scss";
 
 export default function FullCalendarPage() {
   const dispatch = useDispatch();
@@ -159,7 +159,11 @@ export default function FullCalendarPage() {
       return "#FFFF00";
     } else if (status === "Incomplete") {
       return "#999900";
-    } else if (status === "Upcoming" || status === "Rescheduled"|| status === "New") {
+    } else if (
+      status === "Upcoming" ||
+      status === "Rescheduled" ||
+      status === "New"
+    ) {
       return "#685bc7";
     }
   };
@@ -223,6 +227,7 @@ export default function FullCalendarPage() {
           })
           .then(() => {
             toast.success("appointment updated successfully");
+            dispatch(getCalenderEvents(null, start, end));
             setEditOpen(false);
           })
           .catch((err) => {
@@ -253,6 +258,7 @@ export default function FullCalendarPage() {
           })
           .then(() => {
             toast.success("appointment updated successfully");
+            dispatch(getCalenderEvents(null, start, end));
             setEditOpen(false);
           })
           .catch((err) => {
@@ -341,6 +347,7 @@ export default function FullCalendarPage() {
           allDaySlot={false}
           schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
           // now="2018-02-07"
+          slotDuration={"00:15:00"}
           editable={true} // enable draggable events
           aspectRatio={1.8}
           scrollTime={"06:00"} // undo default 6am scrollTime

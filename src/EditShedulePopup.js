@@ -260,24 +260,53 @@ export default function DraggableDialog(props) {
 
   const handleButtonClick = () => {
     setIsSubmit(formValidator());
-    setUpdateData({
-      id: eventClickInfo.event.id,
-      agent: `${selectedAgent.id}`,
-      moderator: selectedModerator.id ? `${selectedModerator.id}` : "",
-      customers: selectedCustomers,
-      schedule_type: selectedAppointmentType
-        ? `${selectedAppointmentType.id}`
-        : null,
-      title: appointmentSubject,
-      description: selectedDescription,
-      time_zone: selectedCustomers[0].time_zone,
-      start: startTimeFormatter(
-        selectedStartDate,
-        selectedStartTime,
-        time_zone.value
-      ),
-      stop: endTimeFormatter(selectedEndDate, selectedEndTime, time_zone.value),
-    });
+    if (type === "schedule") {
+      setUpdateData({
+        id: eventClickInfo.event.id,
+        agent: `${selectedAgent.id}`,
+        moderator: selectedModerator.id ? `${selectedModerator.id}` : "",
+        customers: selectedCustomers,
+        schedule_type: selectedAppointmentType
+          ? `${selectedAppointmentType.id}`
+          : null,
+        title: appointmentSubject,
+        description: selectedDescription,
+        time_zone: selectedCustomers[0].time_zone,
+        start: startTimeFormatter(
+          selectedStartDate,
+          selectedStartTime,
+          time_zone.value
+        ),
+        stop: endTimeFormatter(
+          selectedEndDate,
+          selectedEndTime,
+          time_zone.value
+        ),
+      });
+    } else if (type === "event") {
+      setUpdateData({
+        id: eventClickInfo.event.id,
+        agent: `${selectedAgent.id}`,
+        moderator: selectedModerator.id ? `${selectedModerator.id}` : "",
+        customers: selectedCustomers,
+        schedule_type: selectedAppointmentType
+          ? `${selectedAppointmentType.id}`
+          : null,
+        title: appointmentSubject,
+        description: selectedDescription,
+        time_zone: selectedCustomers[0] ? selectedCustomers[0].time_zone : "",
+        start: startTimeFormatter(
+          selectedStartDate,
+          selectedStartTime,
+          time_zone.value
+        ).slice(0, 19),
+        stop: endTimeFormatter(
+          selectedEndDate,
+          selectedEndTime,
+          time_zone.value
+        ).slice(0, 19),
+      });
+    }
   };
 
   const callback = () => {
