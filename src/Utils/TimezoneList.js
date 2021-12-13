@@ -95,6 +95,7 @@ const timeZoneData = {
   "Australia/Darwin": "(GMT+09:30) Darwin - ACST",
   "Australia/Brisbane": "(GMT+10:00) Brisbane - EAST",
   "Australia/Melbourne": "(GMT+10:00) Canberra, Melbourne, Sydney - AEST",
+  "Australia/Sydney" : "(GMT+11:00) Canberra, Melbourne, Sydney - AEDT",
   "Antarctica/DumontDUrville": "(GMT+10:00) Guam, Port Moresby - WPST",
   "Australia/Currie": "(GMT+10:00) Hobart - TST",
   "Asia/Chita": "(GMT+09:00) Yakutsk - YST",

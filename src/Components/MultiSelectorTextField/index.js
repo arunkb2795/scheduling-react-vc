@@ -58,6 +58,7 @@ export default function Tags(props) {
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [timeZone, setTimeZone] = useState(TimezoneList()[33]);
+  const [existingTimezone, setExistingTimeZone] = useState(TimezoneList()[33]);
 
   useEffect(() => {
     var active = true;
@@ -121,6 +122,11 @@ export default function Tags(props) {
     // setUser({...user,['time_zone']:value.value})
   }
 
+  const handleExistingTimeZoneChange = (e, value) => {
+    console.log(value)
+    setExistingTimeZone(value)
+  }
+
   useEffect(() => {
     createdValue.name
       ? getSelected([...selected, createdValue])
@@ -154,6 +160,10 @@ export default function Tags(props) {
   };
 
   const onChipClik = (option) => {
+    console.log({ option })
+    const timezone = TimezoneList().filter((item) => item.value === option.time_zone)
+    console.log({ timezone })
+    setExistingTimeZone(timezone[0]);
     setEditOpen(true);
     setUser(option);
   };
@@ -354,8 +364,9 @@ export default function Tags(props) {
           open={editOpen}
           onClose={editClose}
           aria-labelledby="form-dialog-title"
+          PaperComponent={PaperComponent}
         >
-          <DialogTitle id="form-dialog-title">Edit User</DialogTitle>
+          <DialogTitle id="form-dialog-title">User Details</DialogTitle>
           <DialogContent>
             <form
               id="my-form-id2"
@@ -364,6 +375,7 @@ export default function Tags(props) {
                 let userData = {
                   name: user.name,
                   email: user.email,
+                  time_zone: existingTimezone.value,
                 };
                 if (validateFunction(user)) {
                   axios
@@ -393,19 +405,16 @@ export default function Tags(props) {
                 helperText={emailError}
                 error={emailError ? true : false}
               />
-              <DialogActions style={{ padding: 0, margin: "12px 0px" }}>
-                <Button color="secondary" onClick={() => handleDelete(user)}>
-                  Remove
-                </Button>
-                <Button
-                  variant="outlined"
-                  type="submit"
-                  form="my-form-id2"
-                  color="primary"
-                >
-                  Save CHanges
-                </Button>
-              </DialogActions>
+              <div style={{ width: "100%",paddingBottom:"20px" }}>
+                <TimeZonePicker
+                  label="Time Zone*"
+                  options={TimezoneList()}
+                  value={existingTimezone}
+                  onChange={handleExistingTimeZoneChange}
+                  disabled={true}
+                />
+              </div>
+              {/**dialog actions */}
             </form>
           </DialogContent>
         </Dialog>
@@ -413,3 +422,17 @@ export default function Tags(props) {
     </div>
   );
 }
+
+              // <DialogActions style={{ padding: 0, margin: "12px 0px" }}>
+              //   <Button color="secondary" onClick={() => handleDelete(user)}>
+              //     Remove
+              //   </Button>
+              //   <Button
+              //     variant="outlined"
+              //     type="submit"
+              //     form="my-form-id2"
+              //     color="primary"
+              //   >
+              //     Save CHanges
+              //   </Button>
+              // </DialogActions>;
