@@ -257,6 +257,7 @@ export default function Tags(props) {
         </div>
         <div>
           <IconButton
+            disabled={props.disabled}
             onClick={handleClickOpen}
             style={{
               //marginTop: "24px",
