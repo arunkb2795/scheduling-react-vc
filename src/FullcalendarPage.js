@@ -192,6 +192,7 @@ export default function FullCalendarPage() {
         })
         .then(() => {
           toast.success("appointment added successfully");
+          dispatch(getCalenderEvents(null, start, end));
           setAddOpen(false);
         })
         .catch((err) => {
