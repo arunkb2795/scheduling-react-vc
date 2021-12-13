@@ -17,6 +17,7 @@ function BasicDatePicker(props) {
           error={false}
           helperText={false}
           name={props.name}
+          disabled={props.disabled}
           style={{ width: 140, marginBottom: 10 }}
           format={"MM/dd/yyyy"}
           value={props.value}

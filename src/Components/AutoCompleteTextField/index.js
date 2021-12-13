@@ -33,6 +33,7 @@ function ComboBox(props) {
               : false
           }
           getOptionLabel={(option) => option.name}
+          disabled={props.disabled}
           renderInput={(params) => (
             <TextField
               {...params}

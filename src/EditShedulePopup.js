@@ -361,6 +361,7 @@ export default function DraggableDialog(props) {
                   label="Consultant Name*"
                   options={agentList}
                   value={selectedAgent}
+                  disabled={type === "event" ? true : false}
                   // disableOptions={agents}
                   onChange={handleAgentChange}
                   placeholder="Select consultant"
@@ -383,6 +384,7 @@ export default function DraggableDialog(props) {
                   label="Moderator Name"
                   options={moderatorList}
                   value={selectedModerator}
+                  disabled={type === "event" ? true : false}
                   onChange={handleModeratorChange}
                   placeholder="Select moderator"
                   helperText={errorMessages.agentNameError}
@@ -401,6 +403,7 @@ export default function DraggableDialog(props) {
               />
               <div style={{ width: "100%" }}>
                 <MultiSelector
+                  disabled={type === "event" ? true : false}
                   customersName={customers}
                   onChange={handleCustomerName}
                   helperText={
@@ -457,6 +460,7 @@ export default function DraggableDialog(props) {
                   value={selectedStartDate}
                   disableFrom={new Date()}
                   onHandleDateChange={handleDateChange}
+                  disabled={type === "event" ? true : false}
                 />
                 <BasicTimePicker
                   label=""
@@ -467,6 +471,7 @@ export default function DraggableDialog(props) {
                     errorMessages.timeError ? errorMessages.timeError : ""
                   }
                   error={errorMessages.timeError ? true : false}
+                  disabled={type === "event" ? true : false}
                 />
                 <div style={{ margin: "32px 0px 20px 0px" }}>-</div>
                 <BasicDatePicker
@@ -476,6 +481,7 @@ export default function DraggableDialog(props) {
                   value={selectedEndDate}
                   disableFrom={selectedStartDate}
                   onHandleDateChange={handleDateChange}
+                  disabled={type === "event" ? true : false}
                 />
                 <BasicTimePicker
                   name="toTime"
@@ -485,6 +491,7 @@ export default function DraggableDialog(props) {
                     errorMessages.timeError ? errorMessages.timeError : ""
                   }
                   error={errorMessages.timeError ? true : false}
+                  disabled={type === "event" ? true : false}
                 />
               </div>
             </div>
@@ -501,6 +508,7 @@ export default function DraggableDialog(props) {
                       : ""
                   }
                   error={errorMessages.appointmentSubjectError ? true : false}
+                  disabled={type === "event" ? true : false}
                 />
               </div>
             </div>
@@ -558,23 +566,25 @@ export default function DraggableDialog(props) {
               </div>
             ) : null}
           </DialogContent>
-          <DialogActions>
-            <CustomButton
-              color="secondary"
-              onClick={() => handleDeleteEvent(eventClickInfo.event.id, type)}
-            >
-              Remove
-            </CustomButton>
-            <div style={{ paddingRight: 30 }}>
+          {type !== "event" ? (
+            <DialogActions>
               <CustomButton
-                onClick={handleButtonClick}
-                color="primary"
-                variant="outlined"
+                color="secondary"
+                onClick={() => handleDeleteEvent(eventClickInfo.event.id, type)}
               >
-                Save Changes
+                Remove
               </CustomButton>
-            </div>
-          </DialogActions>
+              <div style={{ paddingRight: 30 }}>
+                <CustomButton
+                  onClick={handleButtonClick}
+                  color="primary"
+                  variant="outlined"
+                >
+                  Save Changes
+                </CustomButton>
+              </div>
+            </DialogActions>
+          ) : null}
         </Dialog>
       </div>
     )

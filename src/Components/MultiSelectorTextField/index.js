@@ -204,6 +204,7 @@ export default function Tags(props) {
         <div style={{ flex: "2" }}>
           <Autocomplete
             value={selected}
+            disabled={props.disabled}
             multiple
             limitTags={2}
             onOpen={() => {

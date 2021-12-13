@@ -16,6 +16,7 @@ function BasicTimePicker(props) {
           inputVariant="outlined"
           style={{ width: 110, marginBottom: 10 }}
           size="small"
+          disabled={props.disabled}
           value={props.value}
           helperText={props.helperText}
           error={props.error}
