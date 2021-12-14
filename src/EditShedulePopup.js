@@ -337,7 +337,7 @@ export default function DraggableDialog(props) {
             }}
             id="draggable-dialog-title"
           >
-            Edit Appointment
+            {type === "event" ? "Appointment Details" : "Edit Appointment"}
             <IconButton
               style={{ float: "right", padding: 5 }}
               aria-label="close"
