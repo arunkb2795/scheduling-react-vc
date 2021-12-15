@@ -57,6 +57,30 @@ export default function FullCalendarPage() {
   } = useSelector((state) => state.eventDetailsReducer);
 
   useEffect(() => {
+    let x = document.getElementsByClassName("fc-button-group")
+    if (x.length > 0) {
+      if (isLoadingSchedule && !isLoading) {
+        document.getElementsByClassName(
+          "fc-button-group"
+        )[0].style.pointerEvents = "none";
+
+        document.getElementsByClassName(
+          "fc-button-group"
+        )[1].style.pointerEvents = "none";
+      } else {
+        document.getElementsByClassName(
+          "fc-button-group"
+        )[0].style.pointerEvents = "all";
+
+        document.getElementsByClassName(
+          "fc-button-group"
+        )[1].style.pointerEvents = "all";
+      }
+    }
+  }, [isLoadingSchedule, isLoading]);
+
+
+  useEffect(() => {
     axios
       .get("/agent/")
       .then((response) => {
