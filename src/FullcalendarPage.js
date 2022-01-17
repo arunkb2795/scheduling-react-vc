@@ -57,7 +57,7 @@ export default function FullCalendarPage() {
   } = useSelector((state) => state.eventDetailsReducer);
 
   useEffect(() => {
-    let x = document.getElementsByClassName("fc-button-group")
+    let x = document.getElementsByClassName("fc-button-group");
     if (x.length > 0) {
       if (isLoadingSchedule && !isLoading) {
         document.getElementsByClassName(
@@ -78,7 +78,6 @@ export default function FullCalendarPage() {
       }
     }
   }, [isLoadingSchedule, isLoading]);
-
 
   useEffect(() => {
     axios
@@ -148,12 +147,18 @@ export default function FullCalendarPage() {
   };
 
   const handleEventClick = async (eventInfo) => {
-    let type = eventInfo.event._def.extendedProps.type;
-    let id = eventInfo.event.id;
-    setEventClickInfo(eventInfo);
-    setEditOpen(true);
-    dispatch(eventDetailsAction.setType(type));
-    dispatch(getAppointment(id, type));
+    console.log(eventInfo);
+    let user = eventInfo.event._def.extendedProps.user;
+    if (user === "agent") {
+      let type = eventInfo.event._def.extendedProps.type;
+      let id = eventInfo.event.id;
+      setEventClickInfo(eventInfo);
+      setEditOpen(true);
+      dispatch(eventDetailsAction.setType(type));
+      dispatch(getAppointment(id, type));
+    } else if (user === "moderator") {
+      toast.error("Sorry! Moderator schedule can't editable");
+    }
   };
 
   const handleDateSelect = (selectInfo) => {

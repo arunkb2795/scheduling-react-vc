@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import scheduleClient from "../api/scheduleClient";
+import momentTz from "moment-timezone";
+import moment from "moment";
 
 const setStatus = (status) => {
   if (status === "Completed") {
@@ -57,6 +59,12 @@ const eventDetailsSlice = createSlice({
   },
 });
 
+const timeConvertor = (data, agentTimezone, moderatorTimezone) => {
+  var newYork = momentTz.tz(data, agentTimezone);
+  var losAngeles = newYork.clone().tz(moderatorTimezone);
+  return moment(losAngeles).format("YYYY-MM-DDTHH:mm:ss");
+};
+
 export const getCalenderEvents = (id, start, end) => {
   return async (dispatch) => {
     try {
@@ -67,27 +75,56 @@ export const getCalenderEvents = (id, start, end) => {
           ? await scheduleClient.getEventDetails(id, start, end)
           : await scheduleClient.getAllEvents(start, end);
         console.log({ eventResponse });
-        let eventData = eventResponse.data.map(
-          ({ id, title, start, stop, agent,moderator, status }) => ({
+        let agentData = eventResponse.data.map(
+          ({ id, title, start, stop, agent, moderator, status }) => ({
             id: id,
             type: "event",
-            resourceIds: [agent[0].id, moderator[0]?.id],
+            resourceId: agent[0].id,
             title: `ID: #${id},Type: Event,Title :${title},Consultant :${agent[0].name} `,
             start: start.slice(0, 19),
             end: stop.slice(0, 19),
             backgroundColor: setStatus(status),
             borderColor: setStatus(status),
+            user: "agent",
           })
         );
+
+        let moderatorData = eventResponse.data.map(
+          ({ id, title, start, stop, agent, moderator, status }) => ({
+            id: id,
+            type: "event",
+            resourceId: moderator[0].id,
+            title: `ID: #${id},Type: Event,Title :${title},Consultant :${agent[0].name} `,
+            start: timeConvertor(
+              start.slice(0, 19),
+              agent[0].time_zone,
+              moderator[0].time_zone
+            ),
+            end: timeConvertor(
+              stop.slice(0, 19),
+              agent[0].time_zone,
+              moderator[0].time_zone
+            ),
+            backgroundColor: setStatus(status),
+            borderColor: setStatus(status),
+            user: "moderator",
+          })
+        );
+        let combinedEventData = [...agentData, ...moderatorData];
+
+        let filteredCombinedEventData = combinedEventData.filter((item) => {
+          return item.resourceId !== undefined;
+        });
+
         const scheduleResponse = id
           ? await scheduleClient.getScheduleDetails(id, start, end)
           : await scheduleClient.getAllSchedules(start, end);
         console.log({ scheduleResponse });
-        let scheduleData = scheduleResponse.data.map(
-          ({ id, title, start, stop, agent,moderator, status }) => ({
+        let agentScheduleData = scheduleResponse.data.map(
+          ({ id, title, start, stop, agent, moderator, status }) => ({
             id: id,
             type: "schedule",
-            resourceIds: [agent[0].id, moderator[0]?.id],
+            resourceId: agent[0].id,
             title: `ID: #${id},Type: Schedule,Title :${title},Consultant :${agent[0].name} `,
             start: start.slice(0, 19),
             end: stop.slice(0, 19),
@@ -95,7 +132,43 @@ export const getCalenderEvents = (id, start, end) => {
             borderColor: setStatus(status),
           })
         );
-        data = [...eventData, ...scheduleData];
+        let moderatorScheduleData = scheduleResponse.data.map(
+          ({ id, title, start, stop, agent, moderator, status }) => ({
+            id: id,
+            type: "schedule",
+            resourceId: moderator[0]?.id,
+            title: `ID: #${id},Type: Schedule,Title :${title},Consultant :${agent[0].name} `,
+            start: timeConvertor(
+              start.slice(0, 19),
+              agent[0].time_zone,
+              moderator[0]?.time_zone
+            ),
+            end: timeConvertor(
+              stop.slice(0, 19),
+              agent[0].time_zone,
+              moderator[0]?.time_zone
+            ),
+            backgroundColor: setStatus(status),
+            borderColor: setStatus(status),
+          })
+        );
+        let combineScheduleData = [
+          ...agentScheduleData,
+          ...moderatorScheduleData,
+        ];
+
+        let filteredCombinedScheduleData = combineScheduleData.filter(
+          (item) => {
+            return item.resourceId !== undefined;
+          }
+        );
+
+        console.log({
+          filteredCombinedEventData,
+          filteredCombinedScheduleData,
+        });
+
+        data = [...filteredCombinedEventData, ...filteredCombinedScheduleData];
         dispatch(eventDetailsAction.setCalenderEvents(data));
         dispatch(eventDetailsAction.setIsLoading(false));
       }
