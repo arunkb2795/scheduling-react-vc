@@ -157,7 +157,7 @@ export default function FullCalendarPage() {
       dispatch(eventDetailsAction.setType(type));
       dispatch(getAppointment(id, type));
     } else if (user === "moderator") {
-      toast.error("Sorry! Moderator schedule can't editable");
+      toast.error("Sorry! Moderator view is not editable.");
     }
   };
 
