@@ -214,6 +214,7 @@ export default function FullCalendarPage() {
               end: response.data.stop.substring(0, 19),
               backgroundColor: setStatus(response.data.status),
               borderColor: setStatus(response.data.status),
+              user: "agent",
             };
             arr.push(data);
             dispatch(eventDetailsAction.setCalenderEvents(arr));
@@ -246,6 +247,7 @@ export default function FullCalendarPage() {
                 title: response.data.title,
                 start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
                 end: response.data.stop.substring(0, 19),
+                user:'agent'
               };
               const elementsIndex = events.findIndex(
                 (element) => element.id == updateData.id

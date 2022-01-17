@@ -109,8 +109,8 @@ export default function DraggableDialog(props) {
       setSelectedDescription(description);
       setSelectedStartTime(startTime.substring(0, 19));
       setSelectedEndTime(endTime.substring(0, 19));
-      setSelectedStartDate(moment(startTime).format("YYYY-MM-DD"));
-      setSelectedEndDate(moment(endTime).format("YYYY-MM-DD"));
+      setSelectedStartDate(startTime.slice(0,19));
+      setSelectedEndDate(endTime.slice(0,19));
       setAppointmentSubject(title);
       setType(eventClickInfo.event._def.extendedProps.type);
       if (timeZone) {
@@ -121,6 +121,8 @@ export default function DraggableDialog(props) {
       }
     }
   }, [appointmentLoading]);
+
+  console.log("*******", selectedStartDate, startTime);
 
   const handleAgentChange = (e, value) => {
     setErrorMessages({

@@ -130,6 +130,7 @@ export const getCalenderEvents = (id, start, end) => {
             end: stop.slice(0, 19),
             backgroundColor: setStatus(status),
             borderColor: setStatus(status),
+            user: "agent",
           })
         );
         let moderatorScheduleData = scheduleResponse.data.map(
@@ -150,6 +151,7 @@ export const getCalenderEvents = (id, start, end) => {
             ),
             backgroundColor: setStatus(status),
             borderColor: setStatus(status),
+            user: "moderator",
           })
         );
         let combineScheduleData = [
