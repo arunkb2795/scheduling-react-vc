@@ -342,122 +342,135 @@ export default function FullCalendarPage() {
     }
   };
 
-  return (
-    !isLoading && (
-      <div>
-        {isLoadingSchedule && (
-          <div
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: "50%",
-              zIndex: 2,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <p style={{ paddingTop: "3px" }}>Loading...</p>
-            <CircularProgress size={30} />
-          </div>
-        )}
-        <FullCalendar
-          plugins={[
-            adaptivePlugin,
-            interactionPlugin,
-            dayGridPlugin,
-            listPlugin,
-            timeGridPlugin,
-            resourceTimelinePlugin,
-            resourceTimeGridPlugin,
-            scrollGridPlugin,
-          ]}
-          resourceOrder={"type"}
-          ref={calendarRef}
-          dateClick={handleDateClick}
-          datesSet={handleSelectedDate}
-          eventClick={handleEventClick}
-          allDaySlot={false}
-          schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
-          // now="2018-02-07"
-          slotDuration={"00:15:00"}
-          editable={true} // enable draggable events
-          aspectRatio={1.8}
-          scrollTime={"06:00"} // undo default 6am scrollTime
-          headerToolbar={{
-            left: "prev,next today",
-            center: "title",
-            right: window.is_admin
-              ? "resourceTimeGridDay,timeGridWeek,dayGridMonth,listYear"
-              : "timeGridDay,timeGridWeek,dayGridMonth,listYear",
-          }}
-          initialView={window.is_admin ? "resourceTimeGridDay" : "timeGridDay"}
-          resources={resourcesList}
-          events={events}
-          select={handleDateSelect}
-          editable={false}
-          selectable={true}
-          selectMirror={true}
-          // height="auto"
-          dayMinWidth={calendarView === "resourceTimeGridDay" ? 320 : undefined}
-        />
-
-        <div className={styles.dot}>
-          <div className={styles.dotItems}>
-            <p className={styles.completed}></p>
-            <p className={styles.text}>Completed</p>
-          </div>
-          <div className={styles.dotItems}>
-            <p className={styles.cancelled}></p>
-            <p className={styles.text}>Cancelled</p>
-          </div>
-          <div className={styles.dotItems}>
-            <p className={styles.noShow}></p>
-            <p className={styles.text}>No Show</p>
-          </div>
-          <div className={styles.dotItems}>
-            <p className={styles.coc_violation}></p>
-            <p className={styles.text}>Coc Violation</p>
-          </div>
-          <div className={styles.dotItems}>
-            <p className={styles.inComplete}></p>
-            <p className={styles.text}>Incomplete</p>
-          </div>
-          <div className={styles.dotItems}>
-            <p className={styles.upComing}></p>
-            <p className={styles.text}>Upcoming/Reschedule/New</p>
-          </div>
-        </div>
-
-        {addOpen && (
-          <AddSchedulePopup
-            open={addOpen}
-            handleClose={handleClose}
-            selectedInfo={selectedInfo}
-            consultantList={consultantList}
-            scheduleList={scheduleList}
-            timezoneList={TimezoneList()}
-            // customerList={customerList}
-            // timeZoneData={timeZone}
-            handleDataSubmit={handleSubmit}
-            allScheduleInfo={events}
-          />
-        )}
-        {editOpen && (
-          <EditSchedulePopup
-            open={editOpen}
-            handleClose={handleClose}
-            consultantList={consultantList}
-            // customerList={customerList}
-            scheduleList={scheduleList}
-            timezoneList={TimezoneList()}
-            eventClickInfo={eventClickInfo && eventClickInfo}
-            handleDeleteEvent={(id, type) => handleDeleteEventHandler(id, type)}
-            handleUpdateData={handleUpdate}
-            // allScheduleInfo={eventInfo}
-          />
-        )}
-        <ToastContainer />
+  if (isLoading) {
+    return (
+      <div style={{display: "flex",justifyContent: "center",alignItems: "center",height: "100%"}}>
+        <CircularProgress/>
       </div>
-    )
-  );
+    );
+  }
+    return (
+      !isLoading && (
+        <div>
+          {isLoadingSchedule && (
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                zIndex: 2,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <p style={{ paddingTop: "3px" }}>Loading...</p>
+              <CircularProgress size={30} />
+            </div>
+          )}
+          <FullCalendar
+            plugins={[
+              adaptivePlugin,
+              interactionPlugin,
+              dayGridPlugin,
+              listPlugin,
+              timeGridPlugin,
+              resourceTimelinePlugin,
+              resourceTimeGridPlugin,
+              scrollGridPlugin,
+            ]}
+            resourceOrder={"type"}
+            ref={calendarRef}
+            dateClick={handleDateClick}
+            datesSet={handleSelectedDate}
+            eventClick={handleEventClick}
+            allDaySlot={false}
+            schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
+            // now="2018-02-07"
+            slotDuration={"00:15:00"}
+            editable={true} // enable draggable events
+            aspectRatio={1.8}
+            scrollTime={"06:00"} // undo default 6am scrollTime
+            headerToolbar={{
+              left: "prev,next today",
+              center: "title",
+              right: window.is_admin
+                ? "resourceTimeGridDay,timeGridWeek,dayGridMonth,listYear"
+                : "timeGridDay,timeGridWeek,dayGridMonth,listYear",
+            }}
+            initialView={
+              window.is_admin ? "resourceTimeGridDay" : "timeGridDay"
+            }
+            resources={resourcesList}
+            events={events}
+            select={handleDateSelect}
+            editable={false}
+            selectable={true}
+            selectMirror={true}
+            // height="auto"
+            dayMinWidth={
+              calendarView === "resourceTimeGridDay" ? 320 : undefined
+            }
+          />
+
+          <div className={styles.dot}>
+            <div className={styles.dotItems}>
+              <p className={styles.completed}></p>
+              <p className={styles.text}>Completed</p>
+            </div>
+            <div className={styles.dotItems}>
+              <p className={styles.cancelled}></p>
+              <p className={styles.text}>Cancelled</p>
+            </div>
+            <div className={styles.dotItems}>
+              <p className={styles.noShow}></p>
+              <p className={styles.text}>No Show</p>
+            </div>
+            <div className={styles.dotItems}>
+              <p className={styles.coc_violation}></p>
+              <p className={styles.text}>Coc Violation</p>
+            </div>
+            <div className={styles.dotItems}>
+              <p className={styles.inComplete}></p>
+              <p className={styles.text}>Incomplete</p>
+            </div>
+            <div className={styles.dotItems}>
+              <p className={styles.upComing}></p>
+              <p className={styles.text}>Upcoming/Reschedule/New</p>
+            </div>
+          </div>
+
+          {addOpen && (
+            <AddSchedulePopup
+              open={addOpen}
+              handleClose={handleClose}
+              selectedInfo={selectedInfo}
+              consultantList={consultantList}
+              scheduleList={scheduleList}
+              timezoneList={TimezoneList()}
+              // customerList={customerList}
+              // timeZoneData={timeZone}
+              handleDataSubmit={handleSubmit}
+              allScheduleInfo={events}
+            />
+          )}
+          {editOpen && (
+            <EditSchedulePopup
+              open={editOpen}
+              handleClose={handleClose}
+              consultantList={consultantList}
+              // customerList={customerList}
+              scheduleList={scheduleList}
+              timezoneList={TimezoneList()}
+              eventClickInfo={eventClickInfo && eventClickInfo}
+              handleDeleteEvent={(id, type) =>
+                handleDeleteEventHandler(id, type)
+              }
+              handleUpdateData={handleUpdate}
+              // allScheduleInfo={eventInfo}
+            />
+          )}
+          <ToastContainer />
+        </div>
+      )
+    );
 }
