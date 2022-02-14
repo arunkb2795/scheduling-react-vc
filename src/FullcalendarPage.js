@@ -40,6 +40,7 @@ export default function FullCalendarPage() {
   const [scheduleList, setScheduleList] = useState([]);
   const [eventClickInfo, setEventClickInfo] = useState({});
   const [calendarView, setCalenderView] = useState("resourceTimeGridDay");
+  const [disableButton, setDisableButton] = useState(false);
 
   const { agentDropdownList, resourcesList, isLoading } = useSelector(
     (state) => state.agentReducer
@@ -199,7 +200,10 @@ export default function FullCalendarPage() {
 
   const handleSubmit = (submitData) => {
     console.log({ submitData });
+
     if (submitData.title) {
+      setDisableButton(true);
+
       axios
         .post("/schedule/", submitData)
         .then((response) => {
@@ -221,11 +225,13 @@ export default function FullCalendarPage() {
           }
         })
         .then(() => {
+          setDisableButton(false);
           toast.success("appointment added successfully");
           dispatch(getCalenderEvents(null, start, end));
           setAddOpen(false);
         })
         .catch((err) => {
+          setDisableButton(false);
           toast.error("Sorry! Consultant is not available on this time-slot");
           console.log(err);
         });
@@ -247,7 +253,7 @@ export default function FullCalendarPage() {
                 title: response.data.title,
                 start: response.data.start.substring(0, 19), //2020-11-26T09:00:00
                 end: response.data.stop.substring(0, 19),
-                user:'agent'
+                user: "agent",
               };
               const elementsIndex = events.findIndex(
                 (element) => element.id == updateData.id
@@ -344,133 +350,135 @@ export default function FullCalendarPage() {
 
   if (isLoading) {
     return (
-      <div style={{display: "flex",justifyContent: "center",alignItems: "center",height: "100%"}}>
-        <CircularProgress/>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <CircularProgress />
       </div>
     );
   }
-    return (
-      !isLoading && (
-        <div>
-          {isLoadingSchedule && (
-            <div
-              style={{
-                position: "absolute",
-                left: "50%",
-                top: "50%",
-                zIndex: 2,
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <p style={{ paddingTop: "3px" }}>Loading...</p>
-              <CircularProgress size={30} />
-            </div>
-          )}
-          <FullCalendar
-            plugins={[
-              adaptivePlugin,
-              interactionPlugin,
-              dayGridPlugin,
-              listPlugin,
-              timeGridPlugin,
-              resourceTimelinePlugin,
-              resourceTimeGridPlugin,
-              scrollGridPlugin,
-            ]}
-            resourceOrder={"type"}
-            ref={calendarRef}
-            dateClick={handleDateClick}
-            datesSet={handleSelectedDate}
-            eventClick={handleEventClick}
-            allDaySlot={false}
-            schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
-            // now="2018-02-07"
-            slotDuration={"00:15:00"}
-            editable={true} // enable draggable events
-            aspectRatio={1.8}
-            scrollTime={"06:00"} // undo default 6am scrollTime
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: window.is_admin
-                ? "resourceTimeGridDay,timeGridWeek,dayGridMonth,listYear"
-                : "timeGridDay,timeGridWeek,dayGridMonth,listYear",
+  return (
+    !isLoading && (
+      <div>
+        {isLoadingSchedule && (
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              zIndex: 2,
+              display: "flex",
+              alignItems: "center",
             }}
-            initialView={
-              window.is_admin ? "resourceTimeGridDay" : "timeGridDay"
-            }
-            resources={resourcesList}
-            events={events}
-            select={handleDateSelect}
-            editable={false}
-            selectable={true}
-            selectMirror={true}
-            // height="auto"
-            dayMinWidth={
-              calendarView === "resourceTimeGridDay" ? 320 : undefined
-            }
-          />
-
-          <div className={styles.dot}>
-            <div className={styles.dotItems}>
-              <p className={styles.completed}></p>
-              <p className={styles.text}>Completed</p>
-            </div>
-            <div className={styles.dotItems}>
-              <p className={styles.cancelled}></p>
-              <p className={styles.text}>Cancelled</p>
-            </div>
-            <div className={styles.dotItems}>
-              <p className={styles.noShow}></p>
-              <p className={styles.text}>No Show</p>
-            </div>
-            <div className={styles.dotItems}>
-              <p className={styles.coc_violation}></p>
-              <p className={styles.text}>Coc Violation</p>
-            </div>
-            <div className={styles.dotItems}>
-              <p className={styles.inComplete}></p>
-              <p className={styles.text}>Incomplete</p>
-            </div>
-            <div className={styles.dotItems}>
-              <p className={styles.upComing}></p>
-              <p className={styles.text}>Upcoming/Reschedule/New</p>
-            </div>
+          >
+            <p style={{ paddingTop: "3px" }}>Loading...</p>
+            <CircularProgress size={30} />
           </div>
+        )}
+        <FullCalendar
+          plugins={[
+            adaptivePlugin,
+            interactionPlugin,
+            dayGridPlugin,
+            listPlugin,
+            timeGridPlugin,
+            resourceTimelinePlugin,
+            resourceTimeGridPlugin,
+            scrollGridPlugin,
+          ]}
+          resourceOrder={"type"}
+          ref={calendarRef}
+          dateClick={handleDateClick}
+          datesSet={handleSelectedDate}
+          eventClick={handleEventClick}
+          allDaySlot={false}
+          schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
+          // now="2018-02-07"
+          slotDuration={"00:15:00"}
+          editable={true} // enable draggable events
+          aspectRatio={1.8}
+          scrollTime={"06:00"} // undo default 6am scrollTime
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right: window.is_admin
+              ? "resourceTimeGridDay,timeGridWeek,dayGridMonth,listYear"
+              : "timeGridDay,timeGridWeek,dayGridMonth,listYear",
+          }}
+          initialView={window.is_admin ? "resourceTimeGridDay" : "timeGridDay"}
+          resources={resourcesList}
+          events={events}
+          select={handleDateSelect}
+          editable={false}
+          selectable={true}
+          selectMirror={true}
+          // height="auto"
+          dayMinWidth={calendarView === "resourceTimeGridDay" ? 320 : undefined}
+        />
 
-          {addOpen && (
-            <AddSchedulePopup
-              open={addOpen}
-              handleClose={handleClose}
-              selectedInfo={selectedInfo}
-              consultantList={consultantList}
-              scheduleList={scheduleList}
-              timezoneList={TimezoneList()}
-              // customerList={customerList}
-              // timeZoneData={timeZone}
-              handleDataSubmit={handleSubmit}
-              allScheduleInfo={events}
-            />
-          )}
-          {editOpen && (
-            <EditSchedulePopup
-              open={editOpen}
-              handleClose={handleClose}
-              consultantList={consultantList}
-              // customerList={customerList}
-              scheduleList={scheduleList}
-              timezoneList={TimezoneList()}
-              eventClickInfo={eventClickInfo && eventClickInfo}
-              handleDeleteEvent={(id, type) =>
-                handleDeleteEventHandler(id, type)
-              }
-              handleUpdateData={handleUpdate}
-              // allScheduleInfo={eventInfo}
-            />
-          )}
-          <ToastContainer />
+        <div className={styles.dot}>
+          <div className={styles.dotItems}>
+            <p className={styles.completed}></p>
+            <p className={styles.text}>Completed</p>
+          </div>
+          <div className={styles.dotItems}>
+            <p className={styles.cancelled}></p>
+            <p className={styles.text}>Cancelled</p>
+          </div>
+          <div className={styles.dotItems}>
+            <p className={styles.noShow}></p>
+            <p className={styles.text}>No Show</p>
+          </div>
+          <div className={styles.dotItems}>
+            <p className={styles.coc_violation}></p>
+            <p className={styles.text}>Coc Violation</p>
+          </div>
+          <div className={styles.dotItems}>
+            <p className={styles.inComplete}></p>
+            <p className={styles.text}>Incomplete</p>
+          </div>
+          <div className={styles.dotItems}>
+            <p className={styles.upComing}></p>
+            <p className={styles.text}>Upcoming/Reschedule/New</p>
+          </div>
         </div>
-      )
-    );
+
+        {addOpen && (
+          <AddSchedulePopup
+            open={addOpen}
+            handleClose={handleClose}
+            selectedInfo={selectedInfo}
+            consultantList={consultantList}
+            scheduleList={scheduleList}
+            timezoneList={TimezoneList()}
+            // customerList={customerList}
+            // timeZoneData={timeZone}
+            handleDataSubmit={handleSubmit}
+            allScheduleInfo={events}
+            disableButton={disableButton}
+          />
+        )}
+        {editOpen && (
+          <EditSchedulePopup
+            open={editOpen}
+            handleClose={handleClose}
+            consultantList={consultantList}
+            // customerList={customerList}
+            scheduleList={scheduleList}
+            timezoneList={TimezoneList()}
+            eventClickInfo={eventClickInfo && eventClickInfo}
+            handleDeleteEvent={(id, type) => handleDeleteEventHandler(id, type)}
+            handleUpdateData={handleUpdate}
+            // allScheduleInfo={eventInfo}
+          />
+        )}
+        <ToastContainer />
+      </div>
+    )
+  );
 }

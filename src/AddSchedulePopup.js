@@ -46,9 +46,10 @@ export default function DraggableDialog(props) {
     selectedInfo,
     handleDataSubmit,
     allScheduleInfo,
+    disableButton,
   } = props;
 
-  console.log({ scheduleList, consultantList });
+  console.log({ scheduleList, consultantList, disableButton });
 
   const [agents, setAgents] = useState([]);
   const [moderatorList, setModeratorList] = useState([]);
@@ -158,6 +159,7 @@ export default function DraggableDialog(props) {
         name: value[i].name,
         email: value[i].email,
         time_zone: value[i].time_zone,
+        phone:value[i].phone,
       };
       arr.push(userData);
     }
@@ -517,6 +519,7 @@ export default function DraggableDialog(props) {
               onClick={handleButtonClick}
               color="primary"
               variant="outlined"
+              disabled={disableButton}
             >
               Create appointment
             </CustomButton>

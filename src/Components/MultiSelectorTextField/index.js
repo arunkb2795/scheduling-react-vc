@@ -18,8 +18,7 @@ import Paper from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
 import TimeZonePicker from "../TimeZonePicker";
 import TimezoneList from "../../Utils/TimezoneList";
-
-
+import CountrySelect from "../CountrySelector";
 
 //import UserForm from './UserForm'
 
@@ -43,7 +42,7 @@ function PaperComponent(props) {
 }
 
 export default function Tags(props) {
-  const initialFormState = { id: null, name: "", email: ""};
+  const initialFormState = { id: null, name: "", email: "", phone: "" };
   const [dropdownOpen, setDropDownOpen] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [editOpen, setEditOpen] = React.useState(false);
@@ -57,7 +56,13 @@ export default function Tags(props) {
   const loading = dropdownOpen && options.length === 0;
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [timeZone, setTimeZone] = useState(TimezoneList()[33]);
+  const [country, setCountry] = useState({
+    code: "US",
+    label: "United States",
+    phone: "+1",
+  });
   const [existingTimezone, setExistingTimeZone] = useState(TimezoneList()[33]);
 
   useEffect(() => {
@@ -87,7 +92,7 @@ export default function Tags(props) {
 
   function handleClickOpen() {
     setOpen(!open);
-    setTimeZone(TimezoneList()[33])
+    setTimeZone(TimezoneList()[33]);
   }
 
   function handleClose() {
@@ -95,6 +100,12 @@ export default function Tags(props) {
     setUser(initialFormState);
     setNameError("");
     setEmailError("");
+    setPhoneError("");
+    setCountry({
+      code: "US",
+      label: "United States",
+      phone: "+1",
+    });
   }
 
   function editClose() {
@@ -103,6 +114,7 @@ export default function Tags(props) {
     setUser(initialFormState);
     setNameError("");
     setEmailError("");
+    setPhoneError("");
   }
 
   const handleChange = (e) => {
@@ -113,19 +125,22 @@ export default function Tags(props) {
     if (name === "email") {
       setEmailError("");
     }
+    if (name === "phone") {
+      setPhoneError("");
+    }
     setUser({ ...user, [name]: value });
   };
 
   const handleTimezoneChange = (e, value) => {
-    console.log(value)
-    setTimeZone(value)
+    console.log(value);
+    setTimeZone(value);
     // setUser({...user,['time_zone']:value.value})
-  }
+  };
 
   const handleExistingTimeZoneChange = (e, value) => {
-    console.log(value)
-    setExistingTimeZone(value)
-  }
+    console.log(value);
+    setExistingTimeZone(value);
+  };
 
   useEffect(() => {
     createdValue.name
@@ -147,8 +162,17 @@ export default function Tags(props) {
   }, [finalData]);
 
   const addUser = (data) => {
-    setCreatedValue(data);
+    let dataWIthCountryCode = {
+      ...data,
+      phone: data.phone ? `${country.phone}${data.phone}` : null,
+    };
+    setCreatedValue(dataWIthCountryCode);
     setUser(initialFormState);
+    setCountry({
+      code: "US",
+      label: "United States",
+      phone: "+1",
+    });
   };
 
   const updateUser = (data) => {
@@ -160,9 +184,11 @@ export default function Tags(props) {
   };
 
   const onChipClik = (option) => {
-    console.log({ option })
-    const timezone = TimezoneList().filter((item) => item.value === option.time_zone)
-    console.log({ timezone })
+    console.log({ option });
+    const timezone = TimezoneList().filter(
+      (item) => item.value === option.time_zone
+    );
+    console.log({ timezone });
     setExistingTimeZone(timezone[0]);
     setEditOpen(true);
     setUser(option);
@@ -185,6 +211,7 @@ export default function Tags(props) {
 
   const validateFunction = (user) => {
     let valid = true;
+    let pattern = new RegExp(/^[0-9\b]+$/);
     if (!user.name) {
       valid = false;
       setNameError("Required");
@@ -200,10 +227,25 @@ export default function Tags(props) {
       valid = false;
       setEmailError("Invalid Email");
     }
+    if (user.phone) {
+      if (!pattern.test(user.phone)) {
+        valid = false;
+
+        setPhoneError("Invalid Phone Number");
+      } else if (user.phone.length !== 10) {
+        valid = false;
+
+        setPhoneError("Please enter 10 digit phone number!");
+      }
+    }
     return valid;
   };
 
-  console.log(user)
+  const handleCountryChange = (e, value) => {
+    setCountry(value);
+  };
+
+  console.log(user);
 
   return (
     <div>
@@ -303,6 +345,7 @@ export default function Tags(props) {
                   name: user.name,
                   email: user.email,
                   time_zone: timeZone.value,
+                  phone: user.phone,
                 };
                 if (validateFunction(user)) {
                   addUser(userData);
@@ -329,6 +372,22 @@ export default function Tags(props) {
                 helperText={emailError}
                 error={emailError ? true : false}
               />
+              <div style={{ display: "flex" }}>
+                <CountrySelect
+                  value={country}
+                  label={"Phone Number"}
+                  handleCountryChange={handleCountryChange}
+                />
+                <div style={{ width: "100%", padding: "18px 0 0 10px" }}>
+                  <TextFieldCustom
+                    name="phone"
+                    value={user.phone}
+                    onChange={handleChange}
+                    helperText={phoneError}
+                    error={phoneError ? true : false}
+                  />
+                </div>
+              </div>
               <div style={{ width: "100%" }}>
                 <TimeZonePicker
                   label="Time Zone*"
@@ -376,6 +435,7 @@ export default function Tags(props) {
                   name: user.name,
                   email: user.email,
                   time_zone: existingTimezone.value,
+                  phone: user.phone,
                 };
                 if (validateFunction(user)) {
                   axios
@@ -405,7 +465,16 @@ export default function Tags(props) {
                 helperText={emailError}
                 error={emailError ? true : false}
               />
-              <div style={{ width: "100%",paddingBottom:"20px" }}>
+              <TextFieldCustom
+                label="Phone Number*"
+                name="phone"
+                value={user.phone}
+                onChange={handleChange}
+                helperText={phoneError}
+                error={phoneError ? true : false}
+                disabled={true}
+              />
+              <div style={{ width: "100%", paddingBottom: "20px" }}>
                 <TimeZonePicker
                   label="Time Zone*"
                   options={TimezoneList()}
@@ -423,16 +492,16 @@ export default function Tags(props) {
   );
 }
 
-              // <DialogActions style={{ padding: 0, margin: "12px 0px" }}>
-              //   <Button color="secondary" onClick={() => handleDelete(user)}>
-              //     Remove
-              //   </Button>
-              //   <Button
-              //     variant="outlined"
-              //     type="submit"
-              //     form="my-form-id2"
-              //     color="primary"
-              //   >
-              //     Save CHanges
-              //   </Button>
-              // </DialogActions>;
+// <DialogActions style={{ padding: 0, margin: "12px 0px" }}>
+//   <Button color="secondary" onClick={() => handleDelete(user)}>
+//     Remove
+//   </Button>
+//   <Button
+//     variant="outlined"
+//     type="submit"
+//     form="my-form-id2"
+//     color="primary"
+//   >
+//     Save CHanges
+//   </Button>
+// </DialogActions>;

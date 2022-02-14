@@ -7,6 +7,7 @@ return(
         onClick={props.onClick}
         color={props.color}
         variant={props.variant}
+        disabled={props.disabled}
     >
         {props.children}
     </Button>
