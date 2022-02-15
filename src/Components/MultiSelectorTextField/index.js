@@ -271,7 +271,7 @@ export default function Tags(props) {
             PopperComponent={PopperMy}
             options={options}
             getOptionLabel={(option) => option.name}
-            getOptionSelected={(option, value) => option.name === value.name}
+            getOptionSelected={(option, value) => option.email === value.email}
             onChange={selectedValue}
             renderTags={(value, getTagProps) =>
               value.map((option, index) => (
