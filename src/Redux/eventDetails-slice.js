@@ -22,6 +22,27 @@ const setStatus = (status) => {
     return "#685bc7";
   }
 };
+
+const setFadeStatus = (status) => {
+  if (status === "Completed") {
+    return "#93d3a2";
+  } else if (status === "Cancelled") {
+    return "#ed9aa2";
+  } else if (status === "No Show") {
+    return "#b7b7b7";
+  } else if (status === "Coc Violation") {
+    return "#ffff7f";
+  } else if (status === "Incomplete") {
+    return "#cccc7f";
+  } else if (
+    status === "Upcoming" ||
+    status === "Rescheduled" ||
+    status === "New"
+  ) {
+    return "#b3ade3";
+  }
+};
+
 const eventDetailsSlice = createSlice({
   name: "event-details",
   initialState: {
@@ -64,7 +85,7 @@ const timeConvertor = (data, agentTimezone, moderatorTimezone) => {
   var losAngeles = newYork.clone().tz(moderatorTimezone);
   return moment(losAngeles).format("YYYY-MM-DDTHH:mm:ss");
 };
-
+const myClass = "cursor:not-allowed";
 export const getCalenderEvents = (id, start, end) => {
   return async (dispatch) => {
     try {
@@ -80,7 +101,7 @@ export const getCalenderEvents = (id, start, end) => {
             id: id,
             type: "event",
             resourceId: agent[0].id,
-            title: `ID: #${id},Type: Event,Title :${title},Consultant :${agent[0].name} `,
+            title: `ID: #${id},Type: Event,Title :${title},Consultant :${agent[0].name},${moderator.length ? `Moderator:${moderator[0]?.name}` : ""} `,
             start: start.slice(0, 19),
             end: stop.slice(0, 19),
             backgroundColor: setStatus(status),
@@ -94,7 +115,7 @@ export const getCalenderEvents = (id, start, end) => {
             id: id,
             type: "event",
             resourceId: moderator[0].id,
-            title: `ID: #${id},Type: Event,Title :${title},Consultant :${agent[0].name} `,
+            title: `ID: #${id},Type: Event,Title :${title},Consultant :${agent[0].name},${moderator.length ? `Moderator:${moderator[0]?.name}` : ""}`,
             start: timeConvertor(
               start.slice(0, 19),
               agent[0].time_zone,
@@ -105,8 +126,8 @@ export const getCalenderEvents = (id, start, end) => {
               agent[0].time_zone,
               moderator[0].time_zone
             ),
-            backgroundColor: setStatus(status),
-            borderColor: setStatus(status),
+            backgroundColor: setFadeStatus(status),
+            borderColor: setFadeStatus(status),
             user: "moderator",
           })
         );
@@ -125,7 +146,7 @@ export const getCalenderEvents = (id, start, end) => {
             id: id,
             type: "schedule",
             resourceId: agent[0].id,
-            title: `ID: #${id},Type: Schedule,Title :${title},Consultant :${agent[0].name} `,
+            title: `ID: #${id},Type: Schedule,Title :${title},Consultant:${agent[0].name},${moderator.length ? `Moderator:${moderator[0]?.name}` : ""} `,
             start: start.slice(0, 19),
             end: stop.slice(0, 19),
             backgroundColor: setStatus(status),
@@ -138,7 +159,7 @@ export const getCalenderEvents = (id, start, end) => {
             id: id,
             type: "schedule",
             resourceId: moderator[0]?.id,
-            title: `ID: #${id},Type: Schedule,Title :${title},Consultant :${agent[0].name} `,
+            title: `ID: #${id},Type: Schedule,Title :${title},Consultant:${agent[0].name},${moderator.length ? `Moderator:${moderator[0]?.name}` : ""} `,
             start: timeConvertor(
               start.slice(0, 19),
               agent[0].time_zone,
@@ -149,8 +170,8 @@ export const getCalenderEvents = (id, start, end) => {
               agent[0].time_zone,
               moderator[0]?.time_zone
             ),
-            backgroundColor: setStatus(status),
-            borderColor: setStatus(status),
+            backgroundColor: setFadeStatus(status),
+            borderColor: setFadeStatus(status),
             user: "moderator",
           })
         );
