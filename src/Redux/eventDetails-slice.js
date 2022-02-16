@@ -85,7 +85,7 @@ const timeConvertor = (data, agentTimezone, moderatorTimezone) => {
   var losAngeles = newYork.clone().tz(moderatorTimezone);
   return moment(losAngeles).format("YYYY-MM-DDTHH:mm:ss");
 };
-const myClass = "cursor:not-allowed";
+
 export const getCalenderEvents = (id, start, end) => {
   return async (dispatch) => {
     try {
