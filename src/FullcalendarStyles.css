@@ -1276,8 +1276,8 @@ a.fc-event:hover {
 }
 
 .fc-v-event .fc-event-main {
-    color: #fff;
-    color: var(--fc-event-text-color, #fff);
+    /* color: #fff; */
+    /* color: var(--fc-event-text-color, #fff); */
     height: 100%
 }
 
@@ -1305,7 +1305,7 @@ a.fc-event:hover {
     bottom: 0;
     max-height: 100%;
     overflow: hidden;
-    color: #fff
+    /* color: #fff */
 }
 
 .fc-v-event:not(.fc-event-start) {
