@@ -174,9 +174,9 @@ export const getCalenderEvents = (id, start, end) => {
               moderator[0].time_zone
             ),
             backgroundColor: "#fff",
-            borderColor: setFadeStatus(status),
-            textColor: setFadeStatus(status),
-            classNames: setFadeBorder(status),
+            borderColor: setStatus(status),
+            textColor: setStatus(status),
+            classNames: setBorder(status),
             user: "moderator",
           })
         );
@@ -223,8 +223,8 @@ export const getCalenderEvents = (id, start, end) => {
               agent[0].time_zone,
               moderator[0]?.time_zone
             ),
-            backgroundColor: setFadeStatus(status),
-            borderColor: setFadeStatus(status),
+            backgroundColor: setStatus(status),
+            borderColor: setStatus(status),
             user: "moderator",
           })
         );
