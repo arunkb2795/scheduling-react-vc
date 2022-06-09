@@ -41,4 +41,7 @@ export default {
       `/events-list-manageschedule/?start_date=${start}&end_date=${end}`
     );
   },
+  getTimezoneList() {
+    return client.get(`/get-timezone-list/`);
+  },
 };

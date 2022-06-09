@@ -24,6 +24,8 @@ import BasicDatePicker from "./Components/BasicDatePicker";
 import BasicTimePicker from "./Components/BasicTimePicker";
 import Editor from "./Components/CKEditor";
 import TimezoneList from "./Utils/TimezoneList";
+import axios from "./api/axios";
+import WarningMessage from "./Components/WarningMessage";
 
 function PaperComponent(props) {
   return (
@@ -67,6 +69,8 @@ export default function DraggableDialog(props) {
   const [isSubmit, setIsSubmit] = useState(true);
 
   const [time_zone, selectedTimeZone] = useState([]);
+  const [isWarning, setIsWarning] = useState(true);
+  const [isDisableSchedule, setIsDisableSchedule] = useState(true);
 
   const {
     agent,
@@ -109,8 +113,8 @@ export default function DraggableDialog(props) {
       setSelectedDescription(description);
       setSelectedStartTime(startTime.substring(0, 19));
       setSelectedEndTime(endTime.substring(0, 19));
-      setSelectedStartDate(startTime.slice(0,19));
-      setSelectedEndDate(endTime.slice(0,19));
+      setSelectedStartDate(startTime.slice(0, 19));
+      setSelectedEndDate(endTime.slice(0, 19));
       setAppointmentSubject(title);
       setType(eventClickInfo.event._def.extendedProps.type);
       if (timeZone) {
@@ -122,7 +126,41 @@ export default function DraggableDialog(props) {
     }
   }, [appointmentLoading]);
 
-  console.log("*******", selectedStartDate, startTime);
+    useEffect(() => {
+      if (selectedAgent.id) {
+        let data = {
+          agent: selectedAgent.id,
+          start: startTimeFormatter(
+            selectedStartDate,
+            selectedStartTime,
+            time_zone.value
+          ),
+          stop: endTimeFormatter(
+            selectedEndDate,
+            selectedEndTime,
+            time_zone.value
+          ),
+        };
+        setIsDisableSchedule(true);
+        axios
+          .post("/check-agent-availability/", data)
+          .then((response) => {
+            console.log(response.data);
+            setIsWarning(response.data);
+            setIsDisableSchedule(false);
+          })
+          .then(() => {})
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }, [
+      selectedAgent,
+      selectedStartDate,
+      selectedStartTime,
+      selectedEndDate,
+      selectedEndTime,
+    ]);
 
   const handleAgentChange = (e, value) => {
     setErrorMessages({
@@ -497,6 +535,7 @@ export default function DraggableDialog(props) {
                 />
               </div>
             </div>
+            {!isWarning && <WarningMessage />}
             <div style={{ display: "flex" }}>
               <div style={{ marginLeft: "40px", width: "100%" }}>
                 <TextField
@@ -581,6 +620,7 @@ export default function DraggableDialog(props) {
                   onClick={handleButtonClick}
                   color="primary"
                   variant="outlined"
+                  disabled={isDisableSchedule}
                 >
                   Save Changes
                 </CustomButton>

@@ -24,6 +24,8 @@ import BasicDatePicker from "./Components/BasicDatePicker";
 import BasicTimePicker from "./Components/BasicTimePicker";
 import Editor from "./Components/CKEditor";
 import TimezoneList from "./Utils/TimezoneList";
+import axios from "./api/axios";
+import WarningMessage from "./Components/WarningMessage";
 
 function PaperComponent(props) {
   return (
@@ -76,6 +78,8 @@ export default function DraggableDialog(props) {
     customerError: "",
     timeError: "",
   });
+  const [isWarning, setIsWarning] = useState(true);
+  const [isDisableSchedule, setIsDisableSchedule] = useState(true);
 
   const [isSubmit, setIsSubmit] = useState(true);
 
@@ -123,6 +127,28 @@ export default function DraggableDialog(props) {
     setEndDate(moment(selectedInfo?.startStr).format("YYYY-MM-DD"));
   }, [selectedInfo]);
 
+  useEffect(() => {
+    if (selectedAgent.id) {
+      let data = {
+        agent: selectedAgent.id,
+        start: startTimeFormatter(startDate, start, timeZone.value),
+        stop: endTimeFormatter(endDate, end, timeZone.value),
+      };
+      setIsDisableSchedule(true);
+      axios
+        .post("/check-agent-availability/", data)
+        .then((response) => {
+          console.log(response.data);
+          setIsWarning(response.data);
+          setIsDisableSchedule(false);
+        })
+        .then(() => {})
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [selectedAgent, startDate, start, endDate, end]);
+
   const handleAgentChange = (e, value) => {
     setErrorMessages({
       ...errorMessages,
@@ -159,7 +185,7 @@ export default function DraggableDialog(props) {
         name: value[i].name,
         email: value[i].email,
         time_zone: value[i].time_zone,
-        phone:value[i].phone,
+        phone: value[i].phone,
       };
       arr.push(userData);
     }
@@ -278,6 +304,11 @@ export default function DraggableDialog(props) {
   //   );
 
   // }, [startDate, start, end]);
+
+  console.log(selectedAgent.id, {
+    start: startTimeFormatter(startDate, start, timeZone.value),
+    stop: endTimeFormatter(endDate, end, timeZone.value),
+  });
 
   return (
     <div>
@@ -447,6 +478,7 @@ export default function DraggableDialog(props) {
               />
             </div>
           </div>
+          {!isWarning && <WarningMessage />}
           <div style={{ display: "flex" }}>
             <DescriptionOutlinedIcon
               style={{
@@ -519,7 +551,7 @@ export default function DraggableDialog(props) {
               onClick={handleButtonClick}
               color="primary"
               variant="outlined"
-              disabled={disableButton}
+              disabled={disableButton || isDisableSchedule}
             >
               Create appointment
             </CustomButton>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import FullCalendar from "@fullcalendar/react";
 import adaptivePlugin from "@fullcalendar/adaptive";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -29,10 +29,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import styles from "./styles.module.scss";
+import { TimezoneContext } from "./context/TimezoneContext";
+
 
 export default function FullCalendarPage() {
   const dispatch = useDispatch();
   const calendarRef = React.createRef();
+  const timezoneData = useContext(TimezoneContext);
   const [addOpen, setAddOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [consultantList, setConsultantList] = useState([]);
@@ -455,7 +458,7 @@ export default function FullCalendarPage() {
             selectedInfo={selectedInfo}
             consultantList={consultantList}
             scheduleList={scheduleList}
-            timezoneList={TimezoneList()}
+            timezoneList={timezoneData}
             // customerList={customerList}
             // timeZoneData={timeZone}
             handleDataSubmit={handleSubmit}
@@ -470,7 +473,7 @@ export default function FullCalendarPage() {
             consultantList={consultantList}
             // customerList={customerList}
             scheduleList={scheduleList}
-            timezoneList={TimezoneList()}
+            timezoneList={timezoneData}
             eventClickInfo={eventClickInfo && eventClickInfo}
             handleDeleteEvent={(id, type) => handleDeleteEventHandler(id, type)}
             handleUpdateData={handleUpdate}

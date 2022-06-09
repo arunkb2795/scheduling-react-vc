@@ -1,0 +1,12 @@
+.warningContainer {
+  height: 52px;
+  background-color: #fee9cc;
+  display: flex;
+  align-items: center;
+  margin:10px 0 10px 40px;
+  border-radius: 4px;
+  padding: 0 10px;
+  .message{
+      padding: 0 5px;
+  }
+}
