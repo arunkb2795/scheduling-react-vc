@@ -24,7 +24,7 @@ const setStatus = (status) => {
   ) {
     return "#685bc7";
   } else if (status === "Absence") {
-    return "#e68a19";
+    return "#A9A8AF";
   }
 };
 
