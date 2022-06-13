@@ -51,8 +51,6 @@ export default function DraggableDialog(props) {
     disableButton,
   } = props;
 
-  console.log({ scheduleList, consultantList, disableButton });
-
   const [agents, setAgents] = useState([]);
   const [moderatorList, setModeratorList] = useState([]);
   const [agentList, setAgentList] = useState([]);
@@ -138,7 +136,6 @@ export default function DraggableDialog(props) {
       axios
         .post("/check-agent-availability/", data)
         .then((response) => {
-          console.log(response.data);
           setIsWarning(response.data);
           setIsDisableSchedule(false);
         })
@@ -155,7 +152,7 @@ export default function DraggableDialog(props) {
       agentNameError: "",
     });
     setSelectedAgent(value);
-    let agentTimezone = TimezoneList().filter(
+    let agentTimezone =timezoneList.filter(
       (item) => item.value === value.time_zone
     );
     setTimeZone(agentTimezone[0]);
@@ -163,7 +160,6 @@ export default function DraggableDialog(props) {
     setModeratorList(data);
     setSelectedAppointmentType([]);
     let scheduleArray = consultantList.filter((item) => item.id === value.id);
-    console.log(scheduleArray[0].schedule_types);
     setScheduleList(scheduleArray[0].schedule_types);
   };
 
@@ -293,22 +289,7 @@ export default function DraggableDialog(props) {
 
   const handleTimezoneChange = (e, value) => {
     setTimeZone(value);
-    console.log(value);
   };
-
-  // useEffect(() => {
-  //   let startz = startTimeFormatter(startDate, start, timeZone.value);
-  //   let endz = endTimeFormatter(endDate, end, timeZone.value);
-  //   setAgents(
-  //     agentAvailibilityChecker(startDate, startz, endz, allScheduleInfo)
-  //   );
-
-  // }, [startDate, start, end]);
-
-  console.log(selectedAgent.id, {
-    start: startTimeFormatter(startDate, start, timeZone.value),
-    stop: endTimeFormatter(endDate, end, timeZone.value),
-  });
 
   return (
     <div>
