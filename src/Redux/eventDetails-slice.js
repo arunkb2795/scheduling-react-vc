@@ -1,4 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import {
+  createSlice
+} from "@reduxjs/toolkit";
 import scheduleClient from "../api/scheduleClient";
 import momentTz from "moment-timezone";
 import moment from "moment";
@@ -21,6 +23,8 @@ const setStatus = (status) => {
     status === "New"
   ) {
     return "#685bc7";
+  } else if (status === "Absence") {
+    return "#e68a19";
   }
 };
 
@@ -65,23 +69,23 @@ const setBorder = (status) => {
 };
 
 const setFadeBorder = (status) => {
-    if (status === "Completed") {
-      return styles.CompletedFadedStyles;
-    } else if (status === "Cancelled") {
-      return styles.CancelledFadedStyles;
-    } else if (status === "No Show") {
-      return styles.NoShowFadedStyles;
-    } else if (status === "Coc Violation") {
-      return styles.CocViolationFadedStyles;
-    } else if (status === "Incomplete") {
-      return styles.IncompleteFadedStyles;
-    } else if (
-      status === "Upcoming" ||
-      status === "Rescheduled" ||
-      status === "New"
-    ) {
-      return styles.UpcomingFadedStyles;
-    }
+  if (status === "Completed") {
+    return styles.CompletedFadedStyles;
+  } else if (status === "Cancelled") {
+    return styles.CancelledFadedStyles;
+  } else if (status === "No Show") {
+    return styles.NoShowFadedStyles;
+  } else if (status === "Coc Violation") {
+    return styles.CocViolationFadedStyles;
+  } else if (status === "Incomplete") {
+    return styles.IncompleteFadedStyles;
+  } else if (
+    status === "Upcoming" ||
+    status === "Rescheduled" ||
+    status === "New"
+  ) {
+    return styles.UpcomingFadedStyles;
+  }
 }
 
 const eventDetailsSlice = createSlice({
@@ -133,12 +137,22 @@ export const getCalenderEvents = (id, start, end) => {
       if (start && end) {
         let data = [];
         dispatch(eventDetailsAction.setIsLoading(true));
-        const eventResponse = id
-          ? await scheduleClient.getEventDetails(id, start, end)
-          : await scheduleClient.getAllEvents(start, end);
-        console.log({ eventResponse });
+        const eventResponse = id ?
+          await scheduleClient.getEventDetails(id, start, end) :
+          await scheduleClient.getAllEvents(start, end);
+        console.log({
+          eventResponse
+        });
         let agentData = eventResponse.data.map(
-          ({ id, title, start, stop, agent, moderator, status }) => ({
+          ({
+            id,
+            title,
+            start,
+            stop,
+            agent,
+            moderator,
+            status
+          }) => ({
             id: id,
             type: "event",
             resourceId: agent[0].id,
@@ -156,7 +170,15 @@ export const getCalenderEvents = (id, start, end) => {
         );
 
         let moderatorData = eventResponse.data.map(
-          ({ id, title, start, stop, agent, moderator, status }) => ({
+          ({
+            id,
+            title,
+            start,
+            stop,
+            agent,
+            moderator,
+            status
+          }) => ({
             id: id,
             type: "event",
             resourceId: moderator[0].id,
@@ -186,12 +208,22 @@ export const getCalenderEvents = (id, start, end) => {
           return item.resourceId !== undefined;
         });
 
-        const scheduleResponse = id
-          ? await scheduleClient.getScheduleDetails(id, start, end)
-          : await scheduleClient.getAllSchedules(start, end);
-        console.log({ scheduleResponse });
+        const scheduleResponse = id ?
+          await scheduleClient.getScheduleDetails(id, start, end) :
+          await scheduleClient.getAllSchedules(start, end);
+        console.log({
+          scheduleResponse
+        });
         let agentScheduleData = scheduleResponse.data.map(
-          ({ id, title, start, stop, agent, moderator, status }) => ({
+          ({
+            id,
+            title,
+            start,
+            stop,
+            agent,
+            moderator,
+            status
+          }) => ({
             id: id,
             type: "schedule",
             resourceId: agent[0].id,
@@ -206,7 +238,15 @@ export const getCalenderEvents = (id, start, end) => {
           })
         );
         let moderatorScheduleData = scheduleResponse.data.map(
-          ({ id, title, start, stop, agent, moderator, status }) => ({
+          ({
+            id,
+            title,
+            start,
+            stop,
+            agent,
+            moderator,
+            status
+          }) => ({
             id: id,
             type: "schedule",
             resourceId: moderator[0]?.id,
@@ -244,7 +284,32 @@ export const getCalenderEvents = (id, start, end) => {
           filteredCombinedScheduleData,
         });
 
-        data = [...filteredCombinedEventData, ...filteredCombinedScheduleData];
+        const absenceResponse = await scheduleClient.getAgentAbsence(
+          id,
+          start,
+          end
+        );
+
+        let absenceData = absenceResponse.data.map(
+          ({
+            id,
+            title,
+            start,
+            stop,
+            agent,
+            status
+          }) => ({
+            id: id,
+            type: "absence",
+            resourceId: agent[0].id,
+            title: `Reason : ${title}`,
+            start: start.slice(0, 19),
+            end: stop.slice(0, 19),
+            backgroundColor: setStatus(status),
+            borderColor: setStatus(status),
+          })
+        );
+        data = [...filteredCombinedEventData, ...filteredCombinedScheduleData, ...absenceData];
         dispatch(eventDetailsAction.setCalenderEvents(data));
         dispatch(eventDetailsAction.setIsLoading(false));
       }

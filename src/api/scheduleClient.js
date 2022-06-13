@@ -44,4 +44,9 @@ export default {
   getTimezoneList() {
     return client.get(`/get-timezone-list/`);
   },
+  getAgentAbsence(id, start, end) {
+    return client.get(
+      `/agent-unavailability-list-calendar/?start_date=${start}&end_date=${end}`
+    );
+  },
 };
