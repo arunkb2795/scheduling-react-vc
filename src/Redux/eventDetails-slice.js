@@ -156,9 +156,9 @@ export const getCalenderEvents = (id, start, end) => {
             id: id,
             type: "event",
             resourceId: agent[0].id,
-            title: `ID: #${id},Type: Event,Title :${title},Consultant :${
+            title: `ID: #${id},Title: ${title},Type: Event,Consultant :${
               agent[0].name
-            },${moderator.length ? `Moderator:${moderator[0]?.name}` : ""} `,
+            },${moderator.length ? `Moderator: ${moderator[0]?.name}` : ""} `,
             start: start.slice(0, 19),
             end: stop.slice(0, 19),
             backgroundColor: "#ffffff",
@@ -182,9 +182,9 @@ export const getCalenderEvents = (id, start, end) => {
             id: id,
             type: "event",
             resourceId: moderator[0].id,
-            title: `ID: #${id},Type: Event,Title :${title},Consultant :${
+            title: `ID: #${id},Title: ${title},Type: Event,Consultant: ${
               agent[0].name
-            },${moderator.length ? `Moderator:${moderator[0]?.name}` : ""}`,
+            },${moderator.length ? `Moderator: ${moderator[0]?.name}` : ""}`,
             start: timeConvertor(
               start.slice(0, 19),
               agent[0].time_zone,
@@ -227,9 +227,9 @@ export const getCalenderEvents = (id, start, end) => {
             id: id,
             type: "schedule",
             resourceId: agent[0].id,
-            title: `ID: #${id},Type: Schedule,Title :${title},Consultant:${
+            title: `ID: #${id},Title: ${title},Type: Schedule,Consultant: ${
               agent[0].name
-            },${moderator.length ? `Moderator:${moderator[0]?.name}` : ""} `,
+            },${moderator.length ? `Moderator: ${moderator[0]?.name}` : ""} `,
             start: start.slice(0, 19),
             end: stop.slice(0, 19),
             backgroundColor: setStatus(status),
@@ -250,9 +250,9 @@ export const getCalenderEvents = (id, start, end) => {
             id: id,
             type: "schedule",
             resourceId: moderator[0]?.id,
-            title: `ID: #${id},Type: Schedule,Title :${title},Consultant:${
+            title: `ID: #${id},Title: ${title},Type: Schedule,Consultant: ${
               agent[0].name
-            },${moderator.length ? `Moderator:${moderator[0]?.name}` : ""} `,
+            },${moderator.length ? `Moderator: ${moderator[0]?.name}` : ""} `,
             start: timeConvertor(
               start.slice(0, 19),
               agent[0].time_zone,
@@ -302,11 +302,13 @@ export const getCalenderEvents = (id, start, end) => {
             id: id,
             type: "absence",
             resourceId: agent[0].id,
-            title: `Reason : ${title}`,
+            title: title??"",
+            email: agent[0].email,
             start: start.slice(0, 19),
             end: stop.slice(0, 19),
             backgroundColor: setStatus(status),
             borderColor: setStatus(status),
+            className: [styles.absenceBox]
           })
         );
         data = [...filteredCombinedEventData, ...filteredCombinedScheduleData, ...absenceData];

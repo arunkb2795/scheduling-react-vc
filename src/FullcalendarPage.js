@@ -365,6 +365,24 @@ export default function FullCalendarPage() {
       </div>
     );
   }
+
+  const handleEventRenderer = (eventInfo) => {
+    let startTime = moment(eventInfo.event.start).format("hh:mm a");
+    let endTime = moment(eventInfo.event.end).format("hh:mm a");
+    if (eventInfo.event._def?.extendedProps?.type === "absence") {
+      return (
+        <span className = {
+            eventInfo.view.type === "dayGridMonth" ? styles.eventTitle:""
+          } > {
+          eventInfo?.event._def?.title || ""
+        }
+          <div >({eventInfo?.event?._def.extendedProps?.email})</div>
+          <div> Unavailable : {startTime} - {endTime} </div>
+        </span>
+      )
+    }
+  }
+  
   return (
     !isLoading && (
       <div>
@@ -420,6 +438,9 @@ export default function FullCalendarPage() {
           editable={false}
           selectable={true}
           selectMirror={true}
+          eventContent = {
+            handleEventRenderer
+          }
           // height="auto"
           dayMinWidth={calendarView === "resourceTimeGridDay" ? 320 : undefined}
         />
@@ -448,6 +469,10 @@ export default function FullCalendarPage() {
           <div className={styles.dotItems}>
             <p className={styles.upComing}></p>
             <p className={styles.text}>Upcoming/Reschedule/New</p>
+          </div>
+          <div className={styles.dotItems}>
+            <p className={styles.absence}></p>
+            <p className={styles.text}>Absence</p>
           </div>
         </div>
 

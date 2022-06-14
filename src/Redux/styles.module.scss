@@ -1,51 +1,51 @@
-.CompletedStyles{
-    border-left: 8px solid #28a745!important;
-
+.CompletedStyles {
+  border-left: 8px solid #28a745 !important;
 }
-.CancelledStyles{
-    border-left: 8px solid #dc3545 !important;
-
+.CancelledStyles {
+  border-left: 8px solid #dc3545 !important;
 }
-.NoShowStyles{
-    border-left: 8px solid #707070 !important;
-
+.NoShowStyles {
+  border-left: 8px solid #707070 !important;
 }
-.CocViolationStyles{
-    border-left: 8px solid #FFFF00 !important;
-
+.CocViolationStyles {
+  border-left: 8px solid #ffff00 !important;
 }
-.IncompleteStyles{
-    border-left: 8px solid #999900 !important;
-
+.IncompleteStyles {
+  border-left: 8px solid #999900 !important;
 }
 .UpcomingStyles {
-    border-left: 8px solid #685bc7 !important;
+  border-left: 8px solid #685bc7 !important;
 }
 
-
-
-.CompletedFadedStyles{
-    border-left: 8px solid #93d3a2!important;
-
+.CompletedFadedStyles {
+  border-left: 8px solid #93d3a2 !important;
 }
-.CancelledFadedStyles{
-    border-left: 8px solid #ed9aa2 !important;
-
+.CancelledFadedStyles {
+  border-left: 8px solid #ed9aa2 !important;
 }
-.NoShowFadedStyles{
-    border-left: 8px solid #b7b7b7 !important;
-
+.NoShowFadedStyles {
+  border-left: 8px solid #b7b7b7 !important;
 }
-.CocViolationFadedStyles{
-    border-left: 8px solid #ffff7f !important;
-
+.CocViolationFadedStyles {
+  border-left: 8px solid #ffff7f !important;
 }
-.IncompleteFadedStyles{
-    border-left: 8px solid #cccc7f !important;
-
+.IncompleteFadedStyles {
+  border-left: 8px solid #cccc7f !important;
 }
 .UpcomingFadedStyles {
-    border-left: 8px solid #b3ade3 !important;
+  border-left: 8px solid #b3ade3 !important;
+}
+
+.absenceBox {
+  //   background: repeating-linear-gradient(
+  //     -45deg,
+  //     #A9A8AF,
+  //     #A9A8AF 3px,
+  //     white 5px,
+  //     white 10px
+  //   );
+  overflow: hidden;
+  cursor: not-allowed;
 }
 
 // .myclass1:before {
