@@ -118,10 +118,10 @@ export default function DraggableDialog(props) {
       setAppointmentSubject(title);
       setType(eventClickInfo.event._def.extendedProps.type);
       if (timeZone) {
-        let defaultTimezone = TimezoneList().filter(
+        let defaultTimezone = timezoneList.filter(
           (item) => item.value === timeZone
         );
-        selectedTimeZone(defaultTimezone[0] ?? TimezoneList()[33]);
+        selectedTimeZone(defaultTimezone[0] ?? timezoneList[33]);
       }
     }
   }, [appointmentLoading]);
@@ -168,7 +168,7 @@ export default function DraggableDialog(props) {
       agentNameError: "",
     });
     setSelectedAgent(value);
-    let agentTimezone = TimezoneList().filter(
+    let agentTimezone = timezoneList.filter(
       (item) => item.value === value.time_zone
     );
     selectedTimeZone(agentTimezone[0]);

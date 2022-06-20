@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext
+} from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "../../api/axios";
@@ -18,6 +22,10 @@ import Paper from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
 import TimeZonePicker from "../TimeZonePicker";
 import TimezoneList from "../../Utils/TimezoneList";
+import {
+  TimezoneContext
+} from "../../context/TimezoneContext";
+
 import CountrySelect from "../CountrySelector";
 
 //import UserForm from './UserForm'
@@ -42,6 +50,7 @@ function PaperComponent(props) {
 }
 
 export default function Tags(props) {
+  const timezoneData = useContext(TimezoneContext);
   const initialFormState = { id: null, name: "", email: "", phone: "" };
   const [dropdownOpen, setDropDownOpen] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -57,13 +66,13 @@ export default function Tags(props) {
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [timeZone, setTimeZone] = useState(TimezoneList()[33]);
+  const [timeZone, setTimeZone] = useState(timezoneData[33]);
   const [country, setCountry] = useState({
     code: "US",
     label: "United States",
     phone: "+1",
   });
-  const [existingTimezone, setExistingTimeZone] = useState(TimezoneList()[33]);
+  const [existingTimezone, setExistingTimeZone] = useState(timezoneData[33]);
 
   useEffect(() => {
     var active = true;
@@ -92,7 +101,7 @@ export default function Tags(props) {
 
   function handleClickOpen() {
     setOpen(!open);
-    setTimeZone(TimezoneList()[33]);
+    setTimeZone(timezoneData[33]);
   }
 
   function handleClose() {
@@ -185,7 +194,7 @@ export default function Tags(props) {
 
   const onChipClik = (option) => {
     console.log({ option });
-    const timezone = TimezoneList().filter(
+    const timezone = timezoneData.filter(
       (item) => item.value === option.time_zone
     );
     console.log({ timezone });
@@ -391,7 +400,7 @@ export default function Tags(props) {
               <div style={{ width: "100%" }}>
                 <TimeZonePicker
                   label="Time Zone*"
-                  options={TimezoneList()}
+                  options={timezoneData}
                   value={timeZone}
                   onChange={handleTimezoneChange}
                   disabled={false}
@@ -452,7 +461,6 @@ export default function Tags(props) {
                 placeholder="John Doe"
                 value={user.name}
                 onChange={handleChange}
-                onChange={handleChange}
                 helperText={nameError}
                 error={nameError ? true : false}
               />
@@ -477,7 +485,7 @@ export default function Tags(props) {
               <div style={{ width: "100%", paddingBottom: "20px" }}>
                 <TimeZonePicker
                   label="Time Zone*"
-                  options={TimezoneList()}
+                  options={timezoneData}
                   value={existingTimezone}
                   onChange={handleExistingTimeZoneChange}
                   disabled={true}
